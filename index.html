@@ -3,28 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>FlameMatch · Premium Dating with Debugged CameraEngine</title>
+    <title>FlameMatch · Premium Live Dating with CameraEngine</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Modern design system (same as before, concise) */
+        /* ---------- MODERN DESIGN SYSTEM ---------- */
         :root {
             --bg-gradient: radial-gradient(circle at 30% 10%, #0b0918, #010002);
             --panel-bg: rgba(25, 24, 38, 0.85);
             --panel-border: rgba(236, 72, 153, 0.25);
+            --text-primary: #f8fafc;
+            --text-secondary: #cbc3f0;
             --accent-color: #ec4899;
+            --accent-glow: rgba(236, 72, 153, 0.25);
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             --card-radius: 48px;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
             background: var(--bg-gradient);
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-sans);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 20px;
+            perspective: 1000px;
         }
+
         .dating-app {
             max-width: 400px;
             width: 100%;
@@ -32,54 +46,200 @@
             background: rgba(12, 10, 22, 0.85);
             backdrop-filter: blur(2px);
             border-radius: var(--card-radius);
-            box-shadow: 0 30px 50px -15px rgba(0,0,0,0.8), 0 0 0 2px rgba(236,72,153,0.4);
+            box-shadow: 0 30px 50px -15px rgba(0, 0, 0, 0.8), 0 0 0 2px rgba(236, 72, 153, 0.4), 0 0 0 6px rgba(0, 0, 0, 0.2);
             overflow: hidden;
             display: flex;
             flex-direction: column;
         }
+
+        /* Auth Container */
         .auth-container {
             max-width: 400px;
             width: 100%;
             height: 780px;
-            background: rgba(8,6,16,0.96);
+            background: rgba(8, 6, 16, 0.96);
             backdrop-filter: blur(20px);
             border-radius: var(--card-radius);
+            box-shadow: 0 30px 50px -15px black, 0 0 0 2px rgba(236, 72, 153, 0.5);
             padding: 32px 24px;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            overflow-y: auto;
         }
-        .auth-logo h1 { font-size: 3rem; background: linear-gradient(125deg,#F472B6,#EC4899,#A855F7); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .auth-input, .auth-select { background: #1e1c2c; border: 1px solid rgba(236,72,153,0.4); border-radius: 60px; padding: 16px 20px; width: 100%; margin-bottom: 16px; color: white; }
-        .auth-btn { background: linear-gradient(135deg,#ec4899,#be185d); border: none; border-radius: 60px; padding: 14px; font-weight: bold; color: white; cursor: pointer; }
-        .main-header { padding: 12px 20px; display: flex; justify-content: space-between; background: rgba(10,10,18,0.8); backdrop-filter: blur(16px); border-bottom: 1px solid var(--panel-border); }
-        .logo-area h1 { font-size: 1.8rem; font-weight: 800; background: linear-gradient(125deg,#F472B6,#EC4899,#A855F7); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .coin-badge { background: rgba(32,33,48,0.9); backdrop-filter: blur(8px); padding: 6px 16px; border-radius: 60px; display: flex; align-items: center; gap: 8px; font-weight: 700; color: #FBBF24; }
-        .content-area { flex: 1; overflow-y: auto; padding: 18px 16px; }
-        .modern-card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: var(--card-radius); backdrop-filter: blur(12px); overflow: hidden; transition: all 0.3s; opacity: 0; transform: translateY(40px); }
-        .modern-card.is-visible { opacity: 1; transform: translateY(0); }
-        .profile-img { height: 300px; position: relative; overflow: hidden; }
+
+        .auth-logo { text-align: center; margin-bottom: 40px; }
+        .auth-logo h1 { font-size: 3rem; background: linear-gradient(125deg, #F472B6, #EC4899, #A855F7); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .auth-input, .auth-select {
+            background: #1e1c2c;
+            border: 1px solid rgba(236, 72, 153, 0.4);
+            border-radius: 60px;
+            padding: 16px 20px;
+            width: 100%;
+            margin-bottom: 16px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+        }
+        .auth-input:focus, .auth-select:focus { border-color: #ec4899; box-shadow: 0 0 8px #ec4899; }
+        .auth-btn {
+            background: linear-gradient(135deg, #ec4899, #be185d);
+            border: none;
+            border-radius: 60px;
+            padding: 14px;
+            font-weight: bold;
+            font-size: 18px;
+            color: white;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+        .auth-error { color: #ff8989; font-size: 13px; text-align: center; margin-top: 8px; }
+        .auth-switch { text-align: center; margin-top: 24px; color: #b9b1e6; }
+        .auth-switch span { color: #ec4899; cursor: pointer; font-weight: bold; }
+
+        .main-header {
+            padding: 12px 20px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 18, 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--panel-border);
+        }
+        .logo-area h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(125deg, #F472B6, #EC4899, #A855F7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .coin-badge {
+            background: rgba(32, 33, 48, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 6px 16px;
+            border-radius: 60px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            color: #FBBF24;
+            font-size: 15px;
+            border: 0.5px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 18px 16px;
+            scroll-behavior: smooth;
+        }
+
+        .modern-card {
+            position: relative;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--card-radius);
+            backdrop-filter: blur(12px);
+            overflow: hidden;
+            transition: var(--transition-smooth);
+            opacity: 0;
+            transform: translateY(40px) scale(0.98);
+            will-change: transform, opacity;
+        }
+        .modern-card.is-visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        .modern-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(236, 72, 153, 0.6);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px var(--accent-glow);
+        }
+        .modern-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(600px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(255, 255, 255, 0.08), transparent 60%);
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .modern-card:hover::after { opacity: 1; }
+        .card-content { position: relative; z-index: 2; }
+
+        .profile-img { height: 300px; position: relative; overflow: hidden; border-radius: var(--card-radius) var(--card-radius) 0 0; }
         .profile-img img { width: 100%; height: 100%; object-fit: cover; }
-        .match-percent-badge { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); padding: 8px 16px; border-radius: 60px; color: white; }
+        .match-percent-badge {
+            position: absolute; top: 20px; right: 20px; z-index: 3;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(12px);
+            padding: 8px 16px; border-radius: 60px; font-weight: 800;
+            color: white; border: 1px solid #f472b6;
+        }
         .profile-info { padding: 22px 20px; }
-        .profile-name { font-size: 28px; font-weight: 800; color: white; }
+        .profile-name { font-size: 28px; font-weight: 800; color: white; display: flex; justify-content: space-between; }
+        .profile-occupation { font-size: 14px; color: #c084fc; margin-top: 4px; }
+        .profile-bio { color: var(--text-secondary); margin-top: 12px; font-size: 14px; line-height: 1.4; }
+
         .action-buttons { display: flex; justify-content: space-around; padding: 12px 24px 28px; gap: 24px; }
-        .action-btn { background: #24222f; border: none; width: 68px; height: 68px; border-radius: 68px; font-size: 32px; cursor: pointer; }
-        .btn-like { background: linear-gradient(145deg,#ec4899,#be185d); }
-        .btn-super { background: linear-gradient(145deg,#f59e0b,#b45309); }
+        .action-btn {
+            background: #24222f; border: none; width: 68px; height: 68px;
+            border-radius: 68px; font-size: 32px; color: white;
+            cursor: pointer; transition: 0.2s;
+        }
+        .btn-like { background: linear-gradient(145deg, #ec4899, #be185d); box-shadow: 0 0 12px #ec4899; }
+        .btn-super { background: linear-gradient(145deg, #f59e0b, #b45309); }
         .btn-pass { background: #2e2a3e; color: #ffb3b3; }
-        .match-item { display: flex; align-items: center; gap: 16px; background: rgba(23,23,31,0.9); border-radius: 80px; padding: 10px 16px; margin-bottom: 14px; }
+
+        .match-item { display: flex; align-items: center; gap: 16px; padding: 10px 16px; margin-bottom: 14px; }
         .match-avatar { width: 58px; height: 58px; border-radius: 58px; overflow: hidden; border: 2px solid #ec4899; }
-        .chat-btn { background: #ec4899; border: none; padding: 8px 20px; border-radius: 40px; color: white; cursor: pointer; }
-        .live-container video { width: 100%; border-radius: 40px; transform: scaleX(-1); background: #000; }
+        .match-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .match-info { flex: 1; }
+        .match-name { font-weight: 800; color: white; font-size: 16px; }
+        .match-percentage { font-size: 12px; color: #fbbf24; background: #1e1c2c; padding: 2px 10px; border-radius: 40px; margin-left: 8px; }
+        .chat-btn { background: #ec4899; border: none; padding: 8px 20px; border-radius: 40px; color: white; font-weight: 700; cursor: pointer; }
+
+        .chat-header-match { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; background: rgba(18, 18, 26, 0.9); border-radius: 60px; padding: 10px 18px; }
+        .messages-box { background: rgba(8, 8, 16, 0.7); border-radius: 36px; padding: 18px; height: 440px; overflow-y: auto; }
+        .msg-bubble { max-width: 80%; padding: 10px 16px; border-radius: 26px; margin-bottom: 8px; }
+        .msg-sent { background: linear-gradient(135deg, #ec4899, #be185d); align-self: flex-end; color: white; }
+        .msg-received { background: #252432; align-self: flex-start; }
+        .chat-input-area { display: flex; gap: 12px; margin-top: 14px; background: #12121c; border-radius: 60px; padding: 6px 12px; }
+
+        .live-video-wrapper video {
+            width: 100%;
+            border-radius: 40px;
+            transform: scaleX(-1);
+            background: #000;
+            object-fit: cover;
+            max-height: 460px;
+        }
         .live-controls { display: flex; gap: 20px; justify-content: center; padding: 20px; }
-        .live-btn { background: linear-gradient(145deg,#ec4899,#a21caf); border: none; padding: 12px 24px; border-radius: 60px; color: white; font-weight: bold; cursor: pointer; }
+        .live-btn { background: linear-gradient(145deg, #ec4899, #a21caf); border: none; padding: 12px 24px; border-radius: 60px; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .live-btn:active { transform: scale(0.96); }
+
         .my-profile-card { text-align: center; padding: 28px 24px; }
         .user-profile-photo { width: 110px; height: 110px; border-radius: 110px; overflow: hidden; margin: 0 auto; border: 3px solid #ec4899; }
-        .bottom-nav { background: rgba(8,8,14,0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--panel-border); display: flex; justify-content: space-around; padding: 10px 12px 20px; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #6f6b8a; cursor: pointer; font-size: 11px; font-weight: 600; }
+        .user-profile-photo img { width: 100%; height: 100%; object-fit: cover; }
+        .edit-field { background: #23222e; border: 1px solid #ec4899; padding: 14px; border-radius: 60px; color: white; width: 100%; margin-top: 12px; }
+        .upload-label { background: #2e2a3e; padding: 10px 18px; border-radius: 60px; display: inline-block; margin: 8px; cursor: pointer; }
+        .reset-photo-btn { background: #1e1c2c; padding: 10px 18px; border-radius: 60px; cursor: pointer; border: none; color: white; }
+
+        .bottom-nav {
+            background: rgba(8, 8, 14, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--panel-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 12px 20px;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #6f6b8a; cursor: pointer; font-size: 11px; font-weight: 600; transition: 0.2s; }
         .nav-active { color: #f472b6; text-shadow: 0 0 8px #ec4899; }
-        .reset-btn { background: rgba(236,72,153,0.2); border: 1px solid #ec4899; padding: 12px; border-radius: 40px; width: 100%; color: white; cursor: pointer; }
+        .reset-btn { background: rgba(236, 72, 153, 0.2); border: 1px solid #ec4899; padding: 12px; border-radius: 40px; width: 100%; color: white; font-weight: bold; cursor: pointer; }
         .swipe-hint { text-align: center; font-size: 11px; margin-top: 12px; color: #aa99e6; }
     </style>
 </head>
@@ -87,212 +247,81 @@
 <div id="root"></div>
 
 <script>
-    // ----------------------------------- PROFESSIONAL CAMERA ENGINE WITH FULL DEBUGGING -----------------------------------
+    // -------------------------- PROFESSIONAL CAMERA ENGINE (FIXED CONSTRAINTS + INTERVAL CLEANUP) --------------------------
     class CameraEngine {
         constructor(videoElementId) {
             this.videoElement = document.getElementById(videoElementId);
             this.localStream = null;
-            this.isStreaming = false;
-            this.currentConstraints = null;
-            this.debugLogs = [];
-
-            if (!this.videoElement) {
-                throw new Error(`Critical: Video element with ID "${videoElementId}" not found in DOM.`);
-            }
-            this.log("CameraEngine instantiated", { elementId: videoElementId });
+            if (!this.videoElement) throw new Error(`Video element #${videoElementId} missing.`);
         }
 
-        log(message, data = null) {
-            const logEntry = `[CameraEngine] ${message} ${data ? JSON.stringify(data) : ''}`;
-            console.log(logEntry);
-            this.debugLogs.push(logEntry);
-        }
-
-        error(message, errorObj = null) {
-            console.error(`[CameraEngine ERROR] ${message}`, errorObj);
-            this.debugLogs.push(`ERROR: ${message} ${errorObj ? errorObj.message : ''}`);
-        }
-
-        async enumerateDevices() {
-            if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-                this.error("enumerateDevices not supported");
-                return [];
-            }
-            try {
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                const videoDevices = devices.filter(d => d.kind === 'videoinput');
-                this.log("Enumerated video devices", videoDevices.map(d => ({ label: d.label, deviceId: d.deviceId })));
-                return videoDevices;
-            } catch (err) {
-                this.error("Failed to enumerate devices", err);
-                return [];
-            }
-        }
-
-        async checkPermissionState() {
-            if (!navigator.permissions || !navigator.permissions.query) {
-                this.log("Permissions API not supported, cannot pre-check");
-                return "unknown";
-            }
-            try {
-                const permissionStatus = await navigator.permissions.query({ name: 'camera' });
-                this.log(`Camera permission state: ${permissionStatus.state}`);
-                permissionStatus.onchange = () => {
-                    this.log(`Permission state changed to: ${permissionStatus.state}`);
-                };
-                return permissionStatus.state;
-            } catch (err) {
-                this.error("Permission query failed", err);
-                return "unknown";
-            }
-        }
-
-        // Constraint fallback strategy: try ideal, then basic, then minimal
-        getConstraintVariants() {
-            return [
-                // Variant 1: Optimal (high quality)
-                {
-                    audio: { echoCancellation: true, noiseSuppression: true },
-                    video: { width: { ideal: 1280, max: 1920 }, height: { ideal: 720, max: 1080 }, aspectRatio: 1.777777778, frameRate: { ideal: 30 }, facingMode: "user" }
+        // FIX: Removed unsupported backgroundBlur constraint for audio
+        getOptimalConstraints() {
+            return {
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true
+                    // backgroundBlur removed - invalid constraint for getUserMedia
                 },
-                // Variant 2: Standard (720p)
-                {
-                    audio: true,
-                    video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: "user" }
-                },
-                // Variant 3: Minimal (480p) - works on almost all devices
-                {
-                    audio: true,
-                    video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: "user" }
-                },
-                // Variant 4: Fallback - just video true
-                {
-                    video: true,
-                    audio: true
+                video: {
+                    width: { ideal: 1280, max: 1920 },
+                    height: { ideal: 720, max: 1080 },
+                    aspectRatio: 1.777777778,
+                    frameRate: { ideal: 30, max: 60 },
+                    facingMode: "user"
                 }
-            ];
+            };
         }
 
         async startStream() {
-            // Cleanup any existing stream first
-            if (this.localStream) {
-                this.log("Existing stream detected, stopping before restart");
-                this.stopStream();
-            }
-
-            // Pre-flight checks
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                const errorMsg = "MediaDevices API not available. Ensure HTTPS or localhost, and browser support.";
-                this.error(errorMsg);
-                throw new Error(errorMsg);
-            }
-
-            // Check HTTPS (required for getUserMedia in production)
-            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && !location.hostname.includes('127.0.0.1')) {
-                this.error("Application not served over HTTPS. getUserMedia may be blocked.");
-                // Show warning but continue (some browsers still allow)
-            }
-
-            // Log permission state
-            const permState = await this.checkPermissionState();
-            this.log(`Permission pre-check: ${permState}`);
-
-            // Enumerate devices for diagnostics
-            const devices = await this.enumerateDevices();
-            if (devices.length === 0) {
-                this.error("No video input devices found. Please connect a camera.");
-                throw new Error("No camera detected");
-            }
-
-            // Try each constraint variant
-            const variants = this.getConstraintVariants();
-            let lastError = null;
-
-            for (let i = 0; i < variants.length; i++) {
-                const constraints = variants[i];
-                this.log(`Attempting getUserMedia with variant ${i+1}`, constraints);
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-                    this.log(`Stream acquired successfully with variant ${i+1}`);
-                    this.localStream = stream;
-                    this.currentConstraints = constraints;
-
-                    // Attach to video element
-                    this.videoElement.srcObject = stream;
-                    this.videoElement.onloadedmetadata = () => {
-                        this.videoElement.play().catch(e => {
-                            this.error("Autoplay failed", e);
-                            // Autoplay may be blocked; user interaction required. We'll show a message.
-                        });
-                        this.log("Video metadata loaded, stream playing");
-                    };
-                    this.isStreaming = true;
-
-                    // Log stream tracks
-                    stream.getTracks().forEach(track => {
-                        this.log(`Track added: ${track.kind}, enabled: ${track.enabled}, readyState: ${track.readyState}`);
-                    });
-                    return stream;
-                } catch (err) {
-                    lastError = err;
-                    this.error(`Variant ${i+1} failed`, err);
-                    // Continue to next variant
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw new Error("MediaDevices API not supported.");
                 }
+                const constraints = this.getOptimalConstraints();
+                this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
+                this.videoElement.srcObject = this.localStream;
+                this.videoElement.onloadedmetadata = () => {
+                    this.videoElement.play().catch(err => console.warn("Autoplay blocked:", err));
+                };
+                return this.localStream;
+            } catch (error) {
+                this.handleError(error);
+                throw error;
             }
-
-            // All variants failed - provide detailed error mapping
-            const errorMap = this.mapError(lastError);
-            throw new Error(errorMap.userMessage);
-        }
-
-        mapError(error) {
-            let userMessage = "Unable to access camera. ";
-            let technicalDetails = error.message;
-
-            switch (error.name) {
-                case 'NotAllowedError':
-                    userMessage = "Camera permission denied by user. Please allow camera access and refresh.";
-                    break;
-                case 'NotFoundError':
-                    userMessage = "No camera device found on this device. Please connect a camera.";
-                    break;
-                case 'NotReadableError':
-                    userMessage = "Camera is already in use by another application. Close other apps and try again.";
-                    break;
-                case 'SecurityError':
-                    userMessage = "Camera access blocked due to security restrictions (HTTPS required).";
-                    break;
-                case 'OverconstrainedError':
-                    userMessage = "Camera does not support required resolution. Trying fallback...";
-                    break;
-                default:
-                    userMessage = `Camera error: ${error.message || "Unknown error"}`;
-            }
-            this.error(`Final error mapping: ${userMessage}`, error);
-            return { userMessage, technicalDetails };
         }
 
         stopStream() {
-            if (!this.localStream) {
-                this.log("No active stream to stop");
-                return;
-            }
-            this.log("Stopping stream and releasing tracks");
-            this.localStream.getTracks().forEach(track => {
-                track.stop();
-                this.log(`Track ${track.kind} stopped`);
-            });
+            if (!this.localStream) return;
+            this.localStream.getTracks().forEach(track => track.stop());
             this.videoElement.srcObject = null;
             this.localStream = null;
-            this.isStreaming = false;
         }
 
-        isActive() {
-            return this.isStreaming && this.localStream !== null && this.localStream.active;
+        handleError(error) {
+            let msg = "";
+            switch (error.name) {
+                case 'NotAllowedError': msg = "Permission denied: allow camera & mic access."; break;
+                case 'NotFoundError': msg = "No camera found on this device."; break;
+                case 'NotReadableError': msg = "Camera busy / hardware locked."; break;
+                case 'OverconstrainedError': msg = "Camera constraints not supported."; break;
+                default: msg = `Camera error: ${error.message}`;
+            }
+            console.error("[CameraEngine]", msg);
+            showToast(msg, "#ff4d4d");
         }
     }
 
-    // -------------------------- AUTH & APP STATE (unchanged but integrated) --------------------------
+    // Global interval for live viewer simulation (to ensure cleanup)
+    let globalLiveViewerInterval = null;
+    function clearLiveInterval() {
+        if (globalLiveViewerInterval) {
+            clearInterval(globalLiveViewerInterval);
+            globalLiveViewerInterval = null;
+        }
+    }
+
+    // -------------------------- AUTH & STORAGE --------------------------
     const countryList = ["United States", "Canada", "United Kingdom", "Australia", "Germany", "France", "Spain", "Italy", "Netherlands", "Sweden", "Brazil", "Mexico", "India", "Japan", "South Korea", "Kenya", "UAE"];
     let users = JSON.parse(localStorage.getItem("flamematch_users")) || [];
     let currentSessionUser = JSON.parse(sessionStorage.getItem("flamematch_session")) || null;
@@ -301,15 +330,15 @@
     function clearSession() { sessionStorage.removeItem("flamematch_session"); currentSessionUser = null; }
     function signup(email, password, name, age, country) {
         if (!email || !password || !name || !age || !country) return { success: false, error: "All fields required" };
-        if (users.find(u => u.email === email)) return { success: false, error: "Email exists" };
-        const newUser = { id: Date.now().toString(), email, password, name, age: parseInt(age), country, bio: "✨ New to FlameMatch!", photoId: "user_alex_def", coins: 450, customPhotoURL: null };
+        if (users.find(u => u.email === email)) return { success: false, error: "Email already exists" };
+        const newUser = { id: Date.now().toString(), email, password, name, age: parseInt(age), country, bio: "✨ New to FlameMatch. Let's connect!", photoId: "user_alex_def", coins: 450, customPhotoURL: null };
         users.push(newUser);
         saveUsers();
         return { success: true, user: newUser };
     }
     function login(email, password) {
         const user = users.find(u => u.email === email && u.password === password);
-        if (!user) return { success: false, error: "Invalid credentials" };
+        if (!user) return { success: false, error: "Invalid email or password" };
         return { success: true, user };
     }
 
@@ -317,113 +346,174 @@
     const DEFAULT_DISCOVER = [
         { id: "p_jennie", name: "Jennie Karao", age: 20, occupation: "UI Designer", matchPercentage: 89, bio: "Pixel perfect & latte art lover.", liked: false },
         { id: "p_natalie", name: "Natalie Morris", age: 25, occupation: "Fashion Designer", matchPercentage: 90, bio: "Runway dreams & thrift flips.", liked: false },
-        { id: "p_emma", name: "Emma Ora", age: 24, occupation: "Comedian", matchPercentage: 100, bio: "Making you laugh is my superpower.", liked: false }
+        { id: "p_emma", name: "Emma Ora", age: 24, occupation: "Comedian", matchPercentage: 100, bio: "Making you laugh is my superpower.", liked: false },
+        { id: "p_diana", name: "Diana Morans", age: 32, occupation: "Influencer", matchPercentage: 89, bio: "Travel & lifestyle.", liked: false },
+        { id: "p_maria", name: "Maria Sams", age: 25, occupation: "Doctor", matchPercentage: 78, bio: "ER by day, hiking & stargazing.", liked: false },
+        { id: "p_liam2", name: "Liam Chen", age: 27, occupation: "Product Lead", matchPercentage: 92, bio: "Startup nerd + rock climber.", liked: false },
+        { id: "p_sophia", name: "Sophia Rose", age: 23, occupation: "Photographer", matchPercentage: 96, bio: "Capturing light and feelings.", liked: false }
     ];
     const DEFAULT_MATCHES = [
-        { id: "match_natalie", name: "Natalie Morris", age: 25, occupation: "Fashion Designer", matchPercentage: 90, lastMessage: "That outfit is fire! 🔥", chatMessages: [{ text: "Hey! Love your style", sender: "them", time: "2:30 PM" }] }
+        { id: "match_natalie", name: "Natalie Morris", age: 25, occupation: "Fashion Designer", matchPercentage: 90, lastMessage: "That outfit is fire! 🔥", chatMessages: [{ text: "Hey! Love your style 🔥", sender: "them", time: "2:30 PM" }, { text: "Let's grab coffee?", sender: "them", time: "2:32 PM" }] },
+        { id: "match_emma", name: "Emma Ora", age: 24, occupation: "Comedian", matchPercentage: 100, lastMessage: "You're hilarious 😂", chatMessages: [{ text: "Haha your bio made me laugh", sender: "them", time: "Yesterday" }] }
     ];
     const PHOTOS = {
         p_jennie: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&q=80",
         p_natalie: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80",
         p_emma: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80",
+        p_diana: "https://images.unsplash.com/photo-1488716820095-cbe80883c496?w=600&q=80",
+        p_maria: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=80",
+        p_liam2: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&q=80",
+        p_sophia: "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=600&q=80",
         match_natalie: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80",
+        match_emma: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80",
         user_alex_def: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80",
     };
     function photoUrl(id) { if (id === "user_alex" && appData.customUserPhotoURL) return appData.customUserPhotoURL; return PHOTOS[id] || PHOTOS.user_alex_def; }
     
     function loadUserData(userId) {
         const stored = localStorage.getItem(`flamematch_data_${userId}`);
-        if (stored) { const data = JSON.parse(stored); appData.discoverProfiles = data.discoverProfiles || [...DEFAULT_DISCOVER]; appData.matchesList = data.matchesList || [...DEFAULT_MATCHES]; appData.userCoins = data.userCoins ?? 450; appData.currentUserBio = data.currentUserBio || ""; appData.customUserPhotoURL = data.customPhotoURL || null; }
-        else { appData.discoverProfiles = [...DEFAULT_DISCOVER]; appData.matchesList = [...DEFAULT_MATCHES]; appData.userCoins = 450; appData.currentUserBio = ""; }
-        const user = users.find(u => u.id === userId); if (user) user.coins = appData.userCoins;
+        if (stored) {
+            const data = JSON.parse(stored);
+            appData.discoverProfiles = data.discoverProfiles || [...DEFAULT_DISCOVER];
+            appData.matchesList = data.matchesList || [...DEFAULT_MATCHES];
+            appData.userCoins = data.userCoins !== undefined ? data.userCoins : 450;
+            appData.currentUserBio = data.currentUserBio || "";
+            appData.customUserPhotoURL = data.customPhotoURL || null;
+        } else {
+            appData.discoverProfiles = [...DEFAULT_DISCOVER];
+            appData.matchesList = [...DEFAULT_MATCHES];
+            appData.userCoins = 450;
+            appData.currentUserBio = "";
+            appData.customUserPhotoURL = null;
+        }
+        const user = users.find(u => u.id === userId);
+        if (user) user.coins = appData.userCoins;
     }
-    function saveUserData(userId) { localStorage.setItem(`flamematch_data_${userId}`, JSON.stringify({ discoverProfiles: appData.discoverProfiles, matchesList: appData.matchesList, userCoins: appData.userCoins, currentUserBio: appData.currentUserBio, customPhotoURL: appData.customUserPhotoURL })); }
+    function saveUserData(userId) {
+        const data = { discoverProfiles: appData.discoverProfiles, matchesList: appData.matchesList, userCoins: appData.userCoins, currentUserBio: appData.currentUserBio, customPhotoURL: appData.customUserPhotoURL };
+        localStorage.setItem(`flamematch_data_${userId}`, JSON.stringify(data));
+        const user = users.find(u => u.id === userId);
+        if (user) user.coins = appData.userCoins;
+        saveUsers();
+    }
     
     let activeTab = "discover";
     let currentChatPartner = null;
-    let cameraEngine = null; // singleton reference
+    let cameraEngineInstance = null;
 
     function updateCoinUI() { const el = document.getElementById("coinAmount"); if (el) el.innerText = appData.userCoins; }
-    function addMatch(profile) { if (!appData.matchesList.find(m => m.id === profile.id)) { appData.matchesList.unshift({ id: profile.id, name: profile.name, age: profile.age, occupation: profile.occupation, matchPercentage: profile.matchPercentage, lastMessage: "You matched! Say hi ✨", chatMessages: [{ text: "You matched!", sender: "them", time: "now" }] }); return true; } return false; }
-    function likeProfile(profile) { if (profile.liked) return; profile.liked = true; const willMatch = Math.random() > 0.25; if (willMatch) addMatch(profile); alert(willMatch ? `💖 Match with ${profile.name}!` : `👍 Liked ${profile.name}`); const idx = appData.discoverProfiles.findIndex(p => p.id === profile.id); if (idx !== -1) appData.discoverProfiles.splice(idx, 1); saveUserData(currentSessionUser.id); renderCurrentTab(); }
+    function addMatch(profile) { if (!appData.matchesList.find(m => m.id === profile.id)) { appData.matchesList.unshift({ id: profile.id, name: profile.name, age: profile.age, occupation: profile.occupation, matchPercentage: profile.matchPercentage, lastMessage: "You matched! Say hi ✨", chatMessages: [{ text: "You matched! Say hi ✨", sender: "them", time: "just now" }] }); return true; } return false; }
+    function likeProfile(profile) { if (profile.liked) return; profile.liked = true; const willMatch = Math.random() > 0.25; if (willMatch) { const added = addMatch(profile); alert(added ? `💖 Match! You and ${profile.name} liked each other.` : `💕 You liked ${profile.name}!`); } else alert(`👍 You liked ${profile.name}!`); const idx = appData.discoverProfiles.findIndex(p => p.id === profile.id); if (idx !== -1) appData.discoverProfiles.splice(idx, 1); saveUserData(currentSessionUser.id); renderCurrentTab(); }
     function passProfile(profile) { const idx = appData.discoverProfiles.findIndex(p => p.id === profile.id); if (idx !== -1) appData.discoverProfiles.splice(idx, 1); saveUserData(currentSessionUser.id); renderCurrentTab(); }
-    function superLike(profile) { if (appData.userCoins < 50) { alert("Need 50 gems"); return; } appData.userCoins -= 50; updateCoinUI(); addMatch(profile); alert(`✨ SuperLiked ${profile.name}!`); const idx = appData.discoverProfiles.findIndex(p => p.id === profile.id); if (idx !== -1) appData.discoverProfiles.splice(idx, 1); saveUserData(currentSessionUser.id); renderCurrentTab(); }
+    function superLike(profile) { if (appData.userCoins < 50) { alert("💎 Need 50 gems for SuperLike. Get daily bonus."); return; } appData.userCoins -= 50; updateCoinUI(); const added = addMatch(profile); alert(added ? `✨ SuperLiked ${profile.name}! Instant match ✨` : `✨ SuperLiked ${profile.name}`); const idx = appData.discoverProfiles.findIndex(p => p.id === profile.id); if (idx !== -1) appData.discoverProfiles.splice(idx, 1); saveUserData(currentSessionUser.id); renderCurrentTab(); }
     function sendMessage(partnerId, text) { if (!text.trim()) return; const match = appData.matchesList.find(m => m.id === partnerId); if (match) { match.chatMessages.push({ text, sender: "me", time: "now" }); match.lastMessage = text; saveUserData(currentSessionUser.id); renderChatScreen(partnerId); } }
     
-    function renderChatScreen(partnerId) { /* simplified for brevity, same as before but functional */ const partner = appData.matchesList.find(m => m.id === partnerId); if (!partner) return; currentChatPartner = partner; const container = document.getElementById("appContent"); let messagesHtml = ""; partner.chatMessages.forEach(msg => { messagesHtml += `<div class="msg-bubble ${msg.sender === 'me' ? 'msg-sent' : 'msg-received'}">${msg.sender === 'them' ? `<strong>${partner.name}</strong> ` : ''}${escapeHtml(msg.text)}</div>`; }); container.innerHTML = `<div class="modern-card" style="padding:20px;"><div class="chat-header-match"><div style="width:54px;height:54px;border-radius:54px;overflow:hidden;"><img src="${photoUrl(partnerId)}" style="width:100%;"></div><div><strong>${partner.name}, ${partner.age}</strong><br><span style="color:#f472b6;">${partner.matchPercentage}% match</span></div><i class="fas fa-arrow-left" id="backToMatchesBtn" style="margin-left:auto;color:#ec4899;font-size:24px;cursor:pointer;"></i></div><div class="messages-box" id="chatMessagesBox">${messagesHtml}</div><div class="chat-input-area"><input id="chatMessageInput" placeholder="Message..." style="flex:1;background:transparent;border:none;color:white;padding:12px;"><button id="sendChatBtn" style="background:#ec4899;border:none;width:46px;height:46px;border-radius:46px;"><i class="fas fa-paper-plane"></i></button></div></div>`; document.getElementById("backToMatchesBtn")?.addEventListener("click", () => { currentChatPartner = null; activeTab = "matches"; renderCurrentTab(); }); document.getElementById("sendChatBtn")?.addEventListener("click", () => { const inp = document.getElementById("chatMessageInput"); if (inp.value.trim()) { sendMessage(partnerId, inp.value); inp.value = ""; setTimeout(() => document.getElementById("chatMessagesBox")?.scrollTo(0,99999),30); } }); attachModernCardStyles(); }
-    function renderMatchesTab() { if (currentChatPartner) return renderChatScreen(currentChatPartner.id); const container = document.getElementById("appContent"); if (!appData.matchesList.length) { container.innerHTML = `<div class="modern-card" style="text-align:center;padding:60px;"><i class="fas fa-heart-broken"></i><p>No matches yet</p></div>`; attachModernCardStyles(); return; } let html = `<h3 style="color:white;">Matches · ${appData.matchesList.length}</h3>`; appData.matchesList.forEach(m => { html += `<div class="modern-card match-item"><div class="match-avatar"><img src="${photoUrl(m.id)}"></div><div class="match-info"><div class="match-name">${m.name}, ${m.age} <span class="match-percentage">${m.matchPercentage}%</span></div><div>${m.occupation}</div><div>💬 ${m.lastMessage.substring(0,35)}</div></div><button class="chat-btn" data-chatid="${m.id}">Chat</button></div>`; }); container.innerHTML = html; document.querySelectorAll(".chat-btn").forEach(btn => btn.addEventListener("click", () => renderChatScreen(btn.getAttribute("data-chatid")))); attachModernCardStyles(); }
+    function renderChatScreen(partnerId) {
+        const partner = appData.matchesList.find(m => m.id === partnerId); if (!partner) return;
+        currentChatPartner = partner; const container = document.getElementById("appContent");
+        let messagesHtml = ""; partner.chatMessages.forEach(msg => { messagesHtml += `<div class="msg-bubble ${msg.sender === 'me' ? 'msg-sent' : 'msg-received'}">${msg.sender === 'them' ? `<strong>${partner.name}</strong> ` : ''}${escapeHtml(msg.text)}</div>`; });
+        container.innerHTML = `<div class="modern-card" style="padding:20px;"><div class="chat-header-match"><div style="width:54px;height:54px;border-radius:54px;overflow:hidden;"><img src="${photoUrl(partnerId)}" style="width:100%;height:100%;object-fit:cover;"></div><div><strong style="color:white;">${partner.name}, ${partner.age}</strong><br><span style="color:#f472b6;">${partner.matchPercentage}% match</span></div><i class="fas fa-arrow-left" id="backToMatchesBtn" style="margin-left:auto;color:#ec4899;font-size:24px;cursor:pointer;"></i></div><div class="messages-box" id="chatMessagesBox">${messagesHtml}</div><div class="chat-input-area"><input id="chatMessageInput" placeholder="Message..." style="flex:1;background:transparent;border:none;color:white;padding:12px;"><button id="sendChatBtn" style="background:#ec4899;border:none;width:46px;height:46px;border-radius:46px;color:white;"><i class="fas fa-paper-plane"></i></button></div></div>`;
+        document.getElementById("backToMatchesBtn")?.addEventListener("click", () => { currentChatPartner = null; activeTab = "matches"; renderCurrentTab(); });
+        document.getElementById("sendChatBtn")?.addEventListener("click", () => { const inp = document.getElementById("chatMessageInput"); if (inp.value.trim()) { sendMessage(partnerId, inp.value); inp.value = ""; setTimeout(() => document.getElementById("chatMessagesBox")?.scrollTo(0,99999),30); } });
+        attachModernCardStyles();
+    }
+    
+    function renderMatchesTab() {
+        if (currentChatPartner) { renderChatScreen(currentChatPartner.id); return; }
+        const container = document.getElementById("appContent");
+        if (!appData.matchesList.length) { container.innerHTML = `<div class="modern-card" style="text-align:center;padding:60px 20px;"><i class="fas fa-heart-broken" style="font-size:52px;"></i><p>No matches yet. Start liking!</p></div>`; attachModernCardStyles(); return; }
+        let html = `<h3 style="color:white;margin-bottom:18px;">Your Matches · ${appData.matchesList.length}</h3>`;
+        appData.matchesList.forEach(m => { html += `<div class="modern-card match-item" style="margin-bottom:14px;"><div class="match-avatar"><img src="${photoUrl(m.id)}"></div><div class="match-info"><div class="match-name">${m.name}, ${m.age} <span class="match-percentage">${m.matchPercentage}%</span></div><div>${m.occupation}</div><div>💬 ${m.lastMessage.substring(0,35)}</div></div><button class="chat-btn" data-chatid="${m.id}">Chat</button></div>`; });
+        container.innerHTML = html;
+        document.querySelectorAll(".chat-btn").forEach(btn => btn.addEventListener("click", () => { const id = btn.getAttribute("data-chatid"); if (id) renderChatScreen(id); }));
+        attachModernCardStyles();
+    }
     
     let startX=0, currentX=0, isDragging=false;
     function attachSwipeEvents(card, profile) { if(!card) return; const onMove=(e)=>{if(!isDragging) return; const dx=(e.touches?e.touches[0].clientX:e.clientX)-startX; currentX=dx; card.style.transform=`translateX(${dx}px) rotate(${dx*0.03}deg)`; card.style.opacity=Math.max(0.5,1-Math.abs(dx)/400); }; const onEnd=()=>{if(!isDragging) return; isDragging=false; if(currentX>110) likeProfile(profile); else if(currentX<-110) passProfile(profile); else{card.style.transform=""; card.style.opacity="";} document.removeEventListener("mousemove",onMove); document.removeEventListener("mouseup",onEnd); }; const onStart=(e)=>{ if(e.target.closest('.action-btn')) return; isDragging=true; startX=e.touches?e.touches[0].clientX:e.clientX; currentX=0; document.addEventListener("mousemove",onMove); document.addEventListener("mouseup",onEnd); }; card.addEventListener("mousedown",onStart); card.addEventListener("touchstart",onStart,{passive:false}); }
     
-    function renderDiscoverTab() { const container = document.getElementById("appContent"); if(appData.discoverProfiles.length===0){ container.innerHTML=`<div class="modern-card" style="text-align:center;padding:40px;"><i class="fas fa-check-circle"></i><p>No more profiles! <button id="resetDiscoverBtn" class="reset-btn">Reset</button></p></div>`; document.getElementById("resetDiscoverBtn")?.addEventListener("click",()=>{ appData.discoverProfiles=[...DEFAULT_DISCOVER]; saveUserData(currentSessionUser.id); renderCurrentTab(); }); attachModernCardStyles(); return; } const profile=appData.discoverProfiles[0]; container.innerHTML=`<div class="modern-card" id="draggableCard"><div class="profile-img"><div class="match-percent-badge">${profile.matchPercentage}%</div><img src="${photoUrl(profile.id)}"></div><div class="profile-info"><div class="profile-name">${profile.name}, ${profile.age}</div><div class="profile-occupation">${profile.occupation}</div><div class="profile-bio">${profile.bio}</div></div><div class="action-buttons"><button class="action-btn btn-pass" id="passBtn"><i class="fas fa-times"></i></button><button class="action-btn btn-super" id="superBtn"><i class="fas fa-star"></i></button><button class="action-btn btn-like" id="likeBtn"><i class="fas fa-heart"></i></button></div></div><div class="swipe-hint">Swipe → like | ← pass | ⭐ SuperLike (50💎)</div>`; attachSwipeEvents(document.getElementById("draggableCard"), profile); document.getElementById("passBtn")?.addEventListener("click",()=>passProfile(profile)); document.getElementById("likeBtn")?.addEventListener("click",()=>likeProfile(profile)); document.getElementById("superBtn")?.addEventListener("click",()=>superLike(profile)); attachModernCardStyles(); }
-    
-    function renderProfileTab() { const user = currentSessionUser; const container = document.getElementById("appContent"); container.innerHTML = `<div class="modern-card my-profile-card"><div class="user-profile-photo"><img src="${photoUrl('user_alex')}"></div><h2 style="color:white;">${user.name}, ${user.age}</h2><p>📍 ${user.country}</p><p>${appData.currentUserBio || user.bio}</p><label class="upload-label">Upload Photo <input type="file" id="profilePhotoFile" accept="image/*" style="display:none;"></label><button id="resetPhotoBtn" class="reset-photo-btn">Reset</button><div><i class="fas fa-gem"></i> ${appData.userCoins} gems</div><button id="dailyBonusBtn" style="background:linear-gradient(145deg,#f59e0b,#b45309);border:none;padding:14px;border-radius:60px;color:white;">✨ Daily Bonus +50 Gems ✨</button><input id="editBioInput" class="edit-field" value="${escapeHtml(appData.currentUserBio || user.bio)}"><button id="saveBioBtn" style="background:#ec4899;margin-top:12px;padding:12px;">Save</button><select id="editCountrySelect" class="edit-field">${countryList.map(c => `<option value="${c}" ${c === user.country ? 'selected' : ''}>${c}</option>`).join('')}</select><button id="saveCountryBtn" style="background:#ec4899;margin-top:8px;padding:10px;">Update Country</button><button id="logoutBtn" style="background:#2e2a3e;margin-top:20px;padding:12px;">Logout</button></div>`; document.getElementById("profilePhotoFile")?.addEventListener("change",(e)=>{ if(e.target.files[0]){ appData.customUserPhotoURL = URL.createObjectURL(e.target.files[0]); saveUserData(currentSessionUser.id); renderProfileTab(); showToast("Photo updated"); } }); document.getElementById("resetPhotoBtn")?.addEventListener("click",()=>{ appData.customUserPhotoURL=null; saveUserData(currentSessionUser.id); renderProfileTab(); showToast("Default photo"); }); document.getElementById("dailyBonusBtn")?.addEventListener("click",()=>{ appData.userCoins+=50; updateCoinUI(); saveUserData(currentSessionUser.id); renderProfileTab(); showToast("+50 gems!"); }); document.getElementById("saveBioBtn")?.addEventListener("click",()=>{ appData.currentUserBio = document.getElementById("editBioInput").value; saveUserData(currentSessionUser.id); renderProfileTab(); showToast("Bio saved"); }); document.getElementById("saveCountryBtn")?.addEventListener("click",()=>{ currentSessionUser.country = document.getElementById("editCountrySelect").value; saveUsers(); saveSession(currentSessionUser); renderProfileTab(); showToast("Country updated"); }); document.getElementById("logoutBtn")?.addEventListener("click",()=>{ if(cameraEngine) cameraEngine.stopStream(); clearSession(); showAuthScreen(); }); attachModernCardStyles(); }
-    
-    // ----- FIXED LIVE TAB WITH ADVANCED CAMERA ENGINE -----
-    function renderLiveTab() {
-        if (cameraEngine) {
-            cameraEngine.stopStream();
-            cameraEngine = null;
-        }
+    function renderDiscoverTab() {
         const container = document.getElementById("appContent");
-        container.innerHTML = `<div class="modern-card" style="padding:20px;"><div class="live-video-wrapper"><video id="liveVideoElement" autoplay playsinline muted style="width:100%;border-radius:40px;"></video></div><div class="live-controls"><button id="startLiveBtn" class="live-btn"><i class="fas fa-play"></i> START LIVE</button><button id="stopLiveBtn" class="live-btn" style="background:#4a2e3a;"><i class="fas fa-stop"></i> STOP</button></div><div id="liveStatusMsg" class="viewers-sim" style="text-align:center;margin-top:12px;">🔴 Not live — press Start</div><div id="liveDebugLog" style="font-size:10px;color:#aaa;margin-top:12px;max-height:100px;overflow-y:auto;background:#00000055;border-radius:12px;padding:8px;"></div></div>`;
+        if(appData.discoverProfiles.length===0){ container.innerHTML=`<div class="modern-card" style="text-align:center;padding:40px;"><i class="fas fa-check-circle"></i><p>No more profiles! <button id="resetDiscoverBtn" class="reset-btn">Reset</button></p></div>`; document.getElementById("resetDiscoverBtn")?.addEventListener("click",()=>{ appData.discoverProfiles=[...DEFAULT_DISCOVER]; saveUserData(currentSessionUser.id); renderCurrentTab(); }); attachModernCardStyles(); return; }
+        const profile=appData.discoverProfiles[0];
+        container.innerHTML=`<div class="modern-card" id="draggableCard"><div class="profile-img"><div class="match-percent-badge"><i class="fas fa-chart-line"></i> ${profile.matchPercentage}%</div><img src="${photoUrl(profile.id)}"></div><div class="profile-info"><div class="profile-name">${profile.name}, ${profile.age}</div><div class="profile-occupation">${profile.occupation}</div><div class="profile-bio">${profile.bio}</div></div><div class="action-buttons"><button class="action-btn btn-pass" id="passBtn"><i class="fas fa-times"></i></button><button class="action-btn btn-super" id="superBtn"><i class="fas fa-star"></i></button><button class="action-btn btn-like" id="likeBtn"><i class="fas fa-heart"></i></button></div></div><div class="swipe-hint"><i class="fas fa-arrows-alt-h"></i> Swipe → like | ← pass | ⭐ SuperLike (50💎)</div>`;
+        attachSwipeEvents(document.getElementById("draggableCard"), profile);
+        document.getElementById("passBtn")?.addEventListener("click",()=>passProfile(profile));
+        document.getElementById("likeBtn")?.addEventListener("click",()=>likeProfile(profile));
+        document.getElementById("superBtn")?.addEventListener("click",()=>superLike(profile));
+        attachModernCardStyles();
+    }
+    
+    function renderProfileTab() {
+        const user = currentSessionUser;
+        const container = document.getElementById("appContent");
+        container.innerHTML = `<div class="modern-card my-profile-card"><div class="user-profile-photo"><img src="${photoUrl('user_alex')}" id="profileAvatar"></div><h2 style="color:white;">${user.name}, ${user.age}</h2><p style="color:#b9b3d9;">📍 ${user.country}</p><p style="color:#cbc3f0;">${appData.currentUserBio || user.bio}</p><div><label class="upload-label"><i class="fas fa-camera"></i> Upload Photo <input type="file" id="profilePhotoFile" accept="image/*" style="display:none;"></label><button id="resetPhotoBtn" class="reset-photo-btn">Reset</button></div><div style="display:flex;justify-content:space-between;margin:20px 0;"><div><i class="fas fa-gem"></i> ${appData.userCoins} gems</div><div><i class="fas fa-heart"></i> ${appData.matchesList.length} matches</div></div><button id="dailyBonusBtn" style="background:linear-gradient(145deg,#f59e0b,#b45309);border:none;width:100%;padding:14px;border-radius:60px;color:white;">✨ Daily Bonus +50 Gems ✨</button><div>Edit Bio</div><input id="editBioInput" class="edit-field" value="${escapeHtml(appData.currentUserBio || user.bio)}"><button id="saveBioBtn" style="background:#ec4899;margin-top:12px;padding:12px;border-radius:60px;width:100%;color:white;">Save</button><div style="margin-top:16px;">Change Country</div><select id="editCountrySelect" class="edit-field">${countryList.map(c => `<option value="${c}" ${c === user.country ? 'selected' : ''}>${c}</option>`).join('')}</select><button id="saveCountryBtn" style="background:#ec4899;margin-top:8px;padding:10px;border-radius:60px;width:100%;color:white;">Update Country</button><button id="logoutBtn" style="background:#2e2a3e;border:1px solid #ec4899;margin-top:20px;padding:12px;border-radius:60px;color:white;">🚪 Logout</button></div>`;
+        document.getElementById("profilePhotoFile")?.addEventListener("change",(e)=>{ if(e.target.files[0]){ const url=URL.createObjectURL(e.target.files[0]); appData.customUserPhotoURL=url; saveUserData(currentSessionUser.id); renderProfileTab(); showToast("Photo updated!","#ec4899"); } });
+        document.getElementById("resetPhotoBtn")?.addEventListener("click",()=>{ appData.customUserPhotoURL=null; saveUserData(currentSessionUser.id); renderProfileTab(); showToast("Default photo restored","#f59e0b"); });
+        document.getElementById("dailyBonusBtn")?.addEventListener("click",()=>{ appData.userCoins+=50; updateCoinUI(); saveUserData(currentSessionUser.id); renderProfileTab(); showToast("+50 gems!","#fbbf24"); });
+        document.getElementById("saveBioBtn")?.addEventListener("click",()=>{ const newBio=document.getElementById("editBioInput").value; appData.currentUserBio=newBio; saveUserData(currentSessionUser.id); renderProfileTab(); showToast("Bio updated","#ec4899"); });
+        document.getElementById("saveCountryBtn")?.addEventListener("click",()=>{ const newCountry=document.getElementById("editCountrySelect").value; currentSessionUser.country=newCountry; saveUsers(); saveSession(currentSessionUser); renderProfileTab(); showToast("Country updated","#ec4899"); });
+        document.getElementById("logoutBtn")?.addEventListener("click",()=>{ 
+            if(cameraEngineInstance) { cameraEngineInstance.stopStream(); cameraEngineInstance = null; }
+            clearLiveInterval();
+            clearSession(); 
+            showAuthScreen(); 
+        });
+        attachModernCardStyles();
+    }
+    
+    // Live Tab - fixed with professional cleanup and interval handling
+    function renderLiveTab() {
+        if (cameraEngineInstance) {
+            cameraEngineInstance.stopStream();
+            cameraEngineInstance = null;
+        }
+        clearLiveInterval();
+
+        const container = document.getElementById("appContent");
+        container.innerHTML = `<div class="modern-card" style="padding:20px;"><div class="live-video-wrapper"><video id="liveVideoElement" autoplay playsinline muted style="width:100%;border-radius:40px;transform:scaleX(-1);background:#000;"></video></div><div class="live-controls"><button id="startLiveBtn" class="live-btn"><i class="fas fa-play"></i> START LIVE</button><button id="stopLiveBtn" class="live-btn" style="background:#4a2e3a;"><i class="fas fa-stop"></i> STOP</button></div><div id="liveStatusMsg" class="viewers-sim" style="text-align:center;margin-top:12px;font-weight:500;">⚡ Ready to stream</div></div>`;
         
         const videoElement = document.getElementById("liveVideoElement");
         const startBtn = document.getElementById("startLiveBtn");
         const stopBtn = document.getElementById("stopLiveBtn");
         const statusSpan = document.getElementById("liveStatusMsg");
-        const debugDiv = document.getElementById("liveDebugLog");
-        let viewerInterval = null;
-        
-        function updateDebugLog(engine) {
-            if (engine && engine.debugLogs) {
-                debugDiv.innerHTML = engine.debugLogs.slice(-5).map(l => `<div>📹 ${escapeHtml(l)}</div>`).join('');
-            }
-        }
-        
+
         startBtn.onclick = async () => {
-            if (cameraEngine && cameraEngine.isActive()) {
-                showToast("Already live streaming");
+            if (cameraEngineInstance && cameraEngineInstance.localStream) {
+                showToast("Already live! Stop current stream first.", "#ec4899");
                 return;
             }
-            statusSpan.innerHTML = "⏳ Requesting camera...";
             try {
-                cameraEngine = new CameraEngine("liveVideoElement");
-                // Show live logs periodically
-                const logInterval = setInterval(() => updateDebugLog(cameraEngine), 1000);
-                await cameraEngine.startStream();
-                clearInterval(logInterval);
-                updateDebugLog(cameraEngine);
-                statusSpan.innerHTML = `<span style="background:red;padding:4px 12px;border-radius:40px;">🔴 LIVE · 12 viewers watching</span>`;
-                showToast("🔴 You are live! Professional stream active");
-                let viewers = 12;
-                if (viewerInterval) clearInterval(viewerInterval);
-                viewerInterval = setInterval(() => {
-                    if (cameraEngine && cameraEngine.isActive()) {
+                if (cameraEngineInstance) cameraEngineInstance.stopStream();
+                cameraEngineInstance = new CameraEngine("liveVideoElement");
+                await cameraEngineInstance.startStream();
+                statusSpan.innerHTML = `<span style="background:#e11d48; padding:6px 14px; border-radius:60px;">🔴 LIVE · 14 viewers watching</span>`;
+                showToast("🔴 You are live! Professional stream active", "#ec4899");
+                let viewers = 14;
+                clearLiveInterval();
+                globalLiveViewerInterval = setInterval(() => {
+                    if (cameraEngineInstance && cameraEngineInstance.localStream) {
                         viewers += Math.floor(Math.random() * 3);
-                        statusSpan.innerHTML = `<span style="background:red;padding:4px 12px;border-radius:40px;">🔴 LIVE · ${viewers} watching</span>`;
+                        statusSpan.innerHTML = `<span style="background:#e11d48; padding:6px 14px; border-radius:60px;">🔴 LIVE · ${viewers} watching</span>`;
+                    } else {
+                        clearLiveInterval();
                     }
                 }, 5000);
             } catch (err) {
-                console.error("Camera start failed", err);
-                const errorMsg = err.message || "Unknown camera error";
-                statusSpan.innerHTML = `❌ ${errorMsg}`;
-                showToast(`Camera error: ${errorMsg}`, "#ff4d4d");
-                if (cameraEngine) updateDebugLog(cameraEngine);
+                statusSpan.innerHTML = "❌ Camera access denied — check permissions";
+                showToast("Camera permission required for live video", "#ff4d4d");
             }
         };
         
         stopBtn.onclick = () => {
-            if (cameraEngine) {
-                cameraEngine.stopStream();
-                cameraEngine = null;
-                if (viewerInterval) clearInterval(viewerInterval);
-                statusSpan.innerHTML = "Stream ended — press Start to go live again";
-                debugDiv.innerHTML = "";
-                showToast("Live stream ended");
+            if (cameraEngineInstance) {
+                cameraEngineInstance.stopStream();
+                cameraEngineInstance = null;
+                clearLiveInterval();
+                statusSpan.innerHTML = "⏹️ Stream ended — press Start to go live again";
+                showToast("Live stream stopped", "#aaa");
             } else {
-                showToast("No active live stream");
+                showToast("No active live stream", "#aaa");
             }
         };
         attachModernCardStyles();
@@ -438,45 +528,51 @@
         updateCoinUI();
     }
     
-    function attachModernCardStyles() { document.querySelectorAll('.modern-card').forEach(card => card.classList.add('is-visible')); }
-    function showToast(msg,bg="#ec4899"){ const t=document.createElement("div"); t.innerText=msg; Object.assign(t.style,{position:"fixed",bottom:"90px",left:"50%",transform:"translateX(-50%)",backgroundColor:bg,padding:"10px 20px",borderRadius:"60px",color:"white",zIndex:"999"}); document.body.appendChild(t); setTimeout(()=>t.remove(),1800); }
+    function attachModernCardStyles() { if (window.uiEngineInstance) window.uiEngineInstance.observeCards(); }
+    function showToast(msg,bg){ const t=document.createElement("div"); t.innerText=msg; Object.assign(t.style,{position:"fixed",bottom:"90px",left:"50%",transform:"translateX(-50%)",backgroundColor:bg,padding:"10px 20px",borderRadius:"60px",color:"white",zIndex:"999",backdropFilter:"blur(8px)"}); document.body.appendChild(t); setTimeout(()=>t.remove(),1800); }
     function escapeHtml(str){ return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
     
-    class UIEngine { constructor() { this.observeCards(); } observeCards() { document.querySelectorAll('.modern-card').forEach(c => c.classList.add('is-visible')); } }
+    class UIEngine {
+        constructor() { this.observer = null; this.initObserver(); this.initSpotlight(); }
+        initObserver() { this.observer = new IntersectionObserver((entries) => { entries.forEach((entry, idx) => { if (entry.isIntersecting) { setTimeout(() => entry.target.classList.add('is-visible'), idx * 80); this.observer.unobserve(entry.target); } }); }, { threshold: 0.1 }); }
+        initSpotlight() { const attach = (card) => { card.addEventListener('mousemove', (e) => { const rect = card.getBoundingClientRect(); card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`); card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`); }); }; document.querySelectorAll('.modern-card').forEach(attach); new MutationObserver((mutations) => { mutations.forEach((mutation) => { mutation.addedNodes.forEach((node) => { if (node.nodeType === 1 && node.matches && node.matches('.modern-card')) attach(node); else if (node.nodeType === 1 && node.querySelectorAll) node.querySelectorAll('.modern-card').forEach(attach); }); }); }).observe(document.body, { childList: true, subtree: true }); }
+        observeCards() { document.querySelectorAll('.modern-card').forEach(card => this.observer?.observe(card)); }
+    }
     
     function showAuthScreen() {
+        if(cameraEngineInstance) { cameraEngineInstance.stopStream(); cameraEngineInstance = null; clearLiveInterval(); }
         const root = document.getElementById("root");
-        root.innerHTML = `<div class="auth-container"><div class="auth-logo"><h1>FlameMatch</h1></div><div id="authForm"><input type="email" id="authEmail" class="auth-input" placeholder="Email"><input type="password" id="authPassword" class="auth-input" placeholder="Password"><div id="authExtraFields" style="display:none;"><input type="text" id="authName" class="auth-input" placeholder="Full Name"><input type="number" id="authAge" class="auth-input" placeholder="Age"><select id="authCountry" class="auth-select">${countryList.map(c => `<option>${c}</option>`).join('')}</select></div><button id="authSubmitBtn" class="auth-btn">Login</button><div class="auth-switch">New here? <span id="toggleAuthMode">Create account</span></div><div id="authError" class="auth-error"></div></div></div>`;
-        let isLogin = true; const extraDiv = document.getElementById("authExtraFields"), submitBtn = document.getElementById("authSubmitBtn"), toggle = document.getElementById("toggleAuthMode"), errorDiv = document.getElementById("authError");
+        root.innerHTML = `<div class="auth-container"><div class="auth-logo"><h1>FlameMatch</h1><p style="color:#c9c2f0;">Find your perfect flame 🔥</p></div><div id="authForm"><input type="email" id="authEmail" class="auth-input" placeholder="Email"><input type="password" id="authPassword" class="auth-input" placeholder="Password"><div id="authExtraFields" style="display:none;"><input type="text" id="authName" class="auth-input" placeholder="Full Name"><input type="number" id="authAge" class="auth-input" placeholder="Age (18-99)"><select id="authCountry" class="auth-select">${countryList.map(c => `<option value="${c}">${c}</option>`).join('')}</select></div><button id="authSubmitBtn" class="auth-btn">Login</button><div class="auth-switch">New here? <span id="toggleAuthMode">Create account</span></div><div id="authError" class="auth-error"></div></div></div>`;
+        let isLogin = true; const extraDiv = document.getElementById("authExtraFields"); const submitBtn = document.getElementById("authSubmitBtn"); const toggle = document.getElementById("toggleAuthMode"); const errorDiv = document.getElementById("authError");
         const emailInp = document.getElementById("authEmail"), passInp = document.getElementById("authPassword");
         function setMode(login) { isLogin = login; extraDiv.style.display = login ? "none" : "block"; submitBtn.innerText = login ? "Login" : "Sign Up"; toggle.innerText = login ? "Create account" : "Back to Login"; }
         toggle.onclick = () => setMode(!isLogin);
         submitBtn.onclick = () => {
             const email = emailInp.value.trim(), password = passInp.value.trim();
-            if (!email || !password) { errorDiv.innerText = "Required"; return; }
+            if (!email || !password) { errorDiv.innerText = "Email and password required"; return; }
             if (isLogin) {
                 const result = login(email, password);
-                if (result.success) { saveSession(result.user); loadUserData(result.user.id); initMainApp(); } else errorDiv.innerText = result.error;
+                if (result.success) { saveSession(result.user); loadUserData(result.user.id); initMainApp(); }
+                else errorDiv.innerText = result.error;
             } else {
                 const name = document.getElementById("authName")?.value.trim(), age = document.getElementById("authAge")?.value, country = document.getElementById("authCountry")?.value;
-                if (!name || !age || age<18) { errorDiv.innerText = "Valid name and age"; return; }
+                if (!name || !age || age<18 || age>99) { errorDiv.innerText = "Valid name and age (18-99) required"; return; }
                 const result = signup(email, password, name, age, country);
-                if (result.success) { saveSession(result.user); loadUserData(result.user.id); initMainApp(); } else errorDiv.innerText = result.error;
+                if (result.success) { saveSession(result.user); loadUserData(result.user.id); initMainApp(); }
+                else errorDiv.innerText = result.error;
             }
         };
     }
     
     function initMainApp() {
         const root = document.getElementById("root");
-        root.innerHTML = `<div class="dating-app"><div class="main-header"><div class="logo-area"><h1>FlameMatch❤️‍🔥</h1></div><div class="coin-badge"><i class="fas fa-gem"></i> <span id="coinAmount">${appData.userCoins}</span></div></div><div class="content-area" id="appContent"></div><div class="bottom-nav"><div class="nav-item" data-tab="discover"><i class="fas fa-fire"></i><span>For You</span></div><div class="nav-item" data-tab="matches"><i class="fas fa-heart"></i><span>Matches</span></div><div class="nav-item" data-tab="live"><i class="fas fa-video"></i><span>Live</span></div><div class="nav-item" data-tab="profile"><i class="fas fa-user"></i><span>Profile</span></div></div></div>`;
+        root.innerHTML = `<div class="dating-app"><div class="main-header"><div class="logo-area"><h1>FlameMatch❤️‍🔥</h1></div><div class="coin-badge"><i class="fas fa-gem"></i> <span id="coinAmount">${appData.userCoins}</span></div></div><div class="content-area" id="appContent"></div><div class="bottom-nav"><div class="nav-item" data-tab="discover"><i class="fas fa-fire"></i><span>For You</span></div><div class="nav-item" data-tab="matches"><i class="fas fa-heart"></i><span>Matches</span></div><div class="nav-item" data-tab="live"><i class="fas fa-video"></i><span>Live</span></div><div class="nav-item" data-tab="profile"><i class="fas fa-user-astronaut"></i><span>Profile</span></div></div></div>`;
         activeTab = "discover"; currentChatPartner = null;
         renderCurrentTab();
-        document.querySelectorAll(".nav-item").forEach(item => { item.addEventListener("click", () => { const tab = item.getAttribute("data-tab"); if (tab) { if (activeTab === "live" && tab !== "live" && cameraEngine) cameraEngine.stopStream(); activeTab = tab; currentChatPartner = null; renderCurrentTab(); } }); });
+        document.querySelectorAll(".nav-item").forEach(item => { item.addEventListener("click", () => { const tab = item.getAttribute("data-tab"); if (tab) { if (activeTab === "live" && tab !== "live" && cameraEngineInstance) { cameraEngineInstance.stopStream(); cameraEngineInstance = null; clearLiveInterval(); } activeTab = tab; currentChatPartner = null; renderCurrentTab(); } }); });
         updateCoinUI();
-        new UIEngine();
+        window.uiEngineInstance = new UIEngine();
         attachModernCardStyles();
-        // Diagnostic log for HTTPS
-        if (location.protocol !== 'https:' && location.hostname !== 'localhost') console.warn("⚠️ Not using HTTPS – camera access may be blocked on some browsers");
     }
     
     if (currentSessionUser) { loadUserData(currentSessionUser.id); initMainApp(); } else { showAuthScreen(); }
