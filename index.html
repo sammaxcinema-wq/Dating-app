@@ -3,328 +3,392 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>LoveConnect - Modern Dating App</title>
-  <!-- Tailwind + Fonts -->
+  <title>LoveConnect · Modern Dating Ecosystem</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   <style>
     * { font-family: 'Inter', sans-serif; }
-    body { background: #fafafa; }
-    .dark body { background: #0f0f0f; }
-    .swipe-card-shadow {
-      box-shadow: 0 25px 40px -12px rgba(0,0,0,0.25);
+    body { background-color: #fef9f9; color: #0f172a; }
+    .dark body { background-color: #030712; color: #f1f5f9; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    @keyframes pulse-glow {
+      0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); }
+      70% { box-shadow: 0 0 0 12px rgba(244, 63, 94, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); }
     }
-    /* Custom scrollbar */
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-    .dark ::-webkit-scrollbar-track { background: #1e293b; }
-    .dark ::-webkit-scrollbar-thumb { background: #334155; }
+    .swipe-card-shadow {
+      box-shadow: 0 30px 40px -15px rgba(0, 0, 0, 0.2);
+    }
   </style>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#fff1f2', 100: '#ffe4e6', 200: '#fecdd3', 500: '#f43f5e', 600: '#e11d48', 700: '#be123c' }
+          },
+          animation: { 'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
+        }
+      }
+    }
+  </script>
 </head>
 <body class="antialiased transition-colors duration-300">
   <div id="root"></div>
 
-  <!-- CDN imports as ES modules -->
   <script type="importmap">
     {
       "imports": {
         "react": "https://esm.sh/react@19.0.0?bundle",
         "react-dom/client": "https://esm.sh/react-dom@19.0.0/client?bundle",
         "zustand": "https://esm.sh/zustand@5.0.0",
-        "framer-motion": "https://esm.sh/framer-motion@11.0.2",
+        "framer-motion": "https://esm.sh/framer-motion@11.11.11",
         "lucide-react": "https://esm.sh/lucide-react@0.460.0"
       }
     }
   </script>
 
   <script type="module">
-    import React, { useState, useEffect, useRef, useCallback } from 'react';
+    import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
     import ReactDOM from 'react-dom/client';
     import { create } from 'zustand';
     import { motion, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
-    import { Heart, X, Star, MessageCircle, User, Settings, CreditCard, ShieldAlert, Sun, Moon, Sparkles, Check, Zap, Send, MoreHorizontal, Phone, Video, Smile, Image as ImageIcon, Mic } from 'lucide-react';
+    import { 
+      Heart, X, Star, MessageCircle, User, Settings, CreditCard, ShieldAlert, 
+      Sun, Moon, Sparkles, Check, Zap, Send, MoreHorizontal, MapPin, Briefcase, 
+      Flag, Ban, CheckCircle2, AlertTriangle, Users, BarChart3, ShieldCheck, ArrowLeft, 
+      Crown, Eye, Clock, ThumbsUp
+    } from 'lucide-react';
 
-    // ----------------------------- MOCK DATA & HELPERS -----------------------------
-    const MOCK_USERS = [
-      { id: 'u1', email: 'emma@example.com', name: 'Emma', age: 26, gender: 'Female', orientation: 'Straight', bio: 'Adventure seeker, coffee lover ☕️', interests: ['Travel', 'Photography', 'Hiking'], photos: ['https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=600&fit=crop'], location: { lat: 40.7, lng: -74 }, city: 'NYC', verified: true, occupation: 'Designer' },
-      { id: 'u2', email: 'james@example.com', name: 'James', age: 29, gender: 'Male', orientation: 'Straight', bio: 'Fitness & tech enthusiast', interests: ['Gym', 'Coding', 'Basketball'], photos: ['https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=600&fit=crop'], location: { lat: 40.7, lng: -74 }, city: 'Brooklyn', verified: false, occupation: 'Engineer' },
-      { id: 'u3', name: 'Sophia', age: 24, gender: 'Female', orientation: 'Bisexual', bio: 'Art lover & musician 🎹', interests: ['Music', 'Painting', 'Yoga'], photos: ['https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=600&fit=crop'], location: { lat: 40.7, lng: -74 }, city: 'Manhattan', verified: true },
-      { id: 'u4', name: 'Liam', age: 31, gender: 'Male', orientation: 'Straight', bio: 'Chef, let’s cook together!', interests: ['Cooking', 'Wine', 'Travel'], photos: ['https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop'], location: { lat: 40.7, lng: -74 }, city: 'Queens', verified: false },
-      { id: 'u5', name: 'Mia', age: 27, gender: 'Female', orientation: 'Pansexual', bio: 'Writer & plant mom 🌿', interests: ['Reading', 'Plants', 'Hiking'], photos: ['https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=600&fit=crop'], location: { lat: 40.7, lng: -74 }, city: 'NYC', verified: true }
+    // ============================== MOCK DATA (PRODUCTION SEED) ==============================
+    const SEED_PROFILES = [
+      { id: 'p1', email: 'emma@example.com', name: 'Emma', age: 26, gender: 'Female', bio: 'Adventure seeker & coffee minimalist. Let’s find hidden rooftops and talk about human-centered design.', interests: ['Travel', 'Photography', 'Hiking'], photos: ['https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=800&fit=crop'], city: 'Nairobi', verified: true, occupation: 'Product Designer', compatibility: 94 },
+      { id: 'p2', email: 'james@example.com', name: 'James', age: 29, gender: 'Male', bio: 'Systems architect who climbs rocks and builds microservices. Let’s swap playlists and training plans.', interests: ['Climbing', 'Coding', 'Basketball'], photos: ['https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=800&fit=crop'], city: 'Mombasa', verified: true, occupation: 'Lead Engineer', compatibility: 88 },
+      { id: 'p3', name: 'Sophia', age: 24, gender: 'Female', bio: 'Classical pianist & plant whisperer. Deep conversations about art, life, and vegan desserts.', interests: ['Music', 'Painting', 'Yoga'], photos: ['https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=800&fit=crop'], city: 'Nairobi', verified: true, occupation: 'Creative Director', compatibility: 91 },
+      { id: 'p4', name: 'Liam', age: 31, gender: 'Male', bio: 'Chef & fermentation enthusiast. I’ll cook you a meal worth remembering.', interests: ['Cooking', 'Wine', 'Travel'], photos: ['https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=800&fit=crop'], city: 'Kisumu', verified: false, occupation: 'Head Chef', compatibility: 76 },
+      { id: 'p5', name: 'Mia', age: 27, gender: 'Female', bio: 'Travel journalist & author. Currently writing stories about hidden gems across Africa. Passionate storyteller.', interests: ['Writing', 'Hiking', 'Photography'], photos: ['https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&h=800&fit=crop'], city: 'Nakuru', verified: false, occupation: 'Journalist', compatibility: 82 }
     ];
 
-    // initial matches & messages
-    let initialMatches = [{ id: 'match1', users: ['u1', 'u2'], lastMessage: 'Hey! How are you?', lastMessageAt: Date.now() - 3600000, conversationId: 'conv1' }];
-    let initialMessages = { conv1: [{ id: 'm1', senderId: 'u2', content: 'Hey! Love your profile', timestamp: Date.now() - 7200000, read: true }, { id: 'm2', senderId: 'u1', content: 'Thanks! 😊 What do you do?', timestamp: Date.now() - 3600000, read: false }] };
-
-    // helper to load persisted data
-    const loadLocal = (key, def) => {
-      const raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : def;
+    // Storage helpers
+    const storage = {
+      get: (key, fallback) => { try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch { return fallback; } },
+      set: (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
     };
-    const saveLocal = (key, val) => localStorage.setItem(key, JSON.stringify(val));
 
-    // Zustand store
+    // ============================== ZUSTAND STORE (FULL STATE MANAGEMENT) ==============================
     const useStore = create((set, get) => ({
-      user: loadLocal('auth_user', null),
-      token: loadLocal('auth_token', null),
-      isDark: window.matchMedia('(prefers-color-scheme: dark)').matches,
-      swipes: loadLocal('swipes', []), // [{ userId, targetId, type }]
-      matches: loadLocal('matches', initialMatches),
-      messages: loadLocal('messages', initialMessages),
-      likedBy: loadLocal('likedBy', []), // users who liked me
-      reportedUsers: loadLocal('reports', []),
-      blockedUsers: loadLocal('blocks', []),
-      subscriptions: loadLocal('subscriptions', { plan: 'FREE', expiresAt: null }),
+      // Auth & UI
+      user: storage.get('lc_user', null),
+      token: storage.get('lc_token', null),
+      darkMode: storage.get('lc_dark', false),
       adminMode: false,
 
+      // Core interactions
+      swipes: storage.get('lc_swipes', []),            // [{ userId, targetId, type, ts }]
+      matches: storage.get('lc_matches', [
+        { id: 'match_demo', users: ['p1', 'p2'], lastMessage: 'Really vibing your profile!', lastMessageAt: Date.now() - 1800000, conversationId: 'conv_demo' }
+      ]),
+      messages: storage.get('lc_messages', {
+        'conv_demo': [
+          { id: 'msg1', senderId: 'p2', content: 'Hey Emma! Love the travel photos ✈️', timestamp: Date.now() - 3600000, read: true },
+          { id: 'msg2', senderId: 'p1', content: 'Thank you James! Are you into hiking as well?', timestamp: Date.now() - 1800000, read: false }
+        ]
+      }),
+      reports: storage.get('lc_reports', []),
+      blocked: storage.get('lc_blocks', []),
+      subscription: storage.get('lc_sub', { plan: 'FREE', expiresAt: null }),
+
+      // Auth actions
       login: (email, pwd) => {
-        const found = MOCK_USERS.find(u => u.email === email);
-        if (found || (email === 'admin@dating.com' && pwd === 'admin123')) {
-          let user = found;
-          let role = 'user';
-          if (email === 'admin@dating.com') role = 'admin';
-          if (!found && email !== 'admin@dating.com') return false;
-          if (email === 'admin@dating.com') user = { id: 'admin', email, name: 'Admin', role: 'admin', verified: true };
-          const token = 'mock-jwt-' + user.id;
-          set({ user: { ...user, role }, token });
-          saveLocal('auth_user', { ...user, role });
-          saveLocal('auth_token', token);
+        if (email === 'admin@loveconnect.com' && pwd === 'admin2025') {
+          const adminUser = { id: 'admin_root', email, name: 'Super Admin', role: 'admin', verified: true };
+          set({ user: adminUser, token: 'admin-token', adminMode: true });
+          storage.set('lc_user', adminUser); storage.set('lc_token', 'admin-token');
+          return true;
+        }
+        const matched = SEED_PROFILES.find(p => p.email?.toLowerCase() === email.toLowerCase());
+        if (matched) {
+          const regular = { ...matched, role: 'user' };
+          set({ user: regular, token: 'user-token', adminMode: false });
+          storage.set('lc_user', regular); storage.set('lc_token', 'user-token');
           return true;
         }
         return false;
       },
       logout: () => {
         set({ user: null, token: null, adminMode: false });
-        localStorage.removeItem('auth_user');
-        localStorage.removeItem('auth_token');
+        localStorage.removeItem('lc_user'); localStorage.removeItem('lc_token');
       },
-      toggleDark: () => set((state) => {
-        const newDark = !state.isDark;
-        if (newDark) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark');
-        return { isDark: newDark };
+      toggleDark: () => set(state => {
+        const next = !state.darkMode;
+        storage.set('lc_dark', next);
+        if (next) document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+        return { darkMode: next };
       }),
-      addSwipe: (targetId, type) => {
-        const { user, swipes, matches, messages, likedBy } = get();
-        if (!user) return;
-        const newSwipe = { userId: user.id, targetId, type, timestamp: Date.now() };
+
+      // Swipe / Matching engine (production logic)
+      swipeOnProfile: (targetId, swipeType) => {
+        const { user, swipes, matches, messages, blocked } = get();
+        if (!user || blocked.includes(targetId)) return null;
+        const newSwipe = { userId: user.id, targetId, type: swipeType, ts: Date.now() };
         const updatedSwipes = [...swipes, newSwipe];
         set({ swipes: updatedSwipes });
-        saveLocal('swipes', updatedSwipes);
+        storage.set('lc_swipes', updatedSwipes);
 
-        if (type === 'RIGHT' || type === 'SUPER') {
-          // record that this user liked someone (for "liked you" feature)
-          const newLikedBy = [...likedBy];
-          if (!newLikedBy.some(l => l.likerId === user.id && l.targetId === targetId)) {
-            newLikedBy.push({ likerId: user.id, targetId, timestamp: Date.now() });
-            set({ likedBy: newLikedBy });
-            saveLocal('likedBy', newLikedBy);
-          }
-
-          // check mutual like
-          const mutual = swipes.find(s => s.userId === targetId && s.targetId === user.id && (s.type === 'RIGHT' || s.type === 'SUPER'));
-          if (mutual) {
-            const existingMatch = matches.find(m => (m.users[0] === user.id && m.users[1] === targetId) || (m.users[0] === targetId && m.users[1] === user.id));
-            if (!existingMatch) {
-              const newMatch = { id: 'match_' + Date.now(), users: [user.id, targetId], lastMessage: '', lastMessageAt: Date.now(), conversationId: 'conv_' + Date.now() };
-              const updatedMatches = [...matches, newMatch];
-              set({ matches: updatedMatches });
-              saveLocal('matches', updatedMatches);
-              set({ messages: { ...messages, [newMatch.conversationId]: [] } });
-              saveLocal('messages', { ...messages, [newMatch.conversationId]: [] });
-              alert(`🔥 It's a match! You and ${MOCK_USERS.find(u=>u.id===targetId)?.name || 'someone'} liked each other!`);
-            }
-          }
+        // Check for match (mutual RIGHT/SUPER)
+        const reciprocal = swipes.find(s => s.userId === targetId && s.targetId === user.id && ['RIGHT', 'SUPER'].includes(s.type));
+        if (reciprocal && (swipeType === 'RIGHT' || swipeType === 'SUPER')) {
+          const matchId = 'match_' + Date.now();
+          const convId = 'conv_' + Date.now();
+          const newMatch = { id: matchId, users: [user.id, targetId], lastMessage: '✨ You matched! Start the conversation.', lastMessageAt: Date.now(), conversationId: convId };
+          const updatedMatches = [...matches, newMatch];
+          const updatedMessages = { ...messages, [convId]: [] };
+          set({ matches: updatedMatches, messages: updatedMessages });
+          storage.set('lc_matches', updatedMatches);
+          storage.set('lc_messages', updatedMessages);
+          return { match: true, matchId };
         }
+        return { match: false };
       },
+
+      // Real-time message dispatcher (simulates instant + auto reply)
       sendMessage: (convId, text) => {
-        const { user, messages } = get();
+        const { user, messages, matches } = get();
         if (!text.trim()) return;
-        const newMsg = { id: Date.now().toString(), senderId: user.id, content: text, timestamp: Date.now(), read: false, delivered: true };
+        const newMsg = {
+          id: Date.now().toString(),
+          senderId: user.id,
+          content: text,
+          timestamp: Date.now(),
+          read: false,
+        };
         const convMsgs = messages[convId] || [];
-        const updated = { ...messages, [convId]: [...convMsgs, newMsg] };
-        set({ messages: updated });
-        saveLocal('messages', updated);
-        // simulate reply after 2 sec from other user (if match has second user)
+        const updatedMsgs = { ...messages, [convId]: [...convMsgs, newMsg] };
+        // update lastMessage in matches
+        const updatedMatches = matches.map(m => m.conversationId === convId ? { ...m, lastMessage: text, lastMessageAt: Date.now() } : m);
+        set({ messages: updatedMsgs, matches: updatedMatches });
+        storage.set('lc_messages', updatedMsgs);
+        storage.set('lc_matches', updatedMatches);
+        
+        // Simulate auto-reply (intelligent bot)
         setTimeout(() => {
-          const match = get().matches.find(m => m.conversationId === convId);
-          if (match) {
-            const otherId = match.users.find(id => id !== user.id);
-            const otherUser = MOCK_USERS.find(u => u.id === otherId);
-            const autoReply = { id: Date.now().toString() + 'auto', senderId: otherId, content: `Hey! ${otherUser?.name || 'Stranger'} here, nice to match!`, timestamp: Date.now(), read: false };
-            const finalMsgs = [...(get().messages[convId] || []), autoReply];
-            set({ messages: { ...get().messages, [convId]: finalMsgs } });
-            saveLocal('messages', { ...get().messages, [convId]: finalMsgs });
-          }
+          const currentState = get();
+          const targetMatch = currentState.matches.find(m => m.conversationId === convId);
+          if (!targetMatch) return;
+          const otherUserId = targetMatch.users.find(id => id !== user.id);
+          const otherProfile = SEED_PROFILES.find(p => p.id === otherUserId);
+          const replyText = `💬 ${otherProfile?.name || 'Stranger'}: "Hey! So glad we matched. What’s your favorite weekend escape?"`;
+          const autoReplyMsg = {
+            id: 'auto_' + Date.now(),
+            senderId: otherUserId,
+            content: replyText,
+            timestamp: Date.now(),
+            read: false
+          };
+          const finalMessages = { ...currentState.messages, [convId]: [...(currentState.messages[convId] || []), autoReplyMsg] };
+          const finalMatches = currentState.matches.map(m => m.conversationId === convId ? { ...m, lastMessage: replyText, lastMessageAt: Date.now() } : m);
+          set({ messages: finalMessages, matches: finalMatches });
+          storage.set('lc_messages', finalMessages);
+          storage.set('lc_matches', finalMatches);
         }, 2000);
       },
-      markRead: (convId) => {
+
+      markConversationRead: (convId) => {
         const { messages, user } = get();
-        const convMsgs = messages[convId]?.map(m => m.senderId !== user.id ? { ...m, read: true } : m) || [];
-        set({ messages: { ...messages, [convId]: convMsgs } });
-        saveLocal('messages', { ...messages, [convId]: convMsgs });
-      },
-      upgradePlan: (plan) => {
-        set({ subscriptions: { plan, expiresAt: new Date(Date.now() + 30*86400000).toISOString() } });
-        saveLocal('subscriptions', { plan, expiresAt: new Date(Date.now() + 30*86400000).toISOString() });
-      },
-      reportUser: (reportedId, reason) => {
-        const reports = get().reportedUsers;
-        const newReport = { reporterId: get().user.id, reportedId, reason, date: Date.now() };
-        set({ reportedUsers: [...reports, newReport] });
-        saveLocal('reports', [...reports, newReport]);
-      },
-      blockUser: (blockedId) => {
-        const blocks = get().blockedUsers;
-        if (!blocks.includes(blockedId)) {
-          set({ blockedUsers: [...blocks, blockedId] });
-          saveLocal('blocks', [...blocks, blockedId]);
+        const updated = messages[convId]?.map(m => m.senderId !== user.id ? { ...m, read: true } : m) || [];
+        if (updated.length) {
+          set({ messages: { ...messages, [convId]: updated } });
+          storage.set('lc_messages', { ...messages, [convId]: updated });
         }
       },
-      setAdminMode: (mode) => set({ adminMode: mode })
+
+      // Premium & Admin features
+      upgradePlan: (planId) => {
+        const newSub = { plan: planId, expiresAt: new Date(Date.now() + 30 * 86400000).toISOString() };
+        set({ subscription: newSub });
+        storage.set('lc_sub', newSub);
+      },
+      reportUser: (reportedId, reason) => {
+        const { reports, user } = get();
+        const newReport = { id: `rep_${Date.now()}`, reporterId: user.id, reportedId, reason, date: Date.now(), status: 'PENDING' };
+        set({ reports: [...reports, newReport] });
+        storage.set('lc_reports', [...reports, newReport]);
+      },
+      blockUser: (blockId) => {
+        const { blocked } = get();
+        if (!blocked.includes(blockId)) {
+          set({ blocked: [...blocked, blockId] });
+          storage.set('lc_blocks', [...blocked, blockId]);
+        }
+      },
+      // Admin actions
+      resolveReport: (reportId) => {
+        const { reports } = get();
+        const updated = reports.map(r => r.id === reportId ? { ...r, status: 'RESOLVED' } : r);
+        set({ reports: updated });
+        storage.set('lc_reports', updated);
+      }
     }));
 
-    // ----------------------------- SWIPE CARD COMPONENT -----------------------------
-    const SwipeCard = ({ profile, onSwipe, isPremium }) => {
+    // ============================== COMPONENTS ==============================
+    // Premium Toggle Effect: useDarkMode on mount
+    const ThemeInitializer = () => {
+      const { darkMode, toggleDark } = useStore();
+      useEffect(() => {
+        if (darkMode) document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+      }, []);
+      return null;
+    };
+
+    // Swipe Card (with framer-motion drag)
+    const SwipeCard = ({ profile, onSwipeAction, index }) => {
       const x = useMotionValue(0);
-      const rotate = useTransform(x, [-150, 150], [-20, 20]);
-      const opacity = useTransform(x, [-150, -50, 0, 50, 150], [0, 0.5, 1, 0.5, 0]);
-      const dragEnd = (e, info) => {
-        if (info.offset.x > 120) onSwipe('RIGHT');
-        else if (info.offset.x < -120) onSwipe('LEFT');
-        else if (info.offset.y < -100) onSwipe('SUPER');
+      const y = useMotionValue(0);
+      const rotate = useTransform(x, [-200, 200], [-18, 18]);
+      const opacityRight = useTransform(x, [0, 150], [0, 1]);
+      const opacityLeft = useTransform(x, [-150, 0], [1, 0]);
+      const opacitySuper = useTransform(y, [-150, 0], [1, 0]);
+      
+      const handleDragEnd = (e, info) => {
+        if (info.offset.x > 140) onSwipeAction('RIGHT');
+        else if (info.offset.x < -140) onSwipeAction('LEFT');
+        else if (info.offset.y < -110) onSwipeAction('SUPER');
       };
+      
       return (
         <motion.div
-          style={{ x, rotate, opacity }}
-          drag="x" dragConstraints={{ left: 0, right: 0 }} onDragEnd={dragEnd}
+          style={{ x, y, rotate, zIndex: 30 - index }}
+          drag
+          dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+          onDragEnd={handleDragEnd}
           whileTap={{ cursor: 'grabbing' }}
+          transition={{ type: 'spring', stiffness: 300, damping: 25 }}
           className="absolute w-full max-w-md h-[540px] bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden cursor-grab"
         >
           <img src={profile.photos[0]} className="w-full h-full object-cover" alt={profile.name} />
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-5 text-white">
-            <h2 className="text-2xl font-bold">{profile.name}, {profile.age}</h2>
-            <p className="text-sm opacity-90">{profile.bio}</p>
-            <div className="flex flex-wrap gap-2 mt-3">
-              {profile.interests.slice(0,3).map(i => <span key={i} className="bg-white/20 px-3 py-1 rounded-full text-xs">{i}</span>)}
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-5 text-white">
+            <div className="flex items-center gap-2">
+              <h2 className="text-2xl font-bold">{profile.name}, {profile.age}</h2>
+              {profile.verified && <CheckCircle2 size={18} className="text-brand-500 fill-white" />}
+              <span className="ml-auto bg-brand-500/80 text-xs px-2 py-1 rounded-full font-semibold">{profile.compatibility}% Match</span>
             </div>
-            {profile.verified && <div className="flex items-center mt-2 text-yellow-300 text-xs"><Check size={14} className="mr-1"/> Verified</div>}
+            <div className="flex gap-3 text-sm mt-1"><Briefcase size={14}/> {profile.occupation} <MapPin size={14}/> {profile.city}</div>
+            <p className="text-sm mt-2 line-clamp-2">{profile.bio}</p>
+            <div className="flex gap-2 mt-3">
+              {profile.interests.slice(0,3).map(i => <span key={i} className="bg-white/20 text-xs px-3 py-1 rounded-full">{i}</span>)}
+            </div>
           </div>
+          {/* Overlay hints */}
+          <motion.div style={{ opacity: opacityRight }} className="absolute top-8 left-6 border-4 border-green-500 text-green-500 font-black text-2xl px-3 py-1 rounded-xl rotate-[-12deg] bg-green-500/20">LIKE</motion.div>
+          <motion.div style={{ opacity: opacityLeft }} className="absolute top-8 right-6 border-4 border-red-500 text-red-500 font-black text-2xl px-3 py-1 rounded-xl rotate-[12deg] bg-red-500/20">NOPE</motion.div>
+          <motion.div style={{ opacity: opacitySuper }} className="absolute bottom-36 left-1/2 -translate-x-1/2 border-4 border-cyan-400 text-cyan-400 text-xl px-6 py-1 rounded-full bg-cyan-400/20">⭐ SUPER</motion.div>
         </motion.div>
       );
     };
 
-    // ----------------------------- MAIN APP -----------------------------
-    const App = () => {
-      const { user, isDark, toggleDark, logout, subscriptions, adminMode, setAdminMode } = useStore();
-      const [view, setView] = useState('landing'); // landing, discover, matches, chat, subscription, settings, admin
-      const [selectedChat, setSelectedChat] = useState(null);
-
-      useEffect(() => {
-        if (user && user.role === 'admin') setAdminMode(true);
-        if (isDark) document.documentElement.classList.add('dark');
-        else document.documentElement.classList.remove('dark');
-      }, [isDark, user]);
-
-      if (!user) {
-        return <AuthScreen onLogin={() => setView('discover')} />;
-      }
-
-      // Admin panel integration
-      if (adminMode && user.role === 'admin') {
-        return <AdminDashboard onExit={() => setAdminMode(false)} />;
-      }
-
-      const isPremium = subscriptions.plan !== 'FREE';
-
-      const renderContent = () => {
-        if (view === 'discover') return <DiscoverFeed onBack={() => setView('matches')} isPremium={isPremium} />;
-        if (view === 'matches') return <MatchesList onSelectChat={(chatId) => { setSelectedChat(chatId); setView('chat'); }} />;
-        if (view === 'chat' && selectedChat) return <ChatInterface conversationId={selectedChat} onBack={() => setView('matches')} />;
-        if (view === 'subscription') return <SubscriptionPlans />;
-        if (view === 'settings') return <SettingsPanel />;
-        return <LandingDashboard setView={setView} isPremium={isPremium} />;
-      };
-
-      return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20">
-          <header className="sticky top-0 z-20 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b dark:border-gray-800 p-4 flex justify-between items-center">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">LoveConnect</h1>
-            <div className="flex gap-3">
-              <button onClick={toggleDark} className="p-2 rounded-full bg-gray-100 dark:bg-gray-800">{isDark ? <Sun size={20}/> : <Moon size={20}/>}</button>
-              {user.role === 'admin' && <button onClick={() => setAdminMode(true)} className="text-xs bg-red-100 px-2 rounded-full">Admin</button>}
-              <button onClick={logout} className="text-sm text-red-500">Logout</button>
-            </div>
-          </header>
-          <div className="container mx-auto max-w-2xl px-4 py-4">
-            {renderContent()}
-          </div>
-          <BottomNav setView={setView} current={view} />
-        </div>
-      );
-    };
-
-    const BottomNav = ({ setView, current }) => (
-      <div className="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg border-t dark:border-gray-800 flex justify-around py-2 max-w-2xl mx-auto rounded-t-2xl z-30">
-        {[{ id: 'discover', icon: Heart, label: 'Discover' }, { id: 'matches', icon: MessageCircle, label: 'Matches' }, { id: 'subscription', icon: Zap, label: 'Premium' }, { id: 'settings', icon: User, label: 'Profile' }].map(item => (
-          <button key={item.id} onClick={() => setView(item.id)} className={`flex flex-col items-center p-2 rounded-xl transition ${current === item.id ? 'text-rose-500' : 'text-gray-500'}`}>
-            <item.icon size={24} strokeWidth={1.8} />
-            <span className="text-xs mt-1">{item.label}</span>
-          </button>
-        ))}
-      </div>
-    );
-
-    // Discover feed with swipe stack
-    const DiscoverFeed = ({ onBack, isPremium }) => {
-      const { user, addSwipe, swipes, blockedUsers } = useStore();
-      const [profiles, setProfiles] = useState([]);
+    // Main Feed View (Swipe discovery)
+    const DiscoveryFeed = () => {
+      const { user, swipes, swipeOnProfile, subscription, blocked } = useStore();
+      const [candidates, setCandidates] = useState([]);
       const [currentIdx, setCurrentIdx] = useState(0);
+      const isPremium = subscription.plan !== 'FREE';
+      
       useEffect(() => {
-        let candidates = MOCK_USERS.filter(p => p.id !== user.id && !blockedUsers.includes(p.id));
+        let available = SEED_PROFILES.filter(p => p.id !== user.id && !blocked.includes(p.id));
         const swipedIds = swipes.filter(s => s.userId === user.id).map(s => s.targetId);
-        candidates = candidates.filter(c => !swipedIds.includes(c.id));
-        setProfiles(candidates);
-      }, [user, swipes, blockedUsers]);
-      const handleSwipe = (type) => {
-        if (currentIdx >= profiles.length) return;
-        const target = profiles[currentIdx];
-        addSwipe(target.id, type);
-        setCurrentIdx(prev => prev+1);
+        available = available.filter(p => !swipedIds.includes(p.id));
+        setCandidates(available);
+      }, [user, swipes, blocked]);
+      
+      const handleSwipeDecision = (type) => {
+        if (currentIdx >= candidates.length) return;
+        const target = candidates[currentIdx];
+        swipeOnProfile(target.id, type);
+        setCurrentIdx(prev => prev + 1);
       };
-      if (currentIdx >= profiles.length) return <div className="text-center py-20"><Heart size={48} className="mx-auto text-gray-400"/><p className="mt-4 text-gray-500">No more profiles nearby. Check again later!</p><button onClick={onBack} className="mt-6 bg-rose-500 text-white px-6 py-2 rounded-full">View Matches</button></div>;
-      const profile = profiles[currentIdx];
+      
+      if (currentIdx >= candidates.length) {
+        return (
+          <div className="flex flex-col items-center justify-center h-[70vh] text-center">
+            <Heart size={56} className="text-rose-400 mb-4 animate-pulse" />
+            <h3 className="text-xl font-bold">No more profiles for now</h3>
+            <p className="text-gray-500 mt-1">Check back later or adjust filters</p>
+            {!isPremium && <div className="mt-6 bg-amber-100 dark:bg-amber-900/30 p-3 rounded-xl"><Crown size={20} className="inline mr-2"/> Upgrade to see who likes you</div>}
+          </div>
+        );
+      }
+      
       return (
         <div className="relative flex justify-center items-center h-[70vh]">
           <AnimatePresence>
-            <SwipeCard key={profile.id} profile={profile} onSwipe={handleSwipe} isPremium={isPremium} />
+            <SwipeCard key={candidates[currentIdx]?.id} profile={candidates[currentIdx]} onSwipeAction={handleSwipeDecision} index={0} />
           </AnimatePresence>
-          <div className="absolute bottom-[-60px] flex gap-8">
-            <button onClick={() => handleSwipe('LEFT')} className="bg-red-100 p-4 rounded-full text-red-500 shadow-lg"><X size={32}/></button>
-            <button onClick={() => handleSwipe('SUPER')} className="bg-blue-100 p-4 rounded-full text-blue-500 shadow-lg"><Star size={32}/></button>
-            <button onClick={() => handleSwipe('RIGHT')} className="bg-green-100 p-4 rounded-full text-green-500 shadow-lg"><Heart size={32}/></button>
+          <div className="absolute bottom-[-70px] flex gap-6 z-20">
+            <button onClick={() => handleSwipeDecision('LEFT')} className="bg-red-100 dark:bg-red-950 p-4 rounded-full text-red-500 shadow-lg hover:scale-105 transition"><X size={32} /></button>
+            <button onClick={() => handleSwipeDecision('SUPER')} className="bg-blue-100 dark:bg-blue-950 p-4 rounded-full text-blue-500 shadow-lg hover:scale-105 transition"><Star size={32} /></button>
+            <button onClick={() => handleSwipeDecision('RIGHT')} className="bg-green-100 dark:bg-green-950 p-4 rounded-full text-green-500 shadow-lg hover:scale-105 transition"><Heart size={32} /></button>
           </div>
         </div>
       );
     };
 
-    const MatchesList = ({ onSelectChat }) => {
-      const { user, matches, messages } = useStore();
+    // Chat Interface
+    const ChatRoom = ({ conversationId, onBack }) => {
+      const { user, messages, sendMessage, markConversationRead } = useStore();
+      const [text, setText] = useState('');
+      const msgs = messages[conversationId] || [];
+      const bottomRef = useRef(null);
+      useEffect(() => {
+        markConversationRead(conversationId);
+        bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, [msgs]);
+      
+      const handleSend = () => { if(text.trim()) sendMessage(conversationId, text); setText(''); };
+      return (
+        <div className="flex flex-col h-[75vh] bg-white dark:bg-gray-950 rounded-2xl shadow-lg">
+          <div className="flex items-center gap-4 p-3 border-b"><button onClick={onBack}><ArrowLeft size={24} className="text-rose-500"/></button><h3 className="font-bold">Live Chat</h3></div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {msgs.map(m => (
+              <div key={m.id} className={`flex ${m.senderId === user.id ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[75%] rounded-2xl px-4 py-2 ${m.senderId === user.id ? 'bg-rose-500 text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>
+                  {m.content}
+                  <div className="text-[10px] opacity-60 mt-1">{new Date(m.timestamp).toLocaleTimeString()}</div>
+                </div>
+              </div>
+            ))}
+            <div ref={bottomRef} />
+          </div>
+          <div className="p-3 border-t flex gap-2">
+            <input className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2" value={text} onChange={e=>setText(e.target.value)} onKeyPress={e=>e.key==='Enter' && handleSend()} placeholder="Type a message..." />
+            <button onClick={handleSend} className="bg-rose-500 p-2 rounded-full text-white"><Send size={20}/></button>
+          </div>
+        </div>
+      );
+    };
+
+    // Matches list
+    const MatchesGallery = ({ onOpenChat }) => {
+      const { user, matches } = useStore();
       const userMatches = matches.filter(m => m.users.includes(user.id));
       return (
-        <div>
-          <h2 className="text-xl font-bold mb-4">Your Matches</h2>
-          {userMatches.length === 0 && <p className="text-center text-gray-500 py-8">Swipe right to match with someone!</p>}
-          {userMatches.map(match => {
-            const otherId = match.users.find(id => id !== user.id);
-            const other = MOCK_USERS.find(u => u.id === otherId);
-            const lastMsg = (messages[match.conversationId] || []).slice(-1)[0];
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold">✨ Connections</h2>
+          {userMatches.length === 0 && <div className="text-center py-12 text-gray-500">Swipe right to find your first match</div>}
+          {userMatches.map(m => {
+            const otherId = m.users.find(id => id !== user.id);
+            const other = SEED_PROFILES.find(p => p.id === otherId);
             return (
-              <button key={match.id} onClick={() => onSelectChat(match.conversationId)} className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-                <img src={other?.photos[0] || 'https://randomuser.me/api/portraits/women/1.jpg'} className="w-14 h-14 rounded-full object-cover" />
-                <div className="flex-1 text-left"><p className="font-semibold">{other?.name}</p><p className="text-sm text-gray-500 truncate">{lastMsg?.content || 'Say hi!'}</p></div>
-                {lastMsg && !lastMsg.read && lastMsg.senderId !== user.id && <div className="w-2 h-2 bg-rose-500 rounded-full" />}
+              <button key={m.id} onClick={() => onOpenChat(m.conversationId)} className="w-full flex items-center gap-4 p-3 rounded-2xl bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition">
+                <img src={other?.photos[0] || 'https://randomuser.me/api/portraits/men/1.jpg'} className="w-14 h-14 rounded-full object-cover" />
+                <div className="flex-1 text-left">
+                  <p className="font-bold text-lg">{other?.name || 'User'}</p>
+                  <p className="text-sm text-gray-500 truncate">{m.lastMessage}</p>
+                </div>
+                <div className="text-rose-500"><MessageCircle size={20}/></div>
               </button>
             );
           })}
@@ -332,64 +396,108 @@
       );
     };
 
-    const ChatInterface = ({ conversationId, onBack }) => {
-      const { user, messages, sendMessage, markRead } = useStore();
-      const [input, setInput] = useState('');
-      const messagesEndRef = useRef(null);
-      const convMessages = messages[conversationId] || [];
-      useEffect(() => {
-        markRead(conversationId);
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }, [convMessages]);
-      const handleSend = () => { sendMessage(conversationId, input); setInput(''); };
+    // Subscription Plans (Premium Gate)
+    const SubscriptionPlaza = () => {
+      const { subscription, upgradePlan } = useStore();
+      const plans = [
+        { id: 'FREE', name: 'Free', price: '$0', features: ['Basic discovery', 'Standard messaging', '5 swipes/hour'] },
+        { id: 'PREMIUM', name: 'Premium', price: '$14.99', features: ['Unlimited swipes', 'See who liked you', 'Advanced filters', 'Priority visibility'] },
+        { id: 'PREMIUM_PLUS', name: 'Premium+', price: '$29.99', features: ['All Premium perks', 'Travel mode', 'Read receipts', 'Profile boost'] }
+      ];
       return (
-        <div className="flex flex-col h-[70vh]">
-          <div className="flex items-center gap-3 pb-3 border-b"><button onClick={onBack} className="text-rose-500">← Back</button><h2 className="font-bold">Chat</h2></div>
-          <div className="flex-1 overflow-y-auto p-3 space-y-3">
-            {convMessages.map(msg => (
-              <div key={msg.id} className={`flex ${msg.senderId === user.id ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[75%] rounded-2xl px-4 py-2 ${msg.senderId === user.id ? 'bg-rose-500 text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>
-                  {msg.content}
-                  <div className="text-[10px] opacity-70 mt-1">{new Date(msg.timestamp).toLocaleTimeString()}</div>
-                </div>
+        <div>
+          <h2 className="text-2xl font-bold mb-4 flex gap-2"><Crown className="text-amber-500"/> Elevate Experience</h2>
+          <div className="grid gap-4">
+            {plans.map(p => (
+              <div key={p.id} className={`rounded-2xl p-5 border-2 ${subscription.plan === p.id ? 'border-rose-500 bg-rose-50 dark:bg-rose-950/20' : 'border-gray-200 dark:border-gray-800'}`}>
+                <h3 className="text-xl font-bold">{p.name}</h3>
+                <p className="text-3xl font-black">{p.price}<span className="text-sm">/month</span></p>
+                <ul className="my-3 space-y-1">{p.features.map(f => <li key={f} className="flex items-center gap-2"><Check size={14}/>{f}</li>)}</ul>
+                <button onClick={() => upgradePlan(p.id)} className="w-full bg-rose-500 py-2 rounded-full text-white font-semibold mt-2">{subscription.plan === p.id ? 'Current Plan' : 'Upgrade'}</button>
               </div>
             ))}
-            <div ref={messagesEndRef} />
           </div>
-          <div className="flex gap-2 p-3 border-t"><input className="flex-1 rounded-full px-4 py-2 bg-gray-100 dark:bg-gray-800" placeholder="Type a message" value={input} onChange={e=>setInput(e.target.value)} onKeyPress={e=>e.key==='Enter'&&handleSend()}/><button onClick={handleSend} className="bg-rose-500 text-white p-2 rounded-full"><Send size={20}/></button></div>
         </div>
       );
     };
 
-    const SubscriptionPlans = () => {
-      const { upgradePlan, subscriptions } = useStore();
-      const plans = [{ name: 'Free', price: '$0', features: ['Basic filters', 'Limited swipes', 'See matches'], id: 'FREE' }, { name: 'Premium', price: '$14.99', features: ['Unlimited swipes', 'See who liked you', 'Advanced filters', 'Priority visibility'], id: 'PREMIUM' }, { name: 'Premium Plus', price: '$29.99', features: ['All Premium +', 'Boost profile', 'Travel mode', 'Read receipts'], id: 'PREMIUM_PLUS' }];
+    // Admin Dashboard (full audit, reports, analytics)
+    const AdminControlRoom = ({ onExit }) => {
+      const { reports, resolveReport, matches, user } = useStore();
+      const pendingReports = reports.filter(r => r.status === 'PENDING');
       return (
-        <div><h2 className="text-2xl font-bold mb-4">Upgrade Your Experience</h2><div className="grid gap-4">{plans.map(p => (<div key={p.name} className={`p-5 rounded-2xl border-2 ${subscriptions.plan === p.id ? 'border-rose-500 bg-rose-50 dark:bg-rose-950/20' : 'border-gray-200'}`}><h3 className="text-xl font-bold">{p.name}</h3><p className="text-2xl font-black mt-2">{p.price}<span className="text-sm font-normal">/month</span></p><ul className="my-4 space-y-2">{p.features.map(f=><li key={f} className="flex items-center gap-2"><Check size={16}/>{f}</li>)}</ul><button onClick={()=>upgradePlan(p.id)} className="w-full py-2 bg-rose-500 text-white rounded-full">Select</button></div>))}</div>);
+        <div className="min-h-screen bg-gray-950 text-white p-6">
+          <div className="flex justify-between items-center mb-8"><h1 className="text-3xl font-bold flex gap-2"><ShieldCheck /> Admin Cortex</h1><button onClick={onExit} className="bg-gray-800 px-4 py-2 rounded-xl text-sm">Exit Console</button></div>
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-gray-900 p-5 rounded-2xl"><Users size={28} /> <p className="text-2xl font-bold">{SEED_PROFILES.length + 1}</p><p>Total Users</p></div>
+            <div className="bg-gray-900 p-5 rounded-2xl"><BarChart3 size={28} /><p className="text-2xl font-bold">{matches.length}</p><p>Active Connections</p></div>
+            <div className="bg-gray-900 p-5 rounded-2xl"><AlertTriangle size={28} /><p className="text-2xl font-bold">{pendingReports.length}</p><p>Pending Moderation</p></div>
+          </div>
+          <div className="bg-gray-900 rounded-2xl p-5"><h2 className="text-xl font-semibold mb-4">🛡️ Reports & Safety</h2>{reports.length === 0 ? <p className="text-gray-400">No reports filed</p> : reports.map(r => (<div key={r.id} className="border-b border-gray-700 py-3 flex justify-between"><div><p><strong>Reported ID:</strong> {r.reportedId}</p><p>Reason: {r.reason}</p><span className="text-xs text-gray-400">{r.status}</span></div>{r.status === 'PENDING' && <button onClick={() => resolveReport(r.id)} className="bg-green-600 px-3 py-1 rounded">Resolve</button>}</div>))}</div>
+        </div>
+      );
     };
 
-    const SettingsPanel = () => {
-      const { user } = useStore();
-      return (<div><h2 className="text-xl font-bold">Profile Settings</h2><div className="mt-4 space-y-4"><div><label className="block text-sm">Display Name</label><input defaultValue={user.name} className="w-full border rounded-lg p-2"/></div><div><label>Bio</label><textarea defaultValue={user.bio || 'Passionate about life'} className="w-full border rounded-lg p-2"/></div><button className="bg-rose-500 text-white px-4 py-2 rounded-full">Save Changes</button></div></div>);
+    // Main App Switch
+    const AppShell = () => {
+      const { user, darkMode, toggleDark, logout, adminMode, subscription } = useStore();
+      const [activeTab, setActiveTab] = useState('discover');
+      const [activeChatId, setActiveChatId] = useState(null);
+      useEffect(() => { if (darkMode) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); }, [darkMode]);
+      if (!user) return <AuthPage />;
+      if (adminMode && user.role === 'admin') return <AdminControlRoom onExit={() => useStore.setState({ adminMode: false })} />;
+      
+      const isPremiumPlan = subscription.plan !== 'FREE';
+      const renderBody = () => {
+        if (activeChatId) return <ChatRoom conversationId={activeChatId} onBack={() => setActiveChatId(null)} />;
+        if (activeTab === 'discover') return <DiscoveryFeed />;
+        if (activeTab === 'matches') return <MatchesGallery onOpenChat={(cid) => setActiveChatId(cid)} />;
+        if (activeTab === 'premium') return <SubscriptionPlaza />;
+        if (activeTab === 'settings') return <ProfileSettingsPanel />;
+        return <DiscoveryFeed />;
+      };
+      
+      return (
+        <div className="min-h-screen pb-20 bg-gray-50 dark:bg-gray-950">
+          <header className="sticky top-0 backdrop-blur-lg bg-white/70 dark:bg-gray-950/70 z-30 p-4 flex justify-between items-center border-b">
+            <h1 className="text-2xl font-extrabold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">LoveConnect</h1>
+            <div className="flex gap-3"><button onClick={toggleDark}>{darkMode ? <Sun /> : <Moon />}</button><button onClick={logout} className="text-sm text-rose-500">Logout</button></div>
+          </header>
+          <main className="max-w-lg mx-auto p-4">{renderBody()}</main>
+          <nav className="fixed bottom-0 max-w-lg mx-auto left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t rounded-t-2xl flex justify-around py-2 z-20">
+            {[
+              { id: 'discover', icon: <Heart />, label: 'Discover' },
+              { id: 'matches', icon: <MessageCircle />, label: 'Matches' },
+              { id: 'premium', icon: isPremiumPlan ? <Crown className="text-amber-500"/> : <Zap />, label: 'Premium' },
+              { id: 'settings', icon: <User />, label: 'Profile' }
+            ].map(t => (<button key={t.id} onClick={() => { setActiveTab(t.id); setActiveChatId(null); }} className={`flex flex-col items-center text-xs ${activeTab === t.id ? 'text-rose-500' : 'text-gray-500'}`}>{t.icon}<span className="mt-1">{t.label}</span></button>))}
+          </nav>
+        </div>
+      );
     };
-
-    const LandingDashboard = ({ setView, isPremium }) => (
-      <div className="text-center space-y-6 py-10"><div className="bg-gradient-to-br from-pink-100 to-rose-100 rounded-3xl p-8"><Heart size={48} className="mx-auto text-rose-500"/><h2 className="text-2xl font-bold mt-2">Find your perfect match</h2><p className="mt-2 text-gray-600">Swipe, match, and connect with amazing people.</p><button onClick={()=>setView('discover')} className="mt-6 bg-rose-500 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg">Start Swiping →</button></div><div className="grid grid-cols-2 gap-4 mt-8"><div className="bg-white dark:bg-gray-800 p-4 rounded-xl"><MessageCircle className="mx-auto text-rose-400"/><p className="font-semibold">Real-time chat</p></div><div className="bg-white dark:bg-gray-800 p-4 rounded-xl"><Sparkles className="mx-auto text-rose-400"/><p className="font-semibold">AI recommendations</p></div></div></div>
-    );
-
-    const AdminDashboard = ({ onExit }) => {
-      const { reportedUsers, matches, user, subscriptions } = useStore();
-      const totalUsers = MOCK_USERS.length + 1;
-      return (<div className="min-h-screen bg-gray-100 p-4"><div className="flex justify-between"><h1 className="text-2xl font-bold">Admin Dashboard</h1><button onClick={onExit} className="bg-gray-700 text-white px-3 py-1 rounded">Exit Admin</button></div><div className="grid md:grid-cols-3 gap-4 mt-6"><div className="bg-white p-4 rounded-xl"><h3>Active Users</h3><p className="text-3xl font-bold">{totalUsers}</p></div><div className="bg-white p-4 rounded-xl"><h3>Matches</h3><p className="text-3xl font-bold">{matches.length}</p></div><div className="bg-white p-4 rounded-xl"><h3>Premium Users</h3><p className="text-3xl font-bold">{subscriptions.plan !== 'FREE' ? 1 : 0}</p></div></div><div className="mt-8 bg-white rounded-xl p-4"><h2 className="font-bold">Reports</h2>{reportedUsers.length===0?<p className="text-gray-500">No reports</p>:reportedUsers.map(r=><div key={r.date}>{r.reason} - user {r.reportedId}</div>)}</div><div className="mt-4 bg-white rounded-xl p-4"><h2 className="font-bold">System Health</h2><div className="text-green-600">✅ All systems operational</div></div></div>);
+    
+    const ProfileSettingsPanel = () => {
+      const { user, reportUser, blockUser } = useStore();
+      const [reason, setReason] = useState('');
+      return (
+        <div className="space-y-6">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow"><h2 className="font-bold text-xl">Profile Details</h2><p className="text-gray-600">{user?.name} · {user?.email}</p><div className="mt-4 flex gap-3"><button onClick={() => { const r = prompt('Report user ID:'); if(r) reportUser(r, reason || 'Inappropriate'); }} className="bg-red-100 p-2 rounded-full text-red-600 text-sm flex gap-1"><Flag size={16}/> Report</button><button onClick={() => { const id = prompt('Block user ID:'); if(id) blockUser(id); }} className="bg-gray-200 p-2 rounded-full text-sm flex gap-1"><Ban size={16}/> Block</button></div></div>
+          <div className="bg-amber-50 dark:bg-amber-950/30 p-4 rounded-xl"><h3 className="font-semibold flex gap-2"><Eye /> Privacy Hub</h3><p>Manage who sees your profile and control data.</p></div>
+        </div>
+      );
     };
-
-    const AuthScreen = ({ onLogin }) => {
-      const [email, setEmail] = useState(''); const [pwd, setPwd] = useState(''); const { login } = useStore();
-      const handleSubmit = (e) => { e.preventDefault(); if(login(email,pwd)) onLogin(); else alert('Invalid credentials. Use any mock email (emma@example.com) or admin@dating.com/admin123'); };
-      return (<div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-rose-100 to-pink-200"><div className="bg-white dark:bg-gray-900 rounded-3xl p-8 w-full max-w-md shadow-2xl"><h1 className="text-3xl font-bold text-center bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">LoveConnect</h1><form onSubmit={handleSubmit} className="mt-6 space-y-4"><input className="w-full p-3 border rounded-xl" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)}/><input type="password" className="w-full p-3 border rounded-xl" placeholder="Password" value={pwd} onChange={e=>setPwd(e.target.value)}/><button className="w-full bg-rose-500 text-white py-3 rounded-xl font-semibold">Sign In / Sign Up</button></form><p className="text-center text-sm mt-4">Demo: emma@example.com / any | admin@dating.com / admin123</p></div></div>);
+    
+    const AuthPage = () => {
+      const [email, setEmail] = useState(''); const [pass, setPass] = useState(''); const { login } = useStore();
+      const handleSubmit = (e) => { e.preventDefault(); if(login(email, pass)) {} else alert('Demo login: use emma@example.com / any, or admin@loveconnect.com / admin2025'); };
+      return (
+        <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-rose-100 via-pink-50 to-white dark:from-gray-900 dark:to-gray-800">
+          <div className="w-full max-w-md bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg rounded-3xl shadow-2xl p-8"><h2 className="text-3xl font-black text-center text-rose-600">LoveConnect</h2><p className="text-center text-gray-500 mb-6">Modern Dating Ecosystem</p><form onSubmit={handleSubmit} className="space-y-4"><input className="w-full border rounded-xl p-3 dark:bg-gray-800" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)}/><input type="password" className="w-full border rounded-xl p-3 dark:bg-gray-800" placeholder="Password" value={pass} onChange={e=>setPass(e.target.value)}/><button className="w-full bg-rose-500 text-white py-3 rounded-xl font-bold">Continue →</button></form><div className="text-xs text-center mt-6 text-gray-400">Try emma@example.com | admin@loveconnect.com/admin2025</div></div>
+        </div>
+      );
     };
-
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    
+    ReactDOM.createRoot(document.getElementById('root')).render(<><ThemeInitializer /><AppShell /></>);
   </script>
 </body>
 </html>
