@@ -9,14 +9,6 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5512023350779761"
      crossorigin="anonymous"></script>
     
-    <!-- Ad Unit Configuration -->
-    <script>
-        (adsbygoogle = window.adsbygoogle || []).push({
-            google_ad_client: "ca-pub-5512023350779761",
-            enable_page_level_ads: true
-        });
-    </script>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -31,7 +23,8 @@
             --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
             --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             --card-radius: 48px;
-            --ad-height: 90px;
+            --app-max-width: 400px;
+            --ad-height: 60px;
         }
 
         * {
@@ -52,8 +45,16 @@
             perspective: 1000px;
         }
 
+        /* Responsive App Container */
+        .app-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: var(--app-max-width);
+        }
+
         .dating-app {
-            max-width: 400px;
             width: 100%;
             height: 780px;
             background: rgba(12, 10, 22, 0.85);
@@ -66,65 +67,9 @@
             position: relative;
         }
 
-        .ad-container {
-            background: rgba(0,0,0,0.3);
-            border-bottom: 1px solid var(--panel-border);
-            min-height: var(--ad-height);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4px 0;
-            flex-shrink: 0;
-        }
-
-        .ad-container-bottom {
-            border-top: 1px solid var(--panel-border);
-            border-bottom: none;
-            min-height: var(--ad-height);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4px 0;
-            flex-shrink: 0;
-            background: rgba(0,0,0,0.2);
-        }
-
-        .ad-container ins {
-            display: block;
-            margin: 0 auto;
-        }
-
-        .ad-label {
-            color: rgba(255,255,255,0.3);
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: absolute;
-            top: 2px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.5);
-            padding: 0 8px;
-            border-radius: 4px;
-        }
-
-        /* Ad placeholder styling */
-        .ad-placeholder {
-            width: 320px;
-            height: 50px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgba(255,255,255,0.2);
-            font-size: 11px;
-            border: 1px dashed rgba(255,255,255,0.1);
-        }
-
         .auth-container {
-            max-width: 400px;
             width: 100%;
+            max-width: var(--app-max-width);
             height: 780px;
             background: rgba(8, 6, 16, 0.96);
             backdrop-filter: blur(20px);
@@ -138,6 +83,75 @@
             position: relative;
         }
 
+        /* ============================================================ */
+        /* AD CONTAINERS - Responsive & Non-Intrusive */
+        /* ============================================================ */
+        .ad-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid var(--panel-border);
+            min-height: var(--ad-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px 0;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ad-container-bottom {
+            border-top: 1px solid var(--panel-border);
+            border-bottom: none;
+            min-height: var(--ad-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px 0;
+            flex-shrink: 0;
+            background: rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ad-container ins,
+        .ad-container-bottom ins {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+        }
+
+        .ad-label {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            position: absolute;
+            top: 1px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.4);
+            padding: 0 10px;
+            border-radius: 3px;
+            font-weight: 300;
+        }
+
+        .ad-placeholder {
+            width: 100%;
+            max-width: 320px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 10px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+        }
+
+        /* ============================================================ */
+        /* MAIN APP STYLES (Unchanged from original) */
+        /* ============================================================ */
         .auth-logo { text-align: center; margin-bottom: 40px; }
         .auth-logo h1 { font-size: 3rem; background: linear-gradient(125deg, #F472B6, #EC4899, #A855F7); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .auth-input, .auth-select {
@@ -351,15 +365,426 @@
             border-radius: 10px;
         }
 
-        /* Responsive ad containers */
-        @media (max-width: 400px) {
-            .ad-container, .ad-container-bottom {
-                min-height: 60px;
+        /* ============================================================ */
+        /* RESPONSIVE DESIGN - Mobile & Desktop Optimized */
+        /* ============================================================ */
+        
+        /* Mobile First - Default styles are for mobile */
+        
+        /* Tablet and small desktop */
+        @media (min-width: 768px) {
+            body {
+                padding: 30px;
             }
+            
+            .dating-app {
+                height: 820px;
+                max-width: 440px;
+            }
+            
+            .auth-container {
+                height: 820px;
+                max-width: 440px;
+                padding: 40px 32px;
+            }
+            
+            .profile-img {
+                height: 340px;
+            }
+            
+            .messages-box {
+                height: 480px;
+            }
+            
+            .action-btn {
+                width: 76px;
+                height: 76px;
+                font-size: 36px;
+            }
+            
+            :root {
+                --ad-height: 70px;
+            }
+        }
+        
+        /* Large desktop */
+        @media (min-width: 1200px) {
+            body {
+                padding: 40px;
+                background: radial-gradient(circle at 50% 50%, #0b0918, #010002);
+            }
+            
+            .app-wrapper {
+                max-width: 500px;
+            }
+            
+            .dating-app {
+                height: 860px;
+                max-width: 480px;
+                border-radius: 56px;
+                box-shadow: 0 40px 60px -20px rgba(0, 0, 0, 0.9), 0 0 0 3px rgba(236, 72, 153, 0.4), 0 0 0 8px rgba(0, 0, 0, 0.2);
+            }
+            
+            .auth-container {
+                height: 860px;
+                max-width: 480px;
+                border-radius: 56px;
+                padding: 48px 40px;
+            }
+            
+            .profile-img {
+                height: 380px;
+            }
+            
+            .messages-box {
+                height: 500px;
+            }
+            
+            .main-header {
+                padding: 16px 24px;
+            }
+            
+            .logo-area h1 {
+                font-size: 2rem;
+            }
+            
+            .auth-logo h1 {
+                font-size: 3.5rem;
+            }
+            
+            .content-area {
+                padding: 24px 20px;
+            }
+            
+            .action-btn {
+                width: 82px;
+                height: 82px;
+                font-size: 38px;
+            }
+            
+            .bottom-nav {
+                padding: 12px 16px 24px;
+            }
+            
+            .nav-item {
+                font-size: 13px;
+            }
+            
+            .video-call-overlay {
+                border-radius: 56px;
+            }
+            
+            :root {
+                --ad-height: 80px;
+            }
+            
+            .ad-container,
+            .ad-container-bottom {
+                min-height: var(--ad-height);
+            }
+            
             .ad-placeholder {
-                width: 280px;
-                height: 40px;
+                max-width: 400px;
+                height: 60px;
+            }
+        }
+        
+        /* Ultra-wide desktop */
+        @media (min-width: 1600px) {
+            .app-wrapper {
+                max-width: 560px;
+            }
+            
+            .dating-app {
+                height: 900px;
+                max-width: 520px;
+            }
+            
+            .auth-container {
+                height: 900px;
+                max-width: 520px;
+            }
+            
+            .profile-img {
+                height: 420px;
+            }
+            
+            .messages-box {
+                height: 540px;
+            }
+        }
+        
+        /* Small mobile devices */
+        @media (max-width: 380px) {
+            body {
+                padding: 10px;
+            }
+            
+            .dating-app {
+                height: 700px;
+                border-radius: 32px;
+            }
+            
+            .auth-container {
+                height: 700px;
+                border-radius: 32px;
+                padding: 24px 16px;
+            }
+            
+            .profile-img {
+                height: 220px;
+            }
+            
+            .profile-name {
+                font-size: 22px;
+            }
+            
+            .action-btn {
+                width: 56px;
+                height: 56px;
+                font-size: 24px;
+            }
+            
+            .action-buttons {
+                gap: 16px;
+                padding: 8px 16px 20px;
+            }
+            
+            .messages-box {
+                height: 320px;
+            }
+            
+            .main-header {
+                padding: 8px 12px;
+            }
+            
+            .logo-area h1 {
+                font-size: 1.4rem;
+            }
+            
+            .coin-badge {
+                font-size: 12px;
+                padding: 4px 12px;
+            }
+            
+            .bottom-nav {
+                padding: 6px 8px 14px;
+            }
+            
+            .nav-item {
                 font-size: 9px;
+            }
+            
+            .nav-item i {
+                font-size: 14px;
+            }
+            
+            .content-area {
+                padding: 12px 10px;
+            }
+            
+            .auth-logo h1 {
+                font-size: 2.4rem;
+            }
+            
+            .auth-logo {
+                margin-bottom: 24px;
+            }
+            
+            .auth-input, .auth-select {
+                padding: 12px 16px;
+                font-size: 13px;
+                margin-bottom: 12px;
+            }
+            
+            .auth-btn {
+                padding: 12px;
+                font-size: 16px;
+            }
+            
+            .video-call-overlay {
+                border-radius: 32px;
+            }
+            
+            .local-video-pip {
+                width: 70px;
+                height: 105px;
+                top: 12px;
+                right: 12px;
+            }
+            
+            .call-btn {
+                width: 44px;
+                height: 44px;
+                font-size: 16px;
+            }
+            
+            .call-controls {
+                bottom: 20px;
+                gap: 14px;
+            }
+            
+            .match-item {
+                padding: 8px 12px;
+                gap: 12px;
+            }
+            
+            .match-avatar {
+                width: 44px;
+                height: 44px;
+            }
+            
+            .match-name {
+                font-size: 14px;
+            }
+            
+            .chat-btn {
+                padding: 6px 14px;
+                font-size: 12px;
+            }
+            
+            .chat-header-match {
+                padding: 8px 12px;
+                gap: 10px;
+            }
+            
+            .chat-header-match div:first-child {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .chat-input-area {
+                padding: 4px 8px;
+                gap: 8px;
+            }
+            
+            #chatMessageInput {
+                padding: 8px;
+                font-size: 13px;
+            }
+            
+            #sendChatBtn {
+                width: 34px;
+                height: 34px;
+                font-size: 14px;
+            }
+            
+            .live-btn {
+                padding: 10px 18px;
+                font-size: 13px;
+            }
+            
+            :root {
+                --ad-height: 50px;
+            }
+            
+            .ad-container,
+            .ad-container-bottom {
+                min-height: var(--ad-height);
+            }
+            
+            .ad-placeholder {
+                max-width: 240px;
+                height: 36px;
+                font-size: 8px;
+            }
+        }
+        
+        /* Landscape phone mode */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .dating-app {
+                height: 100vh;
+                max-height: 480px;
+                border-radius: 24px;
+            }
+            
+            .auth-container {
+                height: 100vh;
+                max-height: 480px;
+                border-radius: 24px;
+                padding: 16px 20px;
+            }
+            
+            .profile-img {
+                height: 140px;
+            }
+            
+            .messages-box {
+                height: 200px;
+            }
+            
+            .main-header {
+                padding: 6px 12px;
+            }
+            
+            .logo-area h1 {
+                font-size: 1.2rem;
+            }
+            
+            .content-area {
+                padding: 8px 12px;
+            }
+            
+            .bottom-nav {
+                padding: 4px 8px 8px;
+            }
+            
+            .action-btn {
+                width: 44px;
+                height: 44px;
+                font-size: 18px;
+            }
+            
+            .action-buttons {
+                padding: 4px 12px 12px;
+                gap: 12px;
+            }
+            
+            .profile-info {
+                padding: 10px 14px;
+            }
+            
+            .profile-name {
+                font-size: 18px;
+            }
+            
+            .auth-logo h1 {
+                font-size: 2rem;
+            }
+            
+            .auth-logo {
+                margin-bottom: 12px;
+            }
+            
+            .auth-input, .auth-select {
+                padding: 8px 14px;
+                font-size: 12px;
+                margin-bottom: 8px;
+            }
+            
+            .auth-btn {
+                padding: 8px;
+                font-size: 14px;
+            }
+            
+            .auth-switch {
+                margin-top: 12px;
+                font-size: 13px;
+            }
+            
+            .ad-container,
+            .ad-container-bottom {
+                min-height: 40px;
+            }
+            
+            .ad-placeholder {
+                height: 30px;
+                max-width: 200px;
+                font-size: 7px;
+            }
+            
+            :root {
+                --ad-height: 40px;
             }
         }
     </style>
@@ -371,55 +796,48 @@
     // ============================================================
     // GOOGLE ADSENSE - DYNAMIC AD INJECTION
     // ============================================================
-    function injectAdContainer(position) {
+    function createAdContainer(position) {
         const container = document.createElement('div');
         container.className = `ad-container${position === 'bottom' ? '-bottom' : ''}`;
         container.id = `ad-${position}`;
         
-        // Add ad label
+        // Ad label
         const label = document.createElement('div');
         label.className = 'ad-label';
         label.textContent = 'Sponsored';
         container.appendChild(label);
         
-        // Add ad slot
-        const adDiv = document.createElement('div');
-        adDiv.style.width = '100%';
-        adDiv.style.display = 'flex';
-        adDiv.style.justifyContent = 'center';
-        adDiv.style.alignItems = 'center';
-        adDiv.style.minHeight = '60px';
+        // Ad slot wrapper
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'width:100%;display:flex;justify-content:center;align-items:center;min-height:50px;';
         
-        // Ad unit - responsive
+        // Ad unit
         const ins = document.createElement('ins');
         ins.className = 'adsbygoogle';
-        ins.style.display = 'block';
-        ins.style.width = '100%';
-        ins.style.maxWidth = '320px';
-        ins.style.height = '50px';
+        ins.style.cssText = 'display:block;width:100%;max-width:320px;height:50px;';
         ins.setAttribute('data-ad-client', 'ca-pub-5512023350779761');
-        ins.setAttribute('data-ad-slot', '1234567890'); // Replace with your ad slot ID
+        ins.setAttribute('data-ad-slot', '1234567890'); // REPLACE WITH YOUR AD SLOT ID
         ins.setAttribute('data-ad-format', 'horizontal');
         ins.setAttribute('data-full-width-responsive', 'true');
         
-        adDiv.appendChild(ins);
-        container.appendChild(adDiv);
+        wrapper.appendChild(ins);
+        container.appendChild(wrapper);
         
         return container;
     }
 
-    function refreshAds() {
+    function loadAds() {
         try {
             if (typeof adsbygoogle !== 'undefined') {
                 (adsbygoogle = window.adsbygoogle || []).push({});
             }
         } catch (e) {
-            console.log('Ad refresh skipped:', e.message);
+            // Silent fail - ads will load when available
         }
     }
 
     // ============================================================
-    // CAMERA ENGINE
+    // CAMERA ENGINE (Unchanged)
     // ============================================================
     class CameraEngine {
         constructor(videoElementId) {
@@ -474,7 +892,7 @@
     }
 
     // ============================================================
-    // PROFILE FACTORY
+    // PROFILE FACTORY (Unchanged)
     // ============================================================
     class ProfileFactory {
         static names = ["Amani", "Zendaya", "Jabari", "Chloe", "Malik", "Elena", "Siddharth", "Yuki", "Mateo", "Seraphina", "Kaelen", "Tariq"];
@@ -511,7 +929,7 @@
     }
 
     // ============================================================
-    // AUTH SYSTEM (localStorage)
+    // AUTH SYSTEM (Unchanged)
     // ============================================================
     let users = JSON.parse(localStorage.getItem("flamematch_users")) || [];
     let currentSessionUser = JSON.parse(localStorage.getItem("flamematch_session")) || null;
@@ -615,7 +1033,7 @@
     }
 
     // ============================================================
-    // MOCK VIDEO CALL
+    // MOCK VIDEO CALL (Unchanged)
     // ============================================================
     let activeCallEngine = null;
     function initializeVideoCall(partnerId) {
@@ -663,7 +1081,7 @@
     }
 
     // ============================================================
-    // FILE ATTACHMENT
+    // FILE ATTACHMENT (Unchanged)
     // ============================================================
     function processIncomingFile(file, partnerId) {
         if (!file) return;
@@ -689,7 +1107,7 @@
     }
 
     // ============================================================
-    // RENDER CHAT
+    // RENDER CHAT (Unchanged)
     // ============================================================
     function renderChatScreen(partnerId) {
         const partner = appData.matchesList.find(m => m.id === partnerId); if (!partner) return;
@@ -760,7 +1178,7 @@
     }
 
     // ============================================================
-    // DISCOVER TAB
+    // DISCOVER TAB (Unchanged)
     // ============================================================
     function renderDiscoverTab() {
         const container = document.getElementById("appContent");
@@ -797,7 +1215,7 @@
     }
 
     // ============================================================
-    // MATCHES TAB
+    // MATCHES TAB (Unchanged)
     // ============================================================
     function renderMatchesTab() {
         if (currentChatPartner) { renderChatScreen(currentChatPartner.id); return; }
@@ -825,7 +1243,7 @@
     }
 
     // ============================================================
-    // LIVE TAB
+    // LIVE TAB (Unchanged)
     // ============================================================
     function renderLiveTab() {
         if (cameraEngineInstance) { cameraEngineInstance.stopStream(); cameraEngineInstance = null; }
@@ -860,7 +1278,7 @@
     }
 
     // ============================================================
-    // PROFILE TAB
+    // PROFILE TAB (Unchanged)
     // ============================================================
     function renderProfileTab() {
         const user = currentSessionUser;
@@ -888,7 +1306,7 @@
     }
 
     // ============================================================
-    // SWIPE GESTURES
+    // SWIPE GESTURES (Unchanged)
     // ============================================================
     let startX=0, currentX=0, isDragging=false;
     function attachSwipeEvents(card, profile) {
@@ -936,9 +1354,7 @@
         else if(activeTab==="profile") renderProfileTab();
         document.querySelectorAll(".nav-item").forEach(item=>item.classList.toggle("nav-active",item.getAttribute("data-tab")===activeTab));
         updateCoinUI();
-        
-        // Refresh ads when tab changes
-        refreshAds();
+        loadAds(); // Load ads after tab change
     }
 
     function attachModernCardStyles() { window.uiEngineInstance?.observeCards(); }
@@ -946,7 +1362,7 @@
     function escapeHtml(str){ return str ? str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])) : ''; }
 
     // ============================================================
-    // UI ENGINE
+    // UI ENGINE (Unchanged)
     // ============================================================
     class UIEngine {
         constructor() { this.initObserver(); this.initSpotlight(); }
@@ -966,7 +1382,22 @@
     function showAuthScreen() {
         if(cameraEngineInstance) { cameraEngineInstance.stopStream(); cameraEngineInstance = null; clearLiveInterval(); }
         const root = document.getElementById("root");
-        root.innerHTML = `<div class="auth-container"><div class="auth-logo"><h1>FlameMatch</h1><p style="color:#c9c2f0;">Find your permanent flame 🔥</p></div><div id="authForm"><input type="email" id="authEmail" class="auth-input" placeholder="Email"><input type="password" id="authPassword" class="auth-input" placeholder="Password"><div id="authExtraFields" style="display:none;"><input type="text" id="authName" class="auth-input" placeholder="Full Name"><input type="number" id="authAge" class="auth-input" placeholder="Age"><select id="authCountry" class="auth-select"><option>United States</option><option>Canada</option><option>UK</option></select></div><button id="authSubmitBtn" class="auth-btn">Login Session</button><div class="auth-switch">New connection? <span id="toggleAuthMode">Register profile</span></div><div id="authError" class="auth-error"></div></div></div>`;
+        root.innerHTML = `
+            <div class="auth-container">
+                <div class="auth-logo"><h1>FlameMatch</h1><p style="color:#c9c2f0;">Find your permanent flame 🔥</p></div>
+                <div id="authForm">
+                    <input type="email" id="authEmail" class="auth-input" placeholder="Email">
+                    <input type="password" id="authPassword" class="auth-input" placeholder="Password">
+                    <div id="authExtraFields" style="display:none;">
+                        <input type="text" id="authName" class="auth-input" placeholder="Full Name">
+                        <input type="number" id="authAge" class="auth-input" placeholder="Age">
+                        <select id="authCountry" class="auth-select"><option>United States</option><option>Canada</option><option>UK</option></select>
+                    </div>
+                    <button id="authSubmitBtn" class="auth-btn">Login Session</button>
+                    <div class="auth-switch">New connection? <span id="toggleAuthMode">Register profile</span></div>
+                    <div id="authError" class="auth-error"></div>
+                </div>
+            </div>`;
         
         let isLogin = true;
         const extraDiv = document.getElementById("authExtraFields");
@@ -1000,24 +1431,31 @@
     function initMainApp() {
         const root = document.getElementById("root");
         
-        // Build the app with ad containers
-        root.innerHTML = `
-            <div class="dating-app" id="datingAppContainer">
-                ${injectAdContainer('top').outerHTML}
-                <div class="main-header">
-                    <div class="logo-area"><h1>FlameMatch❤️‍🔥</h1></div>
-                    <div class="coin-badge"><i class="fas fa-gem"></i> <span id="coinAmount">0</span></div>
-                </div>
-                <div class="content-area" id="appContent"></div>
-                ${injectAdContainer('bottom').outerHTML}
-                <div class="bottom-nav">
-                    <div class="nav-item" data-tab="discover"><i class="fas fa-fire"></i><span>Discover</span></div>
-                    <div class="nav-item" data-tab="matches"><i class="fas fa-heart"></i><span>Matches</span></div>
-                    <div class="nav-item" data-tab="live"><i class="fas fa-video"></i><span>Broadcasting</span></div>
-                    <div class="nav-item" data-tab="profile"><i class="fas fa-user"></i><span>Identity</span></div>
+        // Build the app with responsive ad containers
+        const topAd = createAdContainer('top');
+        const bottomAd = createAdContainer('bottom');
+        
+        const appHTML = `
+            <div class="app-wrapper">
+                <div class="dating-app" id="datingAppContainer">
+                    ${topAd.outerHTML}
+                    <div class="main-header">
+                        <div class="logo-area"><h1>FlameMatch❤️‍🔥</h1></div>
+                        <div class="coin-badge"><i class="fas fa-gem"></i> <span id="coinAmount">0</span></div>
+                    </div>
+                    <div class="content-area" id="appContent"></div>
+                    ${bottomAd.outerHTML}
+                    <div class="bottom-nav">
+                        <div class="nav-item" data-tab="discover"><i class="fas fa-fire"></i><span>Discover</span></div>
+                        <div class="nav-item" data-tab="matches"><i class="fas fa-heart"></i><span>Matches</span></div>
+                        <div class="nav-item" data-tab="live"><i class="fas fa-video"></i><span>Broadcasting</span></div>
+                        <div class="nav-item" data-tab="profile"><i class="fas fa-user"></i><span>Identity</span></div>
+                    </div>
                 </div>
             </div>
         `;
+        
+        root.innerHTML = appHTML;
         
         window.uiEngineInstance = new UIEngine();
         
@@ -1033,7 +1471,7 @@
         renderCurrentTab();
         
         // Initial ad load
-        setTimeout(refreshAds, 500);
+        setTimeout(loadAds, 500);
     }
 
     // ============================================================
@@ -1046,12 +1484,21 @@
         showAuthScreen();
     }
 
-    // Refresh ads when content changes
+    // Refresh ads after content changes
     const originalRenderCurrentTab = renderCurrentTab;
     renderCurrentTab = function() {
         originalRenderCurrentTab();
-        setTimeout(refreshAds, 300);
+        setTimeout(loadAds, 300);
     };
+
+    // Handle window resize for responsive adjustments
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            loadAds();
+        }, 500);
+    });
 </script>
 </body>
 </html>
