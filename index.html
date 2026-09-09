@@ -28,16 +28,446 @@
             --app-min-height: 700px;
             --app-max-height: 900px;
             --gold: #FBBF24;
-            --premium-gradient: linear-gradient(135deg, #F472B6, #EC4899, #A855F7);
         }
 
-        /* All existing styles from original remain */
-        .dating-app, .auth-container, .main-header, .content-area, .modern-card,
-        .profile-img, .action-btn, .bottom-nav, .video-call-overlay {
-            /* Keep all original styles */
+        body {
+            background: var(--bg-gradient);
+            font-family: var(--font-sans);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: 20px;
+            perspective: 1000px;
         }
 
-        /* New Premium Features */
+        .dating-app {
+            max-width: var(--app-max-width);
+            width: 100%;
+            height: min(90vh, var(--app-max-height));
+            min-height: var(--app-min-height);
+            background: rgba(12, 10, 22, 0.85);
+            backdrop-filter: blur(2px);
+            border-radius: var(--card-radius);
+            box-shadow: 0 30px 50px -15px rgba(0, 0, 0, 0.8), 0 0 0 2px rgba(236, 72, 153, 0.4);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .auth-container {
+            max-width: var(--app-max-width);
+            width: 100%;
+            height: min(90vh, var(--app-max-height));
+            min-height: var(--app-min-height);
+            background: rgba(8, 6, 16, 0.96);
+            backdrop-filter: blur(20px);
+            border-radius: var(--card-radius);
+            box-shadow: 0 30px 50px -15px black, 0 0 0 2px rgba(236, 72, 153, 0.5);
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .auth-logo { text-align: center; margin-bottom: 40px; }
+        .auth-logo h1 { 
+            font-size: clamp(2.5rem, 6vw, 3.5rem); 
+            background: linear-gradient(125deg, #F472B6, #EC4899, #A855F7); 
+            -webkit-background-clip: text; 
+            background-clip: text; 
+            color: transparent; 
+        }
+        .auth-logo p { 
+            font-size: clamp(0.9rem, 2vw, 1.1rem); 
+            color: #c9c2f0; 
+        }
+
+        .auth-input, .auth-select {
+            background: #1e1c2c;
+            border: 1px solid rgba(236, 72, 153, 0.4);
+            border-radius: 60px;
+            padding: 16px 20px;
+            width: 100%;
+            margin-bottom: 16px;
+            color: white;
+            font-size: clamp(14px, 1.5vw, 16px);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .auth-input:focus, .auth-select:focus { 
+            border-color: #ec4899; 
+            box-shadow: 0 0 8px #ec4899; 
+        }
+        .auth-btn {
+            background: linear-gradient(135deg, #ec4899, #be185d);
+            border: none;
+            border-radius: 60px;
+            padding: 14px;
+            font-weight: bold;
+            font-size: clamp(16px, 1.8vw, 19px);
+            color: white;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: transform 0.2s ease;
+        }
+        .auth-btn:active { transform: scale(0.97); }
+        .auth-error { color: #ff8989; font-size: 13px; text-align: center; margin-top: 8px; }
+        .auth-switch { text-align: center; margin-top: 24px; color: #b9b1e6; font-size: clamp(13px, 1.2vw, 15px); }
+        .auth-switch span { color: #ec4899; cursor: pointer; font-weight: bold; }
+
+        .main-header {
+            padding: clamp(8px, 1.5vw, 14px) clamp(16px, 2vw, 24px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 18, 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--panel-border);
+            flex-shrink: 0;
+            min-height: 60px;
+        }
+        .logo-area h1 {
+            font-size: clamp(1.4rem, 3vw, 2rem);
+            font-weight: 800;
+            background: linear-gradient(125deg, #F472B6, #EC4899, #A855F7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+        .coin-badge {
+            background: rgba(32, 33, 48, 0.9);
+            backdrop-filter: blur(8px);
+            padding: clamp(4px, 0.8vw, 8px) clamp(12px, 1.5vw, 18px);
+            border-radius: 60px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            color: #FBBF24;
+            font-size: clamp(13px, 1.2vw, 16px);
+            border: 0.5px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: clamp(12px, 1.5vw, 20px);
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        .content-area::-webkit-scrollbar { width: 4px; }
+        .content-area::-webkit-scrollbar-track { background: transparent; }
+        .content-area::-webkit-scrollbar-thumb { background: rgba(236, 72, 153, 0.3); border-radius: 10px; }
+
+        .modern-card {
+            position: relative;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--card-radius);
+            backdrop-filter: blur(12px);
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0;
+            transform: translateY(40px) scale(0.98);
+        }
+        .modern-card.is-visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        .card-content { position: relative; z-index: 2; }
+
+        .profile-img { 
+            height: clamp(220px, 40vh, 340px); 
+            position: relative; 
+            overflow: hidden; 
+            border-radius: var(--card-radius) var(--card-radius) 0 0; 
+        }
+        .profile-img img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+        }
+        .match-percent-badge {
+            position: absolute; 
+            top: clamp(12px, 2vw, 24px); 
+            right: clamp(12px, 2vw, 24px); 
+            z-index: 3;
+            background: rgba(0,0,0,0.6); 
+            backdrop-filter: blur(12px);
+            padding: clamp(6px, 1vw, 10px) clamp(12px, 1.5vw, 20px); 
+            border-radius: 60px; 
+            font-weight: 800;
+            color: white; 
+            border: 1px solid #f472b6;
+            font-size: clamp(12px, 1.2vw, 16px);
+        }
+        .profile-info { padding: clamp(16px, 2vw, 24px) clamp(16px, 2vw, 24px); }
+        .profile-name { 
+            font-size: clamp(22px, 3vw, 32px); 
+            font-weight: 800; 
+            color: white; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .profile-occupation { 
+            font-size: clamp(12px, 1.2vw, 15px); 
+            color: #c084fc; 
+            margin-top: 4px; 
+        }
+        .profile-bio { 
+            color: var(--text-secondary); 
+            margin-top: clamp(8px, 1vw, 14px); 
+            font-size: clamp(13px, 1.2vw, 15px); 
+            line-height: 1.5; 
+        }
+
+        .action-buttons { 
+            display: flex; 
+            justify-content: space-around; 
+            padding: clamp(8px, 1vw, 16px) clamp(16px, 2vw, 28px) clamp(16px, 2vw, 28px); 
+            gap: clamp(16px, 2vw, 28px); 
+        }
+        .action-btn {
+            background: #24222f; 
+            border: none; 
+            width: clamp(56px, 8vw, 76px); 
+            height: clamp(56px, 8vw, 76px);
+            border-radius: 50%; 
+            font-size: clamp(24px, 3vw, 36px); 
+            color: white;
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .action-btn:active { transform: scale(0.92); }
+        .btn-like { 
+            background: linear-gradient(145deg, #ec4899, #be185d); 
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.4); 
+        }
+        .btn-super { background: linear-gradient(145deg, #f59e0b, #b45309); }
+        .btn-pass { background: #2e2a3e; color: #ffb3b3; }
+
+        .bottom-nav {
+            background: rgba(8, 8, 14, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--panel-border);
+            display: flex;
+            justify-content: space-around;
+            padding: clamp(6px, 0.8vw, 10px) clamp(8px, 1vw, 14px) clamp(12px, 1.5vw, 20px);
+            flex-shrink: 0;
+            gap: 4px;
+        }
+        .nav-item { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 2px; 
+            color: #6f6b8a; 
+            cursor: pointer; 
+            font-size: clamp(9px, 0.9vw, 12px); 
+            font-weight: 600; 
+            transition: all 0.2s ease;
+            padding: 4px 6px;
+            border-radius: 12px;
+            min-width: 44px;
+        }
+        .nav-item i { 
+            font-size: clamp(18px, 2.2vw, 26px); 
+            transition: all 0.2s ease;
+        }
+        .nav-active { 
+            color: #f472b6; 
+            text-shadow: 0 0 12px rgba(236, 72, 153, 0.3); 
+        }
+        .nav-item:active { transform: scale(0.92); }
+
+        .match-item { 
+            display: flex; 
+            align-items: center; 
+            gap: clamp(12px, 1.5vw, 18px); 
+            padding: clamp(8px, 1vw, 14px) clamp(12px, 1.5vw, 18px); 
+            margin-bottom: clamp(10px, 1.2vw, 16px); 
+            cursor: pointer;
+        }
+        .match-avatar { 
+            width: clamp(48px, 6vw, 64px); 
+            height: clamp(48px, 6vw, 64px); 
+            border-radius: 50%; 
+            overflow: hidden; 
+            border: 2px solid #ec4899; 
+            flex-shrink: 0;
+        }
+        .match-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .match-info { flex: 1; min-width: 0; }
+        .match-name { 
+            font-weight: 800; 
+            color: white; 
+            font-size: clamp(14px, 1.3vw, 17px); 
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .match-percentage { 
+            font-size: clamp(10px, 1vw, 13px); 
+            color: #fbbf24; 
+            background: #1e1c2c; 
+            padding: 2px 10px; 
+            border-radius: 40px; 
+        }
+        .chat-btn { 
+            background: #ec4899; 
+            border: none; 
+            padding: clamp(6px, 0.8vw, 10px) clamp(14px, 1.5vw, 22px); 
+            border-radius: 40px; 
+            color: white; 
+            font-weight: 700; 
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            font-size: clamp(12px, 1vw, 14px);
+        }
+        .chat-btn:active { transform: scale(0.95); }
+
+        .chat-header-match { 
+            display: flex; 
+            align-items: center; 
+            gap: clamp(10px, 1.2vw, 16px); 
+            margin-bottom: clamp(12px, 1.5vw, 20px); 
+            background: rgba(18, 18, 26, 0.9); 
+            border-radius: 60px; 
+            padding: clamp(8px, 1vw, 12px) clamp(14px, 1.5vw, 20px); 
+            flex-shrink: 0;
+        }
+        .messages-box { 
+            background: rgba(8, 8, 16, 0.7); 
+            border-radius: 36px; 
+            padding: clamp(14px, 1.5vw, 20px); 
+            height: clamp(280px, 45vh, 500px); 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column;
+        }
+        .msg-bubble { 
+            max-width: 85%; 
+            padding: clamp(8px, 1vw, 12px) clamp(14px, 1.5vw, 18px); 
+            border-radius: 26px; 
+            margin-bottom: 6px; 
+            word-break: break-word;
+            font-size: clamp(13px, 1.1vw, 15px);
+        }
+        .msg-sent { 
+            background: linear-gradient(135deg, #ec4899, #be185d); 
+            align-self: flex-end; 
+            color: white; 
+        }
+        .msg-received { 
+            background: #252432; 
+            align-self: flex-start; 
+            color: white; 
+        }
+        .chat-input-area { 
+            display: flex; 
+            gap: clamp(8px, 1vw, 14px); 
+            margin-top: clamp(10px, 1.2vw, 16px); 
+            background: #12121c; 
+            border-radius: 60px; 
+            padding: clamp(4px, 0.6vw, 8px) clamp(10px, 1.2vw, 16px); 
+            align-items: center; 
+            flex-shrink: 0;
+        }
+        .chat-input-area input[type="text"] {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: clamp(8px, 1vw, 14px);
+            outline: none;
+            font-size: clamp(14px, 1.2vw, 16px);
+            min-width: 0;
+        }
+        .chat-input-area button {
+            background: #ec4899;
+            border: none;
+            width: clamp(36px, 5vw, 46px);
+            height: clamp(36px, 5vw, 46px);
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(16px, 1.5vw, 20px);
+        }
+        .chat-input-area button:active { transform: scale(0.92); }
+
+        .live-video-wrapper video {
+            width: 100%;
+            border-radius: 40px;
+            transform: scaleX(-1);
+            background: #000;
+            object-fit: cover;
+            max-height: clamp(300px, 45vh, 500px);
+            aspect-ratio: 4/3;
+        }
+        .live-controls { 
+            display: flex; 
+            gap: clamp(14px, 2vw, 24px); 
+            justify-content: center; 
+            padding: clamp(14px, 1.5vw, 22px); 
+            flex-wrap: wrap;
+        }
+        .live-btn { 
+            background: linear-gradient(145deg, #ec4899, #a21caf); 
+            border: none; 
+            padding: clamp(10px, 1.2vw, 16px) clamp(18px, 2.5vw, 28px); 
+            border-radius: 60px; 
+            color: white; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            font-size: clamp(13px, 1.2vw, 16px);
+        }
+        .live-btn:active { transform: scale(0.94); }
+
+        .my-profile-card { 
+            text-align: center; 
+            padding: clamp(20px, 3vw, 36px) clamp(16px, 2vw, 28px); 
+        }
+        .user-profile-photo { 
+            width: clamp(90px, 12vw, 130px); 
+            height: clamp(90px, 12vw, 130px); 
+            border-radius: 50%; 
+            overflow: hidden; 
+            margin: 0 auto; 
+            border: 3px solid #ec4899; 
+        }
+        .user-profile-photo img { width: 100%; height: 100%; object-fit: cover; }
+        .upload-label { 
+            background: #2e2a3e; 
+            padding: clamp(8px, 1vw, 12px) clamp(14px, 1.8vw, 20px); 
+            border-radius: 60px; 
+            display: inline-block; 
+            margin: 8px; 
+            cursor: pointer; 
+            color: white;
+            font-size: clamp(13px, 1.2vw, 15px);
+            transition: all 0.2s ease;
+        }
+        .upload-label:active { transform: scale(0.95); }
+
         .premium-badge {
             background: linear-gradient(135deg, #FBBF24, #F59E0B);
             padding: 2px 12px;
@@ -45,7 +475,6 @@
             font-size: 10px;
             font-weight: 700;
             color: #000;
-            margin-left: 8px;
         }
 
         .membership-card {
@@ -54,32 +483,27 @@
             border-radius: var(--card-radius);
             padding: 20px;
             margin-bottom: 16px;
-            transition: var(--transition-smooth);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-
         .membership-card.pro {
             border-color: #FBBF24;
             background: rgba(251, 191, 36, 0.1);
             box-shadow: 0 0 30px rgba(251, 191, 36, 0.1);
         }
-
         .membership-card .price {
             font-size: 28px;
             font-weight: 800;
             color: white;
         }
-
         .membership-card .price span {
             font-size: 14px;
             font-weight: 400;
             color: var(--text-secondary);
         }
-
         .membership-card ul {
             list-style: none;
             margin: 16px 0;
         }
-
         .membership-card ul li {
             color: var(--text-secondary);
             padding: 6px 0;
@@ -87,7 +511,6 @@
             align-items: center;
             gap: 10px;
         }
-
         .membership-card ul li i {
             color: var(--gold);
             width: 20px;
@@ -109,23 +532,7 @@
             justify-content: center;
             gap: 12px;
         }
-
         .mpesa-pay-btn:active { transform: scale(0.97); }
-
-        .mpesa-pay-btn i {
-            font-size: 20px;
-        }
-
-        .pro-feature-tag {
-            background: linear-gradient(135deg, #FBBF24, #F59E0B);
-            color: #000;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 9px;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-left: 6px;
-        }
 
         .boost-indicator {
             background: rgba(251, 191, 36, 0.15);
@@ -148,24 +555,6 @@
             gap: 4px;
         }
 
-        .super-like-badge {
-            background: linear-gradient(135deg, #f59e0b, #b45309);
-            padding: 2px 8px;
-            border-radius: 60px;
-            font-size: 9px;
-            font-weight: 700;
-            color: white;
-        }
-
-        .like-counter {
-            color: var(--text-secondary);
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* M-Pesa Modal */
         .mpesa-modal {
             position: fixed;
             top: 0;
@@ -180,7 +569,6 @@
             z-index: 9999;
             padding: 20px;
         }
-
         .mpesa-modal-content {
             background: #1a1a2e;
             border-radius: var(--card-radius);
@@ -189,28 +577,10 @@
             width: 100%;
             border: 1px solid var(--panel-border);
         }
-
-        .mpesa-modal-content h2 {
-            color: white;
-            margin-bottom: 8px;
-        }
-
-        .mpesa-modal-content .subtitle {
-            color: var(--text-secondary);
-            margin-bottom: 24px;
-        }
-
-        .mpesa-input-group {
-            margin-bottom: 16px;
-        }
-
-        .mpesa-input-group label {
-            color: var(--text-secondary);
-            font-size: 13px;
-            display: block;
-            margin-bottom: 6px;
-        }
-
+        .mpesa-modal-content h2 { color: white; margin-bottom: 8px; }
+        .mpesa-modal-content .subtitle { color: var(--text-secondary); margin-bottom: 24px; }
+        .mpesa-input-group { margin-bottom: 16px; }
+        .mpesa-input-group label { color: var(--text-secondary); font-size: 13px; display: block; margin-bottom: 6px; }
         .mpesa-input-group input {
             width: 100%;
             padding: 14px 16px;
@@ -221,11 +591,7 @@
             font-size: 16px;
             outline: none;
         }
-
-        .mpesa-input-group input:focus {
-            border-color: #ec4899;
-        }
-
+        .mpesa-input-group input:focus { border-color: #ec4899; }
         .mpesa-confirm-btn {
             background: linear-gradient(135deg, #00B841, #008F3A);
             border: none;
@@ -239,9 +605,7 @@
             margin-top: 8px;
             transition: transform 0.2s ease;
         }
-
         .mpesa-confirm-btn:active { transform: scale(0.97); }
-
         .mpesa-close-btn {
             background: transparent;
             border: 1px solid rgba(255,255,255,0.2);
@@ -252,7 +616,6 @@
             width: 100%;
             margin-top: 8px;
         }
-
         .transaction-status {
             padding: 12px;
             border-radius: 12px;
@@ -260,27 +623,93 @@
             text-align: center;
             font-weight: 600;
         }
+        .transaction-status.success { background: rgba(0, 184, 65, 0.2); color: #00B841; }
+        .transaction-status.pending { background: rgba(251, 191, 36, 0.2); color: #FBBF24; }
+        .transaction-status.failed { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
 
-        .transaction-status.success {
-            background: rgba(0, 184, 65, 0.2);
-            color: #00B841;
+        .swipe-hint { 
+            text-align: center; 
+            font-size: clamp(10px, 1vw, 12px); 
+            margin-top: clamp(10px, 1.2vw, 16px); 
+            color: #aa99e6; 
+            opacity: 0.8;
         }
 
-        .transaction-status.pending {
-            background: rgba(251, 191, 36, 0.2);
-            color: #FBBF24;
+        .chat-media-attachment { 
+            max-width: 100%; 
+            border-radius: 16px; 
+            margin-top: 6px; 
+            display: block; 
+            max-height: 300px;
+            width: auto;
         }
 
-        .transaction-status.failed {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
+        .video-call-overlay {
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: #000; 
+            z-index: 100; 
+            border-radius: var(--card-radius);
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden;
         }
+        .remote-video { width: 100%; height: 100%; object-fit: cover; }
+        .local-video-pip {
+            position: absolute; 
+            top: clamp(12px, 2vw, 24px); 
+            right: clamp(12px, 2vw, 24px); 
+            width: clamp(80px, 12vw, 140px); 
+            height: clamp(120px, 18vw, 200px);
+            border-radius: 16px; 
+            object-fit: cover; 
+            border: 2px solid #ec4899;
+            transform: scaleX(-1); 
+            background: #222; 
+            z-index: 110;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+        }
+        .call-controls {
+            position: absolute; 
+            bottom: clamp(20px, 4vw, 50px); 
+            left: 0; 
+            width: 100%;
+            display: flex; 
+            justify-content: center; 
+            gap: clamp(16px, 2.5vw, 32px); 
+            z-index: 110;
+            padding: 0 16px;
+        }
+        .call-btn {
+            width: clamp(48px, 6vw, 64px); 
+            height: clamp(48px, 6vw, 64px); 
+            border-radius: 50%; 
+            border: none;
+            color: white; 
+            font-size: clamp(18px, 2vw, 24px); 
+            cursor: pointer; 
+            display: flex;
+            align-items: center; 
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .call-btn:active { transform: scale(0.9); }
+        .btn-hangup { background: #ef4444; }
+        .btn-mute { background: rgba(255,255,255,0.2); backdrop-filter: blur(8px); }
 
         @media (max-width: 480px) {
-            .mpesa-modal-content {
-                padding: 24px 16px;
-                border-radius: 32px;
-            }
+            body { padding: 10px; }
+            .dating-app { height: 100vh; height: 100dvh; min-height: 600px; border-radius: 32px; max-width: 100%; }
+            .auth-container { height: 100vh; height: 100dvh; min-height: 600px; border-radius: 32px; padding: 24px 16px; }
+            :root { --card-radius: 32px; }
+            .mpesa-modal-content { padding: 24px 16px; border-radius: 32px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
         }
     </style>
 </head>
@@ -289,7 +718,7 @@
 
 <script>
     // ============================================================
-    // M-PESA PAYMENT ENGINE (Simulated)
+    // M-PESA PAYMENT ENGINE
     // ============================================================
     class MpesaPaymentEngine {
         constructor() {
@@ -297,10 +726,8 @@
             this.isProcessing = false;
         }
 
-        // Simulate M-Pesa STK Push
         async processPayment(phoneNumber, amount, packageName) {
             return new Promise((resolve, reject) => {
-                // Validate phone number (Kenyan format)
                 const cleaned = phoneNumber.replace(/\s/g, '');
                 if (!cleaned.match(/^(07|01|2547|2541)\d{8}$/)) {
                     reject(new Error('Invalid phone number. Use format: 0712345678'));
@@ -308,8 +735,6 @@
                 }
 
                 this.isProcessing = true;
-
-                // Simulate STK Push dialog
                 const transactionId = `MPESA${Date.now()}`;
                 const transaction = {
                     id: transactionId,
@@ -319,16 +744,12 @@
                     status: 'pending',
                     timestamp: new Date().toISOString()
                 };
-
                 this.transactions.push(transaction);
 
-                // Simulate M-Pesa processing delay
                 setTimeout(() => {
-                    // 85% success rate for realism
                     const success = Math.random() < 0.85;
                     transaction.status = success ? 'success' : 'failed';
                     this.isProcessing = false;
-
                     if (success) {
                         resolve({
                             success: true,
@@ -341,10 +762,6 @@
                 }, 2000 + Math.random() * 1500);
             });
         }
-
-        getTransactionStatus(transactionId) {
-            return this.transactions.find(t => t.id === transactionId);
-        }
     }
 
     // ============================================================
@@ -356,54 +773,26 @@
                 id: 'silver',
                 name: 'Silver',
                 price: 299,
-                features: [
-                    '10 Extra SuperLikes',
-                    'Profile Boost (2hrs)',
-                    'See Who Liked You',
-                    'No Ads'
-                ],
+                features: ['10 Extra SuperLikes', 'Profile Boost (2hrs)', 'See Who Liked You', 'No Ads'],
                 color: '#94A3B8'
             },
             {
                 id: 'gold',
                 name: 'Gold',
                 price: 499,
-                features: [
-                    '25 Extra SuperLikes',
-                    'Profile Boost (6hrs)',
-                    'See Who Liked You',
-                    'No Ads',
-                    'Advanced Filters',
-                    'Read Receipts'
-                ],
+                features: ['25 Extra SuperLikes', 'Profile Boost (6hrs)', 'See Who Liked You', 'No Ads', 'Advanced Filters', 'Read Receipts'],
                 color: '#FBBF24'
             },
             {
                 id: 'platinum',
                 name: 'Platinum',
                 price: 999,
-                features: [
-                    'Unlimited SuperLikes',
-                    'Profile Boost (24hrs)',
-                    'See Who Liked You',
-                    'No Ads',
-                    'Advanced Filters',
-                    'Read Receipts',
-                    'Priority Support',
-                    'Exclusive Events'
-                ],
+                features: ['Unlimited SuperLikes', 'Profile Boost (24hrs)', 'See Who Liked You', 'No Ads', 'Advanced Filters', 'Read Receipts', 'Priority Support', 'Exclusive Events'],
                 color: '#A855F7'
             }
         ];
 
-        static getPackage(id) {
-            return this.packages.find(p => p.id === id);
-        }
-
-        static getFeatures(packageId) {
-            const pkg = this.getPackage(packageId);
-            return pkg ? pkg.features : [];
-        }
+        static getPackage(id) { return this.packages.find(p => p.id === id); }
     }
 
     // ============================================================
@@ -423,32 +812,22 @@
 
         calculateMatchScore(user1, user2) {
             let score = 0;
-
-            // Location proximity (simplified)
             if (user1.country === user2.country) {
                 score += this.matchWeights.location * 100;
             }
-
-            // Age compatibility (±5 years)
             const ageDiff = Math.abs(user1.age - user2.age);
             if (ageDiff <= 5) {
                 score += this.matchWeights.age * 100 * (1 - ageDiff / 10);
             }
-
-            // Interests overlap
             if (user1.interests && user2.interests) {
                 const overlap = user1.interests.filter(i => user2.interests.includes(i));
                 const overlapPercent = overlap.length / Math.max(user1.interests.length, 1);
                 score += this.matchWeights.interests * 100 * overlapPercent;
             }
-
-            // Lifestyle compatibility
             if (user1.lifestyle && user2.lifestyle) {
                 const lifestyleMatch = user1.lifestyle === user2.lifestyle ? 1 : 0.5;
                 score += this.matchWeights.lifestyle * 100 * lifestyleMatch;
             }
-
-            // Education level
             if (user1.education && user2.education) {
                 const educationLevels = ['high_school', 'bachelor', 'master', 'phd'];
                 const idx1 = educationLevels.indexOf(user1.education);
@@ -456,7 +835,6 @@
                 const diff = Math.abs(idx1 - idx2);
                 score += this.matchWeights.education * 100 * (1 - diff / educationLevels.length);
             }
-
             return Math.min(Math.round(score), 100);
         }
 
@@ -469,28 +847,51 @@
     }
 
     // ============================================================
-    // ENHANCED PROFILE FACTORY
+    // PROFILE FACTORIES
     // ============================================================
-    class ProProfileFactory {
-        static generateEnhanced() {
-            const base = ProfileFactory.generateNext();
+    class ProfileFactory {
+        static names = ["Amani", "Zendaya", "Jabari", "Chloe", "Malik", "Elena", "Siddharth", "Yuki", "Mateo", "Seraphina", "Kaelen", "Tariq"];
+        static occupations = ["Software Architect", "Creative Director", "Aerospace Engineer", "Venture Capitalist", "Fine Art Curator", "Product Designer", "Clinical Strategist"];
+        static bios = [
+            "Architecting clean code and clean design systems. Let's debate performance profiles over coffee.",
+            "Living at the intersection of media arts and physical installations. Looking for an inspired conversationalist.",
+            "High-energy strategist, mountain trail running enthusiast, and late-night culinary experimenting specialist.",
+            "Building high-scale frameworks by day. Searching for aesthetic minimalism and real, unfiltered connections."
+        ];
+        static photos = [
+            "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&q=80",
+            "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80",
+            "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80",
+            "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&q=80",
+            "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=600&q=80",
+            "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&q=80"
+        ];
+
+        static generateNext() {
+            const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+            const id = `p_gen_${Date.now()}_${Math.floor(Math.random()*1000)}`;
             const interests = ['Travel', 'Food', 'Music', 'Sports', 'Art', 'Tech', 'Fashion', 'Fitness', 'Books', 'Movies'];
             const shuffled = interests.sort(() => Math.random() - 0.5);
-            
             return {
-                ...base,
+                id,
+                name: pick(this.names),
+                age: Math.floor(Math.random() * 15) + 21,
+                occupation: pick(this.occupations),
+                matchPercentage: Math.floor(Math.random() * 25) + 75,
+                bio: pick(this.bios),
+                photoURL: pick(this.photos),
+                liked: false,
                 interests: shuffled.slice(0, 3 + Math.floor(Math.random() * 3)),
                 lifestyle: ['Active', 'Social', 'Homebody', 'Adventurous', 'Balanced'][Math.floor(Math.random() * 5)],
                 education: ['high_school', 'bachelor', 'master', 'phd'][Math.floor(Math.random() * 4)],
                 verified: Math.random() > 0.4,
-                isOnline: Math.random() > 0.3,
-                lastActive: new Date(Date.now() - Math.random() * 86400000).toISOString()
+                isOnline: Math.random() > 0.3
             };
         }
     }
 
     // ============================================================
-    // ORIGINAL CLASSES (Adapted for Pro)
+    // CAMERA ENGINE
     // ============================================================
     class CameraEngine {
         constructor(videoElementId) {
@@ -499,23 +900,19 @@
             if (!this.videoElement) throw new Error("Target video container configuration missing.");
         }
 
-        getOptimalConstraints() {
-            return {
-                audio: { echoCancellation: true, noiseSuppression: true },
-                video: {
-                    width: { ideal: 1280, max: 1920 },
-                    height: { ideal: 720, max: 1080 },
-                    aspectRatio: 1.777777778,
-                    frameRate: { ideal: 30 },
-                    facingMode: "user"
-                }
-            };
-        }
-
         async startStream() {
             try {
                 if (!navigator.mediaDevices?.getUserMedia) throw new Error("MediaDevices API structural failure.");
-                this.localStream = await navigator.mediaDevices.getUserMedia(this.getOptimalConstraints());
+                this.localStream = await navigator.mediaDevices.getUserMedia({
+                    audio: { echoCancellation: true, noiseSuppression: true },
+                    video: {
+                        width: { ideal: 1280, max: 1920 },
+                        height: { ideal: 720, max: 1080 },
+                        aspectRatio: 1.777777778,
+                        frameRate: { ideal: 30 },
+                        facingMode: "user"
+                    }
+                });
                 this.videoElement.srcObject = this.localStream;
                 this.videoElement.onloadedmetadata = () => {
                     this.videoElement.play().catch(err => console.warn("Autoplay deferred:", err));
@@ -544,42 +941,8 @@
         }
     }
 
-    class ProfileFactory {
-        static names = ["Amani", "Zendaya", "Jabari", "Chloe", "Malik", "Elena", "Siddharth", "Yuki", "Mateo", "Seraphina", "Kaelen", "Tariq"];
-        static occupations = ["Software Architect", "Creative Director", "Aerospace Engineer", "Venture Capitalist", "Fine Art Curator", "Product Designer", "Clinical Strategist"];
-        static bios = [
-            "Architecting clean code and clean design systems. Let's debate performance profiles over coffee.",
-            "Living at the intersection of media arts and physical installations. Looking for an inspired conversationalist.",
-            "High-energy strategist, mountain trail running enthusiast, and late-night culinary experimenting specialist.",
-            "Building high-scale frameworks by day. Searching for aesthetic minimalism and real, unfiltered connections."
-        ];
-        static photos = [
-            "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&q=80",
-            "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80",
-            "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80",
-            "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&q=80",
-            "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=600&q=80",
-            "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&q=80"
-        ];
-
-        static generateNext() {
-            const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-            const id = `p_gen_${Date.now()}_${Math.floor(Math.random()*1000)}`;
-            return {
-                id,
-                name: pick(this.names),
-                age: Math.floor(Math.random() * 15) + 21,
-                occupation: pick(this.occupations),
-                matchPercentage: Math.floor(Math.random() * 25) + 75,
-                bio: pick(this.bios),
-                photoURL: pick(this.photos),
-                liked: false
-            };
-        }
-    }
-
     // ============================================================
-    // AUTH SYSTEM (Enhanced with Pro features)
+    // AUTH SYSTEM
     // ============================================================
     let users = JSON.parse(localStorage.getItem("flamematch_users_pro")) || [];
     let currentSessionUser = JSON.parse(localStorage.getItem("flamematch_session_pro")) || null;
@@ -588,25 +951,22 @@
     function saveSession(user) { currentSessionUser = user; localStorage.setItem("flamematch_session_pro", JSON.stringify(user)); }
     function clearSession() { localStorage.removeItem("flamematch_session_pro"); currentSessionUser = null; }
 
-    function signup(email, password, name, age, country, interests = [], lifestyle = 'Balanced', education = 'bachelor') {
+    function signup(email, password, name, age, country) {
         if (!email || !password || !name || !age || !country) return { success: false, error: "All fields required" };
         if (users.find(u => u.email === email)) return { success: false, error: "Email already registered." };
-        
-        const newUser = { 
-            id: Date.now().toString(), 
-            email, 
-            password, 
-            name, 
-            age: parseInt(age), 
+        const newUser = {
+            id: Date.now().toString(),
+            email, password, name,
+            age: parseInt(age),
             country,
-            bio: "✨ Let's connect!", 
-            photoId: "user_alex_def", 
+            bio: "✨ Let's connect!",
+            photoId: "user_alex_def",
             coins: 450,
             membership: 'free',
             membershipExpiry: null,
-            interests: interests.length ? interests : ['Travel', 'Music', 'Food'],
-            lifestyle,
-            education,
+            interests: ['Travel', 'Music', 'Food'],
+            lifestyle: 'Balanced',
+            education: 'bachelor',
             verified: false,
             boostActive: false,
             boostExpiry: null,
@@ -626,7 +986,7 @@
     }
 
     let appData = { discoverProfiles: [], matchesList: [], userCoins: 450, currentUserBio: "", customUserPhotoURL: null };
-    
+
     function loadUserData(userId) {
         const stored = localStorage.getItem(`flamematch_data_pro_${userId}`);
         if (stored) {
@@ -643,13 +1003,19 @@
             appData.currentUserBio = "";
             appData.customUserPhotoURL = null;
         }
-        while(appData.discoverProfiles.length < 5) {
-            appData.discoverProfiles.push(ProProfileFactory.generateEnhanced());
+        while (appData.discoverProfiles.length < 5) {
+            appData.discoverProfiles.push(ProfileFactory.generateNext());
         }
     }
 
     function saveUserData(userId) {
-        const data = { discoverProfiles: appData.discoverProfiles, matchesList: appData.matchesList, userCoins: appData.userCoins, currentUserBio: appData.currentUserBio, customPhotoURL: appData.customUserPhotoURL };
+        const data = {
+            discoverProfiles: appData.discoverProfiles,
+            matchesList: appData.matchesList,
+            userCoins: appData.userCoins,
+            currentUserBio: appData.currentUserBio,
+            customPhotoURL: appData.customUserPhotoURL
+        };
         localStorage.setItem(`flamematch_data_pro_${userId}`, JSON.stringify(data));
     }
 
@@ -669,15 +1035,10 @@
     function isPremiumUser() {
         const user = currentSessionUser;
         if (!user) return false;
-        if (user.membership === 'platinum') return true;
-        if (user.membership === 'gold') return true;
-        if (user.membership === 'silver') return true;
-        return false;
+        return ['platinum', 'gold', 'silver'].includes(user.membership);
     }
 
-    function getMembershipLevel() {
-        return currentSessionUser?.membership || 'free';
-    }
+    function getMembershipLevel() { return currentSessionUser?.membership || 'free'; }
 
     function canSuperLike() {
         const user = currentSessionUser;
@@ -692,7 +1053,6 @@
     function getDailySwipes() {
         const user = currentSessionUser;
         if (!user) return 0;
-        // Reset daily swipes if new day
         const lastReset = new Date(user.lastSwipeReset);
         const now = new Date();
         if (lastReset.getDate() !== now.getDate() || lastReset.getMonth() !== now.getMonth() || lastReset.getFullYear() !== now.getFullYear()) {
@@ -713,27 +1073,8 @@
     }
 
     function canSwipe() {
-        const user = currentSessionUser;
-        if (!user) return false;
         if (isPremiumUser()) return true;
-        return getDailySwipes() < 15; // Free users get 15 swipes/day
-    }
-
-    function applyBoost() {
-        const user = currentSessionUser;
-        if (!user) return false;
-        if (user.membership === 'platinum' || user.membership === 'gold' || user.membership === 'silver') {
-            // Boost active for 2-24 hours depending on package
-            const hours = user.membership === 'platinum' ? 24 : user.membership === 'gold' ? 6 : 2;
-            user.boostActive = true;
-            user.boostExpiry = new Date(Date.now() + hours * 3600000).toISOString();
-            saveUsers();
-            saveSession(user);
-            showToast(`🚀 Profile boosted for ${hours} hours!`, "#FBBF24");
-            return true;
-        }
-        showToast("💎 Upgrade to boost your profile", "#ef4444");
-        return false;
+        return getDailySwipes() < 15;
     }
 
     function isBoostActive() {
@@ -746,6 +1087,42 @@
             return false;
         }
         return user.boostActive;
+    }
+
+    function applyBoost() {
+        const user = currentSessionUser;
+        if (!user) return false;
+        if (isPremiumUser()) {
+            const hours = user.membership === 'platinum' ? 24 : user.membership === 'gold' ? 6 : 2;
+            user.boostActive = true;
+            user.boostExpiry = new Date(Date.now() + hours * 3600000).toISOString();
+            saveUsers();
+            saveSession(user);
+            showToast(`🚀 Profile boosted for ${hours} hours!`, "#FBBF24");
+            return true;
+        }
+        showToast("💎 Upgrade to boost your profile", "#ef4444");
+        return false;
+    }
+
+    function applyPremiumPackage(packageId) {
+        const user = currentSessionUser;
+        if (!user) return;
+        const pkg = PremiumPackage.getPackage(packageId);
+        if (!pkg) return;
+        user.membership = packageId;
+        user.membershipExpiry = new Date(Date.now() + 30 * 86400000).toISOString();
+        if (packageId === 'platinum') { user.superLikesUsed = 0; user.coins += 500; }
+        else if (packageId === 'gold') { user.superLikesUsed = 0; user.coins += 200; }
+        else if (packageId === 'silver') { user.superLikesUsed = 0; user.coins += 100; }
+        user.boostActive = true;
+        const hours = packageId === 'platinum' ? 24 : packageId === 'gold' ? 6 : 2;
+        user.boostExpiry = new Date(Date.now() + hours * 3600000).toISOString();
+        saveUsers();
+        saveSession(user);
+        appData.userCoins = user.coins;
+        saveUserData(user.id);
+        showToast(`🎉 ${pkg.name} Package activated!`, "#FBBF24");
     }
 
     // ============================================================
@@ -787,10 +1164,7 @@
             try {
                 const result = await mpesaEngine.processPayment(phone, pkg.price, pkg.name);
                 statusDiv.innerHTML = `<div class="transaction-status success">✅ ${result.message}</div>`;
-                
-                // Apply premium benefits
                 applyPremiumPackage(packageId);
-                
                 setTimeout(() => {
                     document.getElementById('mpesaModal').remove();
                     renderCurrentTab();
@@ -806,44 +1180,18 @@
         };
     }
 
-    function applyPremiumPackage(packageId) {
-        const user = currentSessionUser;
-        if (!user) return;
-
-        const pkg = PremiumPackage.getPackage(packageId);
-        if (!pkg) return;
-
-        // Update membership
-        user.membership = packageId;
-        user.membershipExpiry = new Date(Date.now() + 30 * 86400000).toISOString(); // 30 days
-
-        // Add benefits
-        if (packageId === 'platinum') {
-            user.superLikesUsed = 0; // Unlimited
-            user.coins += 500;
-        } else if (packageId === 'gold') {
-            user.superLikesUsed = 0;
-            user.coins += 200;
-        } else if (packageId === 'silver') {
-            user.superLikesUsed = 0;
-            user.coins += 100;
+    // ============================================================
+    // CORE APP FUNCTIONS
+    // ============================================================
+    function consumeDiscoverHead() {
+        appData.discoverProfiles.shift();
+        while (appData.discoverProfiles.length < 5) {
+            appData.discoverProfiles.push(ProfileFactory.generateNext());
         }
-
-        // Apply boost
-        user.boostActive = true;
-        const hours = packageId === 'platinum' ? 24 : packageId === 'gold' ? 6 : 2;
-        user.boostExpiry = new Date(Date.now() + hours * 3600000).toISOString();
-
-        saveUsers();
-        saveSession(user);
-        appData.userCoins = user.coins;
-        saveUserData(user.id);
-        showToast(`🎉 ${pkg.name} Package activated!`, "#FBBF24");
+        saveUserData(currentSessionUser.id);
+        renderCurrentTab();
     }
 
-    // ============================================================
-    // ENHANCED LIKE/PASS WITH PRO LOGIC
-    // ============================================================
     function likeProfile(profile) {
         if (!canSwipe()) {
             showToast("⏳ Daily swipes used. Upgrade to continue!", "#ef4444");
@@ -851,20 +1199,17 @@
         }
         incrementSwipes();
         profile.liked = true;
-        
-        // Enhanced match calculation
         const user = currentSessionUser;
         const matchScore = matchEngine.calculateMatchScore(user, profile);
         const willMatch = matchScore > 65 || Math.random() > 0.4;
-        
         if (willMatch) {
             const insight = matchEngine.generateCompatibilityInsights(matchScore);
             appData.matchesList.unshift({
-                id: profile.id, 
-                name: profile.name, 
-                age: profile.age, 
+                id: profile.id,
+                name: profile.name,
+                age: profile.age,
                 occupation: profile.occupation,
-                matchPercentage: matchScore, 
+                matchPercentage: matchScore,
                 photoURL: profile.photoURL,
                 lastMessage: `💬 ${insight}`,
                 chatMessages: [{ sender: 'them', text: `🌟 ${insight}`, time: 'now' }],
@@ -894,20 +1239,17 @@
             showToast("💎 No SuperLikes left. Upgrade your plan!", "#ff4d4d");
             return;
         }
-        
         const user = currentSessionUser;
         user.superLikesUsed = (user.superLikesUsed || 0) + 1;
         saveUsers();
         saveSession(user);
-
-        // SuperLike guarantees a match
         const matchScore = matchEngine.calculateMatchScore(user, profile);
         appData.matchesList.unshift({
-            id: profile.id, 
-            name: profile.name, 
-            age: profile.age, 
+            id: profile.id,
+            name: profile.name,
+            age: profile.age,
             occupation: profile.occupation,
-            matchPercentage: Math.min(matchScore + 20, 99), 
+            matchPercentage: Math.min(matchScore + 20, 99),
             photoURL: profile.photoURL,
             lastMessage: "⭐ SuperMatch! You caught their attention!",
             chatMessages: [{ sender: 'them', text: '⭐ SuperMatch activated!', time: 'now' }],
@@ -919,105 +1261,81 @@
         consumeDiscoverHead();
     }
 
-    function consumeDiscoverHead() {
-        appData.discoverProfiles.shift();
-        while(appData.discoverProfiles.length < 5) {
-            appData.discoverProfiles.push(ProProfileFactory.generateEnhanced());
+    function initializeVideoCall(partnerId) {
+        if (!isPremiumUser()) {
+            showToast("💎 Video calls require a Premium plan", "#ef4444");
+            return;
         }
-        saveUserData(currentSessionUser.id);
-        renderCurrentTab();
+        const container = document.getElementById("root");
+        const callOverlay = document.createElement("div");
+        callOverlay.className = "video-call-overlay";
+        callOverlay.id = "videoCallOverlay";
+        callOverlay.innerHTML = `
+            <video id="remoteVideoView" class="remote-video" autoplay playsinline src="https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-light-background-41712-large.mp4" loop muted></video>
+            <video id="localVideoPIP" class="local-video-pip" autoplay playsinline muted></video>
+            <div class="call-controls">
+                <button class="call-btn btn-mute" id="muteCallBtn"><i class="fas fa-microphone"></i></button>
+                <button class="call-btn btn-hangup" id="hangupCallBtn"><i class="fas fa-phone-slash"></i></button>
+            </div>
+        `;
+        container.appendChild(callOverlay);
+
+        const localPip = document.getElementById("localVideoPIP");
+        cameraEngineInstance = new CameraEngine(localPip);
+        cameraEngineInstance.startStream().catch(err => console.error("Call stream error:", err));
+
+        document.getElementById("hangupCallBtn").onclick = () => {
+            if (cameraEngineInstance) { cameraEngineInstance.stopStream(); cameraEngineInstance = null; }
+            document.getElementById("videoCallOverlay").remove();
+            showToast("Call disconnected", "#ef4444");
+        };
+
+        let isMuted = false;
+        document.getElementById("muteCallBtn").onclick = () => {
+            isMuted = !isMuted;
+            if (cameraEngineInstance && cameraEngineInstance.localStream) {
+                cameraEngineInstance.localStream.getAudioTracks().forEach(t => t.enabled = !isMuted);
+            }
+            document.getElementById("muteCallBtn").innerHTML = isMuted ? `<i class="fas fa-microphone-slash"></i>` : `<i class="fas fa-microphone"></i>`;
+        };
+    }
+
+    function processIncomingFile(file, partnerId) {
+        if (!file) return;
+        const isVideo = file.type.startsWith("video/");
+        const isImage = file.type.startsWith("image/");
+        if (!isImage && !isVideo) { showToast("Unsupported format", "#ef4444"); return; }
+
+        const localBlobPointer = URL.createObjectURL(file);
+        const match = appData.matchesList.find(m => m.id === partnerId);
+        if (match) {
+            match.chatMessages.push({
+                sender: "me",
+                time: "Just Now",
+                text: isVideo ? "[Shared a Video]" : "[Shared a Photo]",
+                attachment: localBlobPointer,
+                attachmentType: isVideo ? "video" : "image"
+            });
+            match.lastMessage = isVideo ? "🎥 Video asset shared" : "📷 Photographic asset shared";
+            saveUserData(currentSessionUser.id);
+            renderChatScreen(partnerId);
+        }
     }
 
     // ============================================================
-    // RENDER PREMIUM SHOP
-    // ============================================================
-    function renderPremiumShop() {
-        const container = document.getElementById("appContent");
-        const user = currentSessionUser;
-        const membership = getMembershipLevel();
-
-        let html = `
-            <div style="margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="color: white;">💎 Premium Plans</h3>
-                    <span class="boost-indicator">${isBoostActive() ? '🚀 Boost Active' : '📈 Boost Available'}</span>
-                </div>
-                <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">
-                    Current: ${membership.charAt(0).toUpperCase() + membership.slice(1)}
-                    ${membership !== 'free' ? '✓' : '— Upgrade for more features'}
-                </p>
-            </div>
-        `;
-
-        PremiumPackage.packages.forEach(pkg => {
-            const isActive = membership === pkg.id;
-            html += `
-                <div class="membership-card ${isActive ? 'pro' : ''}" style="border-color: ${isActive ? pkg.color : 'var(--panel-border)'};">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <span style="color: white; font-weight: 700; font-size: 20px;">${pkg.name}</span>
-                            ${isActive ? '<span style="background: #00B841; color: white; padding: 2px 10px; border-radius: 60px; font-size: 11px; font-weight: 700; margin-left: 8px;">ACTIVE</span>' : ''}
-                        </div>
-                        <div class="price">KES ${pkg.price} <span>/mo</span></div>
-                    </div>
-                    <ul>
-                        ${pkg.features.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('')}
-                    </ul>
-                    ${!isActive ? `
-                        <button class="mpesa-pay-btn" onclick="showMpesaPayment('${pkg.id}')">
-                            <i class="fas fa-phone"></i> Pay with M-Pesa
-                        </button>
-                    ` : `
-                        <button style="background: #2e2a3e; border: 1px solid #00B841; padding: 14px; border-radius: 60px; color: #00B841; font-weight: 700; cursor: pointer; width: 100%;">
-                            ✅ Active Plan
-                        </button>
-                    `}
-                </div>
-            `;
-        });
-
-        // Add boost feature
-        html += `
-            <div class="membership-card" style="border-color: rgba(251, 191, 36, 0.3);">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <span style="color: white; font-weight: 700; font-size: 18px;">🚀 Profile Boost</span>
-                        ${isBoostActive() ? '<span style="background: #FBBF24; color: #000; padding: 2px 10px; border-radius: 60px; font-size: 11px; font-weight: 700; margin-left: 8px;">ACTIVE</span>' : ''}
-                    </div>
-                </div>
-                <p style="color: var(--text-secondary); margin: 8px 0;">Get 10x more visibility and matches</p>
-                ${!isBoostActive() ? `
-                    <button class="mpesa-pay-btn" onclick="applyBoost()" style="background: linear-gradient(135deg, #FBBF24, #F59E0B); color: #000;">
-                        <i class="fas fa-rocket"></i> Activate Boost
-                    </button>
-                ` : `
-                    <button style="background: #2e2a3e; border: 1px solid #FBBF24; padding: 14px; border-radius: 60px; color: #FBBF24; font-weight: 700; cursor: pointer; width: 100%;">
-                        ⏳ Boost Active
-                    </button>
-                `}
-            </div>
-        `;
-
-        container.innerHTML = html;
-        attachModernCardStyles();
-    }
-
-    // ============================================================
-    // ENHANCED DISCOVER WITH PRO FEATURES
+    // RENDER FUNCTIONS
     // ============================================================
     function renderDiscoverTab() {
         const container = document.getElementById("appContent");
-        if(appData.discoverProfiles.length === 0) { 
-            container.innerHTML = `<div class="modern-card" style="text-align:center;padding:40px;"><p>Syncing network stream...</p></div>`; 
-            return; 
+        if (appData.discoverProfiles.length === 0) {
+            container.innerHTML = `<div class="modern-card" style="text-align:center;padding:40px;"><p>Syncing network stream...</p></div>`;
+            return;
         }
-        
         const profile = appData.discoverProfiles[0];
         const swipesRemaining = isPremiumUser() ? '∞' : (15 - getDailySwipes());
-        
         container.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <span style="color: var(--text-secondary); font-size: 13px;">👆 ${swipesRemaining} swipes remaining</span>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <span style="color:var(--text-secondary);font-size:13px;">👆 ${swipesRemaining} swipes remaining</span>
                 ${isBoostActive() ? '<span class="boost-indicator">🚀 Boosted</span>' : ''}
                 ${isPremiumUser() ? `<span class="premium-badge">${getMembershipLevel().toUpperCase()}</span>` : ''}
             </div>
@@ -1043,7 +1361,6 @@
                 </div>
             </div>
             <div class="swipe-hint"><i class="fas fa-arrows-alt-h"></i> Drag card left/right or use controls</div>`;
-        
         attachSwipeEvents(document.getElementById("draggableCard"), profile);
         document.getElementById("passBtn").onclick = () => passProfile(profile);
         document.getElementById("likeBtn").onclick = () => likeProfile(profile);
@@ -1051,16 +1368,44 @@
         attachModernCardStyles();
     }
 
-    // ============================================================
-    // ENHANCED CHAT WITH PRO FEATURES
-    // ============================================================
-    function renderChatScreen(partnerId) {
-        const partner = appData.matchesList.find(m => m.id === partnerId); 
-        if (!partner) return;
-        currentChatPartner = partner; 
+    function renderMatchesTab() {
+        if (currentChatPartner) { renderChatScreen(currentChatPartner.id); return; }
         const container = document.getElementById("appContent");
-        
-        let messagesHtml = ""; 
+        if (!appData.matchesList.length) {
+            container.innerHTML = `<div class="modern-card" style="text-align:center;padding:60px 20px;"><i class="fas fa-heart-broken" style="font-size:52px;color:#ec4899;margin-bottom:12px;"></i><p style="color:white;">No active connections. Keep swiping!</p></div>`;
+            attachModernCardStyles();
+            return;
+        }
+        let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><h3>Verified Fits (${appData.matchesList.length})</h3></div>`;
+        appData.matchesList.forEach(m => {
+            html += `
+            <div class="modern-card match-item">
+                <div class="match-avatar" style="position:relative;">
+                    <img src="${m.photoURL}" loading="lazy">
+                    ${m.isOnline ? '<div style="position:absolute;bottom:2px;right:2px;width:10px;height:10px;background:#22c55e;border-radius:50%;border:2px solid #1a1a2e;"></div>' : ''}
+                </div>
+                <div class="match-info">
+                    <div class="match-name">
+                        ${m.name}, ${m.age} 
+                        <span class="match-percentage">${m.matchPercentage}%</span>
+                        ${m.verified ? '<span class="profile-verification" style="font-size:8px;"><i class="fas fa-check-circle"></i></span>' : ''}
+                    </div>
+                    <div style="color:#b9b1e6;font-size:clamp(12px,1vw,14px);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${m.lastMessage.substring(0,40)}</div>
+                </div>
+                <button class="chat-btn" data-chatid="${m.id}"><i class="fas fa-comments"></i></button>
+            </div>`;
+        });
+        container.innerHTML = html;
+        document.querySelectorAll(".chat-btn").forEach(btn => btn.onclick = () => renderChatScreen(btn.getAttribute("data-chatid")));
+        attachModernCardStyles();
+    }
+
+    function renderChatScreen(partnerId) {
+        const partner = appData.matchesList.find(m => m.id === partnerId);
+        if (!partner) return;
+        currentChatPartner = partner;
+        const container = document.getElementById("appContent");
+        let messagesHtml = "";
         partner.chatMessages.forEach(msg => {
             let mediaMarkup = "";
             if (msg.attachment) {
@@ -1079,7 +1424,7 @@
         });
 
         container.innerHTML = `
-            <div class="modern-card" style="padding:clamp(14px,2vw,24px); height:100%; display:flex; flex-direction:column;">
+            <div class="modern-card" style="padding:clamp(14px,2vw,24px);height:100%;display:flex;flex-direction:column;">
                 <div class="chat-header-match">
                     <div style="width:clamp(44px,5vw,58px);height:clamp(44px,5vw,58px);border-radius:50%;overflow:hidden;flex-shrink:0;position:relative;">
                         <img src="${partner.photoURL || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80'}" style="width:100%;height:100%;object-fit:cover;">
@@ -1087,18 +1432,18 @@
                     </div>
                     <div style="flex:1;min-width:0;">
                         <strong style="color:white;font-size:clamp(15px,1.3vw,18px);">${partner.name}</strong>
-                        <div style="font-size:clamp(10px,0.9vw,12px); color:#a855f7;">
+                        <div style="font-size:clamp(10px,0.9vw,12px);color:#a855f7;">
                             ${partner.verified ? '<i class="fas fa-check-circle" style="color:#1e8b3c;"></i> Verified · ' : ''}
                             ${partner.matchPercentage}% match
                         </div>
                     </div>
-                    ${isPremiumUser() ? `<i class="fas fa-video" id="initCallBtn" style="color:#ec4899; font-size:clamp(18px,2vw,24px); cursor:pointer; margin-right:12px; flex-shrink:0;"></i>` : ''}
+                    ${isPremiumUser() ? `<i class="fas fa-video" id="initCallBtn" style="color:#ec4899;font-size:clamp(18px,2vw,24px);cursor:pointer;margin-right:12px;flex-shrink:0;"></i>` : ''}
                     <i class="fas fa-arrow-left" id="backToMatchesBtn" style="color:#6f6b8a;font-size:clamp(18px,2vw,24px);cursor:pointer;flex-shrink:0;"></i>
                 </div>
                 <div class="messages-box" id="chatMessagesBox" style="flex:1;">${messagesHtml}</div>
                 <div class="chat-input-area">
                     ${isPremiumUser() ? `
-                        <label style="color:#ec4899; cursor:pointer; font-size:clamp(16px,1.5vw,20px); padding: 0 4px; flex-shrink:0;">
+                        <label style="color:#ec4899;cursor:pointer;font-size:clamp(16px,1.5vw,20px);padding:0 4px;flex-shrink:0;">
                             <i class="fas fa-paperclip"></i>
                             <input type="file" id="chatMediaInput" accept="image/*,video/*" style="display:none;">
                         </label>
@@ -1114,10 +1459,9 @@
         if (isPremiumUser()) {
             document.getElementById("initCallBtn").onclick = () => initializeVideoCall(partnerId);
             document.getElementById("chatMediaInput").onchange = (e) => {
-                if(e.target.files.length > 0) processIncomingFile(e.target.files[0], partnerId);
+                if (e.target.files.length > 0) processIncomingFile(e.target.files[0], partnerId);
             };
         }
-
         const dispatchText = () => {
             const inp = document.getElementById("chatMessageInput");
             if (!inp.value.trim()) return;
@@ -1127,128 +1471,10 @@
             inp.value = "";
             renderChatScreen(partnerId);
         };
-
         document.getElementById("sendChatBtn").onclick = dispatchText;
-        document.getElementById("chatMessageInput").onkeydown = (e) => { if(e.key === "Enter") dispatchText(); };
-        
-        setTimeout(() => { const box = document.getElementById("chatMessagesBox"); if(box) box.scrollTop = box.scrollHeight; }, 50);
+        document.getElementById("chatMessageInput").onkeydown = (e) => { if (e.key === "Enter") dispatchText(); };
+        setTimeout(() => { const box = document.getElementById("chatMessagesBox"); if (box) box.scrollTop = box.scrollHeight; }, 50);
         attachModernCardStyles();
-    }
-
-    // ============================================================
-    // ENHANCED MATCHES WITH PRO FILTERS
-    // ============================================================
-    function renderMatchesTab() {
-        if (currentChatPartner) { renderChatScreen(currentChatPartner.id); return; }
-        const container = document.getElementById("appContent");
-        if (!appData.matchesList.length) { 
-            container.innerHTML = `<div class="modern-card" style="text-align:center;padding:60px 20px;"><i class="fas fa-heart-broken" style="font-size:52px;color:#ec4899;margin-bottom:12px;"></i><p style="color:white;">No active connections. Keep swiping!</p></div>`; 
-            attachModernCardStyles(); 
-            return; 
-        }
-        
-        let html = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-            <h3>Verified Fits (${appData.matchesList.length})</h3>
-            ${isPremiumUser() ? `<span style="background:rgba(236,72,153,0.15);padding:4px 12px;border-radius:60px;font-size:12px;color:var(--text-secondary);"><i class="fas fa-sliders-h"></i> Filter</span>` : ''}
-        </div>`;
-        
-        appData.matchesList.forEach(m => { 
-            html += `
-            <div class="modern-card match-item">
-                <div class="match-avatar" style="position:relative;">
-                    <img src="${m.photoURL}" loading="lazy">
-                    ${m.isOnline ? '<div style="position:absolute;bottom:2px;right:2px;width:10px;height:10px;background:#22c55e;border-radius:50%;border:2px solid #1a1a2e;"></div>' : ''}
-                </div>
-                <div class="match-info">
-                    <div class="match-name">
-                        ${m.name}, ${m.age} 
-                        <span class="match-percentage">${m.matchPercentage}%</span>
-                        ${m.verified ? '<span class="profile-verification" style="font-size:8px;"><i class="fas fa-check-circle"></i></span>' : ''}
-                        ${isPremiumUser() && m.interests ? `<span style="font-size:10px;color:var(--text-secondary);margin-left:4px;">${m.interests.slice(0,2).join(' · ')}</span>` : ''}
-                    </div>
-                    <div style="color:#b9b1e6;font-size:clamp(12px,1vw,14px);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${m.lastMessage.substring(0,40)}</div>
-                </div>
-                <button class="chat-btn" data-chatid="${m.id}"><i class="fas fa-comments"></i></button>
-            </div>`; 
-        });
-        container.innerHTML = html;
-        document.querySelectorAll(".chat-btn").forEach(btn => btn.onclick = () => renderChatScreen(btn.getAttribute("data-chatid")));
-        attachModernCardStyles();
-    }
-
-    // ============================================================
-    // ORIGINAL FUNCTIONS (Adapted)
-    // ============================================================
-    function initializeVideoCall(partnerId) {
-        const partner = appData.matchesList.find(m => m.id === partnerId);
-        if (!partner) return;
-
-        if (!isPremiumUser()) {
-            showToast("💎 Video calls require a Premium plan", "#ef4444");
-            return;
-        }
-
-        const container = document.getElementById("root");
-        const callOverlay = document.createElement("div");
-        callOverlay.className = "video-call-overlay";
-        callOverlay.id = "videoCallOverlay";
-        callOverlay.innerHTML = `
-            <video id="remoteVideoView" class="remote-video" autoplay playsinline src="https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-light-background-41712-large.mp4" loop muted></video>
-            <video id="localVideoPIP" class="local-video-pip" autoplay playsinline muted></video>
-            <div class="call-controls">
-                <button class="call-btn btn-mute" id="muteCallBtn"><i class="fas fa-microphone"></i></button>
-                <button class="call-btn btn-hangup" id="hangupCallBtn"><i class="fas fa-phone-slash"></i></button>
-            </div>
-        `;
-        container.appendChild(callOverlay);
-
-        const localPip = document.getElementById("localVideoPIP");
-        activeCallEngine = new CameraEngine(localPip);
-        
-        activeCallEngine.startStream().then(() => {
-            const remoteVid = document.getElementById("remoteVideoView");
-            remoteVid.play().catch(() => {});
-        }).catch(err => {
-            console.error("Call stream initialization rejected.", err);
-        });
-
-        document.getElementById("hangupCallBtn").onclick = () => {
-            if (activeCallEngine) { activeCallEngine.stopStream(); activeCallEngine = null; }
-            document.getElementById("videoCallOverlay").remove();
-            showToast("Call disconnected", "#ef4444");
-        };
-
-        let isMuted = false;
-        document.getElementById("muteCallBtn").onclick = () => {
-            isMuted = !isMuted;
-            if(activeCallEngine.localStream) {
-                activeCallEngine.localStream.getAudioTracks().forEach(t => t.enabled = !isMuted);
-            }
-            document.getElementById("muteCallBtn").innerHTML = isMuted ? `<i class="fas fa-microphone-slash"></i>` : `<i class="fas fa-microphone"></i>`;
-        };
-    }
-
-    function processIncomingFile(file, partnerId) {
-        if (!file) return;
-        const isVideo = file.type.startsWith("video/");
-        const isImage = file.type.startsWith("image/");
-        if (!isImage && !isVideo) { showToast("Unsupported format", "#ef4444"); return; }
-
-        const localBlobPointer = URL.createObjectURL(file);
-        const match = appData.matchesList.find(m => m.id === partnerId);
-        
-        if (match) {
-            match.chatMessages.push({
-                sender: "me",
-                time: "Just Now",
-                text: isVideo ? "[Shared a Video]" : "[Shared a Photo]",
-                attachment: localBlobPointer,
-                attachmentType: isVideo ? "video" : "image"
-            });
-            match.lastMessage = isVideo ? "🎥 Video asset shared" : "📷 Photographic asset shared";
-            saveUserData(currentSessionUser.id);
-            renderChatScreen(partnerId);
-        }
     }
 
     function renderLiveTab() {
@@ -1256,7 +1482,6 @@
         clearLiveInterval();
         const container = document.getElementById("appContent");
         container.innerHTML = `<div class="modern-card" style="padding:clamp(14px,2vw,24px);"><div class="live-video-wrapper"><video id="liveVideoElement" autoplay playsinline muted style="transform:scaleX(-1);"></video></div><div class="live-controls"><button id="startLiveBtn" class="live-btn"><i class="fas fa-play"></i> START BROADCAST</button><button id="stopLiveBtn" class="live-btn" style="background:#4a2e3a;"><i class="fas fa-stop"></i> TERMINATE</button></div><div id="liveStatusMsg" style="text-align:center;margin-top:clamp(10px,1.2vw,16px);color:white;font-size:clamp(13px,1.2vw,15px);">⚡ Ready to stream</div></div>`;
-        
         const startBtn = document.getElementById("startLiveBtn");
         const stopBtn = document.getElementById("stopLiveBtn");
         const statusSpan = document.getElementById("liveStatusMsg");
@@ -1267,16 +1492,15 @@
                 cameraEngineInstance = new CameraEngine("liveVideoElement");
                 await cameraEngineInstance.startStream();
                 let viewers = 42;
-                statusSpan.innerHTML = `<span style="background:#e11d48; padding:clamp(4px,0.6vw,8px) clamp(10px,1.2vw,16px); border-radius:60px;">🔴 LIVE · ${viewers} viewers</span>`;
+                statusSpan.innerHTML = `<span style="background:#e11d48;padding:clamp(4px,0.6vw,8px) clamp(10px,1.2vw,16px);border-radius:60px;">🔴 LIVE · ${viewers} viewers</span>`;
                 globalLiveViewerInterval = setInterval(() => {
                     if (cameraEngineInstance?.localStream) {
                         viewers += Math.floor(Math.random() * 4);
-                        statusSpan.innerHTML = `<span style="background:#e11d48; padding:clamp(4px,0.6vw,8px) clamp(10px,1.2vw,16px); border-radius:60px;">🔴 LIVE · ${viewers} viewers</span>`;
+                        statusSpan.innerHTML = `<span style="background:#e11d48;padding:clamp(4px,0.6vw,8px) clamp(10px,1.2vw,16px);border-radius:60px;">🔴 LIVE · ${viewers} viewers</span>`;
                     }
                 }, 4000);
             } catch (err) { statusSpan.innerHTML = "❌ Hardware tracking blocked."; }
         };
-        
         stopBtn.onclick = () => {
             if (cameraEngineInstance) { cameraEngineInstance.stopStream(); cameraEngineInstance = null; clearLiveInterval(); statusSpan.innerHTML = "⏹️ Transmission ended."; }
         };
@@ -1288,28 +1512,25 @@
         const container = document.getElementById("appContent");
         const avatarURL = appData.customUserPhotoURL || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80";
         const membership = getMembershipLevel();
-        
         container.innerHTML = `
             <div class="modern-card my-profile-card">
                 <div class="user-profile-photo"><img src="${avatarURL}" id="profileAvatar" loading="lazy"></div>
                 <h2 style="color:white;margin-top:clamp(6px,0.8vw,12px);font-size:clamp(20px,2.5vw,28px);">${user.name}, ${user.age}</h2>
                 <p style="color:#cbc3f0;font-size:clamp(13px,1.2vw,15px);margin-bottom:4px;">📍 ${user.country}</p>
-                <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+                <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
                     <span class="premium-badge" style="font-size:12px;">${membership.toUpperCase()}</span>
                     ${isBoostActive() ? '<span class="boost-indicator">🚀 Boosted</span>' : ''}
                     ${user.verified ? '<span class="profile-verification"><i class="fas fa-check-circle"></i> Verified</span>' : ''}
                 </div>
                 <div style="margin-bottom:clamp(12px,1.5vw,20px);">
                     <label class="upload-label"><i class="fas fa-camera"></i> Change Avatar <input type="file" id="profilePhotoFile" accept="image/*" style="display:none;"></label>
-                    <label class="upload-label" style="background:#2e2a3e;"><i class="fas fa-gem"></i> Upgrade <input type="button" onclick="activeTab='shop';renderCurrentTab();" style="display:none;"></label>
                 </div>
                 <button id="logoutBtn" style="background:#2e2a3e;border:1px solid #ec4899;padding:clamp(10px,1.2vw,14px);border-radius:60px;color:white;width:100%;cursor:pointer;font-weight:600;font-size:clamp(14px,1.2vw,16px);transition:all 0.2s ease;">
                     🚪 Close Account Session
                 </button>
             </div>`;
-        
         document.getElementById("profilePhotoFile").onchange = (e) => {
-            if(e.target.files[0]){
+            if (e.target.files[0]) {
                 if (appData.customUserPhotoURL) URL.revokeObjectURL(appData.customUserPhotoURL);
                 appData.customUserPhotoURL = URL.createObjectURL(e.target.files[0]);
                 saveUserData(currentSessionUser.id);
@@ -1320,29 +1541,91 @@
         attachModernCardStyles();
     }
 
+    function renderPremiumShop() {
+        const container = document.getElementById("appContent");
+        const membership = getMembershipLevel();
+        let html = `
+            <div style="margin-bottom:20px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <h3 style="color:white;">💎 Premium Plans</h3>
+                    <span class="boost-indicator">${isBoostActive() ? '🚀 Boost Active' : '📈 Boost Available'}</span>
+                </div>
+                <p style="color:var(--text-secondary);font-size:14px;margin-top:4px;">
+                    Current: ${membership.charAt(0).toUpperCase() + membership.slice(1)}
+                    ${membership !== 'free' ? '✓' : '— Upgrade for more features'}
+                </p>
+            </div>
+        `;
+        PremiumPackage.packages.forEach(pkg => {
+            const isActive = membership === pkg.id;
+            html += `
+                <div class="membership-card ${isActive ? 'pro' : ''}" style="border-color: ${isActive ? pkg.color : 'var(--panel-border)'};">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <div>
+                            <span style="color:white;font-weight:700;font-size:20px;">${pkg.name}</span>
+                            ${isActive ? '<span style="background:#00B841;color:white;padding:2px 10px;border-radius:60px;font-size:11px;font-weight:700;margin-left:8px;">ACTIVE</span>' : ''}
+                        </div>
+                        <div class="price">KES ${pkg.price} <span>/mo</span></div>
+                    </div>
+                    <ul>${pkg.features.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('')}</ul>
+                    ${!isActive ? `
+                        <button class="mpesa-pay-btn" onclick="showMpesaPayment('${pkg.id}')">
+                            <i class="fas fa-phone"></i> Pay with M-Pesa
+                        </button>
+                    ` : `
+                        <button style="background:#2e2a3e;border:1px solid #00B841;padding:14px;border-radius:60px;color:#00B841;font-weight:700;cursor:pointer;width:100%;">
+                            ✅ Active Plan
+                        </button>
+                    `}
+                </div>
+            `;
+        });
+        html += `
+            <div class="membership-card" style="border-color:rgba(251,191,36,0.3);">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <span style="color:white;font-weight:700;font-size:18px;">🚀 Profile Boost</span>
+                        ${isBoostActive() ? '<span style="background:#FBBF24;color:#000;padding:2px 10px;border-radius:60px;font-size:11px;font-weight:700;margin-left:8px;">ACTIVE</span>' : ''}
+                    </div>
+                </div>
+                <p style="color:var(--text-secondary);margin:8px 0;">Get 10x more visibility and matches</p>
+                ${!isBoostActive() ? `
+                    <button class="mpesa-pay-btn" onclick="applyBoost()" style="background:linear-gradient(135deg,#FBBF24,#F59E0B);color:#000;">
+                        <i class="fas fa-rocket"></i> Activate Boost
+                    </button>
+                ` : `
+                    <button style="background:#2e2a3e;border:1px solid #FBBF24;padding:14px;border-radius:60px;color:#FBBF24;font-weight:700;cursor:pointer;width:100%;">
+                        ⏳ Boost Active
+                    </button>
+                `}
+            </div>
+        `;
+        container.innerHTML = html;
+        attachModernCardStyles();
+    }
+
     // ============================================================
     // SWIPE GESTURES
     // ============================================================
-    let startX=0, currentX=0, isDragging=false;
+    let startX = 0, currentX = 0, isDragging = false;
     function attachSwipeEvents(card, profile) {
-        if(!card) return;
+        if (!card) return;
         const onMove = (e) => {
-            if(!isDragging) return;
+            if (!isDragging) return;
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             currentX = clientX - startX;
             card.style.transform = `translateX(${currentX}px) rotate(${currentX * 0.04}deg)`;
-            card.style.opacity = Math.max(0.3, 1 - Math.abs(currentX)/350);
+            card.style.opacity = Math.max(0.3, 1 - Math.abs(currentX) / 350);
         };
         const onEnd = () => {
-            if(!isDragging) return;
+            if (!isDragging) return;
             isDragging = false;
             document.removeEventListener("mousemove", onMove);
             document.removeEventListener("mouseup", onEnd);
             document.removeEventListener("touchmove", onMove);
             document.removeEventListener("touchend", onEnd);
-            
-            if(currentX > 130) likeProfile(profile);
-            else if(currentX < -130) passProfile(profile);
+            if (currentX > 130) likeProfile(profile);
+            else if (currentX < -130) passProfile(profile);
             else { card.style.transform = ""; card.style.opacity = ""; }
         };
         const onStart = (e) => {
@@ -1352,41 +1635,65 @@
             currentX = 0;
             document.addEventListener("mousemove", onMove);
             document.addEventListener("mouseup", onEnd);
-            document.addEventListener("touchmove", onMove, {passive:false});
+            document.addEventListener("touchmove", onMove, { passive: false });
             document.addEventListener("touchend", onEnd);
         };
         card.addEventListener("mousedown", onStart);
-        card.addEventListener("touchstart", onStart, {passive:false});
+        card.addEventListener("touchstart", onStart, { passive: false });
     }
 
     // ============================================================
     // NAVIGATION & RENDERING
     // ============================================================
     function renderCurrentTab() {
-        if(activeTab==="discover") renderDiscoverTab();
-        else if(activeTab==="matches") renderMatchesTab();
-        else if(activeTab==="live") renderLiveTab();
-        else if(activeTab==="profile") renderProfileTab();
-        else if(activeTab==="shop") renderPremiumShop();
-        document.querySelectorAll(".nav-item").forEach(item=>item.classList.toggle("nav-active",item.getAttribute("data-tab")===activeTab));
+        if (activeTab === "discover") renderDiscoverTab();
+        else if (activeTab === "matches") renderMatchesTab();
+        else if (activeTab === "live") renderLiveTab();
+        else if (activeTab === "profile") renderProfileTab();
+        else if (activeTab === "shop") renderPremiumShop();
+        document.querySelectorAll(".nav-item").forEach(item => item.classList.toggle("nav-active", item.getAttribute("data-tab") === activeTab));
         updateCoinUI();
     }
 
     function attachModernCardStyles() { window.uiEngineInstance?.observeCards(); }
-    function showToast(msg,bg){ const t=document.createElement("div"); t.innerText=msg; Object.assign(t.style,{position:"fixed",bottom:"90px",left:"50%",transform:"translateX(-50%)",backgroundColor:bg,padding:"10px 20px",borderRadius:"60px",color:"white",zIndex:"9999",fontSize:window.innerWidth < 480 ? "13px" : "15px",fontWeight:"600",boxShadow:"0 4px 20px rgba(0,0,0,0.4)"}); document.body.appendChild(t); setTimeout(()=>t.remove(),1800); }
-    function escapeHtml(str){ return str ? str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])) : ''; }
+
+    function showToast(msg, bg) {
+        const t = document.createElement("div");
+        t.innerText = msg;
+        Object.assign(t.style, {
+            position: "fixed",
+            bottom: "90px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: bg,
+            padding: "10px 20px",
+            borderRadius: "60px",
+            color: "white",
+            zIndex: "9999",
+            fontSize: window.innerWidth < 480 ? "13px" : "15px",
+            fontWeight: "600",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.4)"
+        });
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 1800);
+    }
+
+    function escapeHtml(str) { return str ? str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m)) : ''; }
 
     // ============================================================
     // UI ENGINE
     // ============================================================
     class UIEngine {
-        constructor() { this.initObserver(); this.initSpotlight(); }
-        initObserver() { this.observer = new IntersectionObserver((entries) => { entries.forEach((entry, idx) => { if (entry.isIntersecting) { setTimeout(() => entry.target.classList.add('is-visible'), idx * 50); this.observer.unobserve(entry.target); } }); }, { threshold: 0.05 }); }
-        initSpotlight() {
-            const attach = (card) => {
-                card.addEventListener('mousemove', (e) => { const rect = card.getBoundingClientRect(); card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`); card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`); });
-            };
-            new MutationObserver((mutations) => { mutations.forEach((m) => m.addedNodes.forEach((n) => { if (n.nodeType === 1 && n.matches('.modern-card')) attach(n); else if (n.nodeType === 1 && n.querySelectorAll) n.querySelectorAll('.modern-card').forEach(attach); })); }).observe(document.body, { childList: true, subtree: true });
+        constructor() { this.initObserver(); }
+        initObserver() {
+            this.observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, idx) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => entry.target.classList.add('is-visible'), idx * 50);
+                        this.observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.05 });
         }
         observeCards() { document.querySelectorAll('.modern-card').forEach(c => this.observer?.observe(c)); }
     }
@@ -1395,10 +1702,10 @@
     // AUTHENTICATION SCREEN
     // ============================================================
     function showAuthScreen() {
-        if(cameraEngineInstance) { cameraEngineInstance.stopStream(); cameraEngineInstance = null; clearLiveInterval(); }
+        if (cameraEngineInstance) { cameraEngineInstance.stopStream(); cameraEngineInstance = null; clearLiveInterval(); }
         const root = document.getElementById("root");
         root.innerHTML = `<div class="auth-container"><div class="auth-logo"><h1>FlameMatch</h1><p>Find your permanent flame 🔥</p></div><div id="authForm"><input type="email" id="authEmail" class="auth-input" placeholder="Email"><input type="password" id="authPassword" class="auth-input" placeholder="Password"><div id="authExtraFields" style="display:none;"><input type="text" id="authName" class="auth-input" placeholder="Full Name"><input type="number" id="authAge" class="auth-input" placeholder="Age"><select id="authCountry" class="auth-select"><option>United States</option><option>Canada</option><option>UK</option><option>Kenya</option><option>Nigeria</option><option>South Africa</option></select></div><button id="authSubmitBtn" class="auth-btn">Login Session</button><div class="auth-switch">New connection? <span id="toggleAuthMode">Register profile</span></div><div id="authError" class="auth-error"></div></div></div>`;
-        
+
         let isLogin = true;
         const extraDiv = document.getElementById("authExtraFields");
         const submitBtn = document.getElementById("authSubmitBtn");
@@ -1406,21 +1713,19 @@
         const errorDiv = document.getElementById("authError");
 
         toggle.onclick = () => { isLogin = !isLogin; extraDiv.style.display = isLogin ? "none" : "block"; submitBtn.innerText = isLogin ? "Login Session" : "Build Identity"; };
-        
+
         submitBtn.onclick = () => {
             const email = document.getElementById("authEmail").value.trim();
             const password = document.getElementById("authPassword").value.trim();
             if (isLogin) {
                 const res = login(email, password);
-                if (res.success) { saveSession(res.user); loadUserData(res.user.id); initMainApp(); }
-                else errorDiv.innerText = res.error;
+                if (res.success) { saveSession(res.user); loadUserData(res.user.id); initMainApp(); } else errorDiv.innerText = res.error;
             } else {
                 const name = document.getElementById("authName").value.trim();
                 const age = document.getElementById("authAge").value;
                 if (!name || !age || age < 18) { errorDiv.innerText = "Valid age (18+) required."; return; }
                 const res = signup(email, password, name, age, "Kenya");
-                if (res.success) { saveSession(res.user); loadUserData(res.user.id); initMainApp(); }
-                else errorDiv.innerText = res.error;
+                if (res.success) { saveSession(res.user); loadUserData(res.user.id); initMainApp(); } else errorDiv.innerText = res.error;
             }
         };
     }
@@ -1434,8 +1739,8 @@
             <div class="dating-app" id="datingAppContainer">
                 <div class="main-header">
                     <div class="logo-area"><h1>FlameMatch❤️‍🔥</h1></div>
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <span class="premium-badge" style="font-size:9px; background:${isPremiumUser() ? '#FBBF24' : '#4a4a5a'};">${getMembershipLevel().toUpperCase()}</span>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <span class="premium-badge" style="font-size:9px;background:${isPremiumUser() ? '#FBBF24' : '#4a4a5a'};">${getMembershipLevel().toUpperCase()}</span>
                         <div class="coin-badge"><i class="fas fa-gem"></i> <span id="coinAmount">0</span></div>
                     </div>
                 </div>
@@ -1449,18 +1754,16 @@
                 </div>
             </div>
         `;
-        
         window.uiEngineInstance = new UIEngine();
-        
         document.querySelectorAll(".nav-item").forEach(item => {
             item.onclick = () => {
                 const target = item.getAttribute("data-tab");
                 if (activeTab === "live" && target !== "live") { cameraEngineInstance?.stopStream(); cameraEngineInstance = null; clearLiveInterval(); }
-                activeTab = target; currentChatPartner = null;
+                activeTab = target;
+                currentChatPartner = null;
                 renderCurrentTab();
             };
         });
-        
         renderCurrentTab();
     }
 
