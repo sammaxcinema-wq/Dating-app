@@ -43,75 +43,6 @@
             perspective: 1000px;
         }
 
-        /* ===== GOOGLE AUTH ===== */
-        .google-auth-btn {
-            background: white;
-            border: none;
-            border-radius: 60px;
-            padding: 14px;
-            font-weight: 600;
-            font-size: clamp(14px, 1.5vw, 16px);
-            color: #3c4043;
-            cursor: pointer;
-            margin-top: 12px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            transition: all 0.2s ease;
-            font-family: var(--font-sans);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-        .google-auth-btn:hover { background: #f8f9fa; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .google-auth-btn:active { transform: scale(0.97); }
-        .google-auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-        .auth-divider {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 20px 0;
-            color: #6f6b8a;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        .auth-divider::before,
-        .auth-divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: rgba(236, 72, 153, 0.25);
-        }
-
-        .google-verified-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(66, 133, 244, 0.15);
-            color: #4285F4;
-            padding: 3px 10px;
-            border-radius: 60px;
-            font-size: 10px;
-            font-weight: 700;
-            border: 1px solid rgba(66, 133, 244, 0.3);
-        }
-
-        .verify-email-banner {
-            background: rgba(251, 191, 36, 0.15);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 12px;
-            color: var(--gold);
-        }
-        .verify-email-banner i { font-size: 18px; }
-
         /* ===== ADMIN PANEL ===== */
         .admin-panel {
             position: fixed;
@@ -318,6 +249,20 @@
         .auth-error { color: #ff8989; font-size: 13px; text-align: center; margin-top: 8px; }
         .auth-switch { text-align: center; margin-top: 24px; color: #b9b1e6; font-size: clamp(13px, 1.2vw, 15px); }
         .auth-switch span { color: #ec4899; cursor: pointer; font-weight: bold; }
+
+        .verify-email-banner {
+            background: rgba(251, 191, 36, 0.15);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--gold);
+        }
+        .verify-email-banner i { font-size: 18px; }
 
         .main-header {
             padding: clamp(8px, 1.5vw, 14px) clamp(16px, 2vw, 24px);
@@ -855,257 +800,20 @@
             * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
         }
     </style>
-
-    <!-- Google Identity Services SDK -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 <div id="root"></div>
 
 <script>
 // ============================================================
-// 1. CLASS DEFINITIONS (must be declared before instantiation)
+// 1. CLASS DEFINITIONS
 // ============================================================
-
-// -------- GOOGLE AUTH ENGINE --------
-class GoogleAuthEngine {
-    constructor() {
-        this.clientId = localStorage.getItem('flamematch_google_client_id') || '';
-        this.initialized = false;
-        this.currentUser = null;
-        this.verificationCallbacks = [];
-    }
-
-    setClientId(clientId) {
-        this.clientId = clientId;
-        if (clientId) localStorage.setItem('flamematch_google_client_id', clientId);
-    }
-
-    getClientId() {
-        return this.clientId || localStorage.getItem('flamematch_google_client_id') || '';
-    }
-
-    isConfigured() {
-        return !!this.getClientId();
-    }
-
-    decodeJWT(token) {
-        try {
-            const base64Url = token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(
-                atob(base64).split('').map(c =>
-                    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-                ).join('')
-            );
-            return JSON.parse(jsonPayload);
-        } catch (e) {
-            console.error('JWT decode error:', e);
-            return null;
-        }
-    }
-
-    async initialize() {
-        return new Promise((resolve) => {
-            if (!this.isConfigured()) { resolve(false); return; }
-
-            const checkGoogle = (attempts = 0) => {
-                if (typeof google !== 'undefined' && google.accounts) {
-                    try {
-                        google.accounts.id.initialize({
-                            client_id: this.getClientId(),
-                            callback: (response) => this.handleCredentialResponse(response),
-                            auto_select: false,
-                            cancel_on_tap_outside: true
-                        });
-                        this.initialized = true;
-                        resolve(true);
-                    } catch (e) {
-                        console.error('Google init error:', e);
-                        resolve(false);
-                    }
-                } else if (attempts < 20) {
-                    setTimeout(() => checkGoogle(attempts + 1), 250);
-                } else {
-                    resolve(false);
-                }
-            };
-            checkGoogle();
-        });
-    }
-
-    async handleCredentialResponse(response) {
-        try {
-            const payload = this.decodeJWT(response.credential);
-            if (!payload) throw new Error('Invalid Google credential');
-
-            if (payload.iss !== 'https://accounts.google.com' && payload.iss !== 'accounts.google.com') {
-                throw new Error('Invalid token issuer');
-            }
-            if (payload.exp * 1000 < Date.now()) {
-                throw new Error('Google token expired');
-            }
-
-            this.currentUser = {
-                credential: response.credential,
-                googleId: payload.sub,
-                email: payload.email,
-                emailVerified: payload.email_verified,
-                name: payload.name,
-                firstName: payload.given_name,
-                lastName: payload.family_name,
-                photoURL: payload.picture,
-                locale: payload.locale,
-                verifiedAt: new Date().toISOString()
-            };
-
-            this.verificationCallbacks.forEach(cb => cb(this.currentUser));
-            this.verificationCallbacks = [];
-            return this.currentUser;
-        } catch (error) {
-            console.error('Google auth error:', error);
-            this.verificationCallbacks.forEach(cb => cb(null, error));
-            this.verificationCallbacks = [];
-            throw error;
-        }
-    }
-
-    async signIn() {
-        if (!this.isConfigured()) {
-            throw new Error('Google Client ID not configured. Contact admin.');
-        }
-
-        if (!this.initialized) {
-            const ok = await this.initialize();
-            if (!ok) throw new Error('Failed to initialize Google Sign-In');
-        }
-
-        return new Promise((resolve, reject) => {
-            this.verificationCallbacks.push((user, error) => {
-                if (error) reject(error);
-                else resolve(user);
-            });
-
-            try {
-                google.accounts.id.prompt((notification) => {
-                    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                        this.fallbackPopup(resolve, reject);
-                    }
-                });
-
-                setTimeout(() => {
-                    if (this.verificationCallbacks.length > 0) {
-                        this.fallbackPopup(resolve, reject);
-                    }
-                }, 4000);
-            } catch (e) {
-                reject(e);
-            }
-        });
-    }
-
-    fallbackPopup(resolve, reject) {
-        const clientId = this.getClientId();
-        const redirectUri = window.location.origin;
-        const scope = 'openid email profile';
-        const nonce = Math.random().toString(36).substring(2);
-
-        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
-            `client_id=${encodeURIComponent(clientId)}` +
-            `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-            `&response_type=id_token` +
-            `&scope=${encodeURIComponent(scope)}` +
-            `&nonce=${nonce}` +
-            `&prompt=select_account`;
-
-        const popup = window.open(authUrl, 'google-signin',
-            'width=500,height=600,left=' + (screen.width/2 - 250) + ',top=' + (screen.height/2 - 300));
-
-        if (!popup) {
-            reject(new Error('Popup blocked. Please allow popups for this site.'));
-            return;
-        }
-
-        const messageListener = (event) => {
-            if (event.origin !== window.location.origin) return;
-            if (event.data && event.data.type === 'google_auth_success') {
-                window.removeEventListener('message', messageListener);
-                clearInterval(checkClosed);
-                try {
-                    const payload = this.decodeJWT(event.data.credential);
-                    this.currentUser = {
-                        credential: event.data.credential,
-                        googleId: payload.sub,
-                        email: payload.email,
-                        emailVerified: payload.email_verified,
-                        name: payload.name,
-                        firstName: payload.given_name,
-                        lastName: payload.family_name,
-                        photoURL: payload.picture,
-                        locale: payload.locale,
-                        verifiedAt: new Date().toISOString()
-                    };
-                    this.verificationCallbacks.forEach(cb => cb(this.currentUser));
-                    this.verificationCallbacks = [];
-                    resolve(this.currentUser);
-                } catch (e) {
-                    reject(e);
-                }
-            }
-        };
-        window.addEventListener('message', messageListener);
-
-        const checkClosed = setInterval(() => {
-            if (popup.closed) {
-                clearInterval(checkClosed);
-                window.removeEventListener('message', messageListener);
-                if (this.verificationCallbacks.length > 0) {
-                    this.verificationCallbacks.forEach(cb =>
-                        cb(null, new Error('Sign-in cancelled'))
-                    );
-                    this.verificationCallbacks = [];
-                    reject(new Error('Sign-in cancelled'));
-                }
-            }
-        }, 800);
-    }
-
-    renderButton(elementId, options = {}) {
-        if (!this.initialized) return;
-        try {
-            const el = document.getElementById(elementId);
-            if (!el) return;
-            google.accounts.id.renderButton(el, {
-                theme: 'filled_black',
-                size: 'large',
-                width: '320',
-                text: 'continue_with',
-                shape: 'pill',
-                logo_alignment: 'left',
-                ...options
-            });
-        } catch (e) {
-            console.error('Render button error:', e);
-        }
-    }
-
-    signOut() {
-        try {
-            if (typeof google !== 'undefined' && google.accounts) {
-                google.accounts.id.disableAutoSelect();
-            }
-        } catch (e) {}
-        this.currentUser = null;
-    }
-}
 
 // -------- ADMIN KEY MANAGER --------
 class AdminKeyManager {
     constructor() {
         this.storageKey = 'flamematch_admin_config';
-        this.googleClientKey = 'flamematch_google_client_id';
         this.apiKey = null;
-        this.googleClientId = null;
         this.isConfigured = false;
         this.loadConfig();
     }
@@ -1116,30 +824,22 @@ class AdminKeyManager {
             if (config) {
                 const parsed = JSON.parse(config);
                 this.apiKey = parsed.apiKey;
-                this.googleClientId = parsed.googleClientId;
                 this.isConfigured = parsed.isConfigured || false;
             }
-            const googleId = localStorage.getItem(this.googleClientKey);
-            if (googleId) this.googleClientId = googleId;
         } catch (e) {
             console.error('Failed to load admin config:', e);
         }
     }
 
-    saveConfig(apiKey, googleClientId) {
+    saveConfig(apiKey) {
         try {
             const config = {
-                apiKey: apiKey || this.apiKey,
-                googleClientId: googleClientId || this.googleClientId,
+                apiKey: apiKey,
                 isConfigured: true,
                 configuredAt: new Date().toISOString()
             };
             localStorage.setItem(this.storageKey, JSON.stringify(config));
-            if (googleClientId) {
-                localStorage.setItem(this.googleClientKey, googleClientId);
-                this.googleClientId = googleClientId;
-            }
-            if (apiKey) this.apiKey = apiKey;
+            this.apiKey = apiKey;
             this.isConfigured = true;
             return true;
         } catch (e) {
@@ -1151,9 +851,7 @@ class AdminKeyManager {
     resetConfig() {
         try {
             localStorage.removeItem(this.storageKey);
-            localStorage.removeItem(this.googleClientKey);
             this.apiKey = null;
-            this.googleClientId = null;
             this.isConfigured = false;
             return true;
         } catch (e) {
@@ -1163,9 +861,7 @@ class AdminKeyManager {
     }
 
     getApiKey() { return this.apiKey; }
-    getGoogleClientId() { return this.googleClientId || localStorage.getItem(this.googleClientKey); }
     isApiConfigured() { return !!this.apiKey; }
-    isGoogleConfigured() { return !!this.getGoogleClientId(); }
 
     initAdminUI() {
         if (document.getElementById('adminPanel')) return;
@@ -1180,11 +876,7 @@ class AdminKeyManager {
                     <label>🔑 M-Pesa API Secret Key</label>
                     <input type="password" id="adminApiKeyInput" placeholder="Enter M-Pesa API Key" autocomplete="off">
                 </div>
-                <div class="admin-input-group">
-                    <label>🔐 Google OAuth Client ID</label>
-                    <input type="text" id="adminGoogleIdInput" placeholder="xxxxx.apps.googleusercontent.com" autocomplete="off">
-                </div>
-                <div id="adminStatusMsg" class="admin-status-msg error">⚠️ Configure keys to enable features</div>
+                <div id="adminStatusMsg" class="admin-status-msg error">⚠️ Configure key to enable payments</div>
                 <div class="admin-actions">
                     <button class="admin-save-btn" id="adminSaveBtn"><i class="fas fa-save"></i> Save</button>
                     <button class="admin-reset-btn" id="adminResetBtn"><i class="fas fa-trash"></i> Reset</button>
@@ -1202,7 +894,7 @@ class AdminKeyManager {
         this.attachEvents();
         this.updateUI();
 
-        if (this.isApiConfigured() && this.isGoogleConfigured()) {
+        if (this.isApiConfigured()) {
             this.hideAdminPanel();
         }
     }
@@ -1213,7 +905,6 @@ class AdminKeyManager {
         const saveBtn = document.getElementById('adminSaveBtn');
         const resetBtn = document.getElementById('adminResetBtn');
         const apiKeyInput = document.getElementById('adminApiKeyInput');
-        const googleIdInput = document.getElementById('adminGoogleIdInput');
 
         toggleBtn?.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -1223,37 +914,21 @@ class AdminKeyManager {
 
         saveBtn?.addEventListener('click', () => {
             const apiKey = apiKeyInput.value.trim();
-            const googleId = googleIdInput.value.trim();
 
-            if (!apiKey && !googleId) {
-                this.showStatus('⚠️ Enter at least one key', 'error');
+            if (!apiKey) {
+                this.showStatus('⚠️ Enter an API key', 'error');
                 return;
             }
-            if (apiKey && apiKey.length < 8) {
+            if (apiKey.length < 8) {
                 this.showStatus('⚠️ API key too short (min 8 chars)', 'error');
                 return;
             }
-            if (googleId && !googleId.includes('.apps.googleusercontent.com')) {
-                this.showStatus('⚠️ Invalid Google Client ID format', 'error');
-                return;
-            }
 
-            const saved = this.saveConfig(apiKey, googleId);
+            const saved = this.saveConfig(apiKey);
             if (saved) {
                 this.showStatus('✅ Configuration saved! Auto-hiding...', 'success');
                 apiKeyInput.value = '';
-                googleIdInput.value = '';
-
                 if (window.api) window.api.setApiKey(this.apiKey);
-                if (window.googleAuth) {
-                    if (this.googleClientId) window.googleAuth.setClientId(this.googleClientId);
-                    window.googleAuth.initialize().then(() => {
-                        if (typeof window.reinitializeGoogleButton === 'function') {
-                            window.reinitializeGoogleButton();
-                        }
-                    });
-                }
-
                 setTimeout(() => this.hideAdminPanel(), 1500);
             } else {
                 this.showStatus('❌ Failed to save configuration', 'error');
@@ -1261,7 +936,7 @@ class AdminKeyManager {
         });
 
         resetBtn?.addEventListener('click', () => {
-            if (confirm('⚠️ Reset all API keys? This will disable M-Pesa and Google Auth.')) {
+            if (confirm('⚠️ Reset API key? This will disable M-Pesa payments.')) {
                 this.resetConfig();
                 if (window.api) window.api.setApiKey(null);
                 this.updateUI();
@@ -1271,9 +946,6 @@ class AdminKeyManager {
         });
 
         apiKeyInput?.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') googleIdInput?.focus();
-        });
-        googleIdInput?.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') saveBtn?.click();
         });
 
@@ -1296,21 +968,12 @@ class AdminKeyManager {
     updateUI() {
         const statusBadge = document.getElementById('adminStatusBadge');
         const apiKeyInput = document.getElementById('adminApiKeyInput');
-        const googleIdInput = document.getElementById('adminGoogleIdInput');
-
         const apiOk = this.isApiConfigured();
-        const googleOk = this.isGoogleConfigured();
-        const allOk = apiOk && googleOk;
 
         if (statusBadge) {
-            if (allOk) {
-                statusBadge.textContent = '✅ All Set';
+            if (apiOk) {
+                statusBadge.textContent = '✅ Configured';
                 statusBadge.className = 'status-badge configured';
-            } else if (apiOk || googleOk) {
-                statusBadge.textContent = '⚙️ Partial';
-                statusBadge.className = 'status-badge';
-                statusBadge.style.background = '#FBBF24';
-                statusBadge.style.color = '#000';
             } else {
                 statusBadge.textContent = '⚠️ Not Setup';
                 statusBadge.className = 'status-badge not-configured';
@@ -1320,12 +983,9 @@ class AdminKeyManager {
         if (apiKeyInput) {
             apiKeyInput.placeholder = apiOk ? '•••••••••••• (configured)' : 'Enter M-Pesa API Key';
         }
-        if (googleIdInput) {
-            googleIdInput.value = this.getGoogleClientId() || '';
-        }
 
         const toggleBtn = document.getElementById('adminToggleBtn');
-        if (toggleBtn && allOk) {
+        if (toggleBtn && apiOk) {
             toggleBtn.innerHTML = '<i class="fas fa-check-circle" style="color:#00B841;"></i> <span>Ready</span>';
             toggleBtn.style.background = 'rgba(0, 184, 65, 0.15)';
             toggleBtn.style.border = '1px solid rgba(0, 184, 65, 0.3)';
@@ -1401,18 +1061,6 @@ class APIService {
         const response = await this.request('/auth/register', {
             method: 'POST',
             body: JSON.stringify(userData)
-        });
-        if (response.token) {
-            this.token = response.token;
-            localStorage.setItem('flamematch_token', response.token);
-        }
-        return response;
-    }
-
-    async googleLogin(credential) {
-        const response = await this.request('/auth/google', {
-            method: 'POST',
-            body: JSON.stringify({ credential })
         });
         if (response.token) {
             this.token = response.token;
@@ -1603,20 +1251,17 @@ class UIEngine {
 }
 
 // ============================================================
-// 2. INSTANTIATE SERVICES (after all classes are defined)
+// 2. INSTANTIATE SERVICES
 // ============================================================
 const api = new APIService();
-const googleAuth = new GoogleAuthEngine();
 const adminManager = new AdminKeyManager();
 const mpesaEngine = new MpesaPaymentEngine(api);
 
-// Wire up saved keys into services
+// Wire up saved API key
 if (adminManager.isApiConfigured()) api.setApiKey(adminManager.getApiKey());
-if (adminManager.isGoogleConfigured()) googleAuth.setClientId(adminManager.getGoogleClientId());
 
 // Expose to window
 window.api = api;
-window.googleAuth = googleAuth;
 window.adminManager = adminManager;
 window.uiEngineInstance = new UIEngine();
 
@@ -2126,11 +1771,10 @@ function renderProfileTab() {
     const container = document.getElementById("appContent");
     const avatarURL = appData.customUserPhotoURL || user?.photoURL || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80";
     const membership = getMembershipLevel();
-    const isGoogleUser = user?.googleId || user?.authProvider === 'google';
 
     container.innerHTML = `
         <div class="modern-card my-profile-card">
-            ${user && !user.emailVerified && !isGoogleUser ? `
+            ${user && !user.emailVerified ? `
                 <div class="verify-email-banner">
                     <i class="fas fa-exclamation-triangle"></i>
                     <div style="flex:1;">Your email is not verified. Some features may be limited.</div>
@@ -2143,7 +1787,6 @@ function renderProfileTab() {
             <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
                 <span class="premium-badge" style="font-size:12px;">${membership.toUpperCase()}</span>
                 ${isBoostActive() ? '<span class="boost-indicator">🚀 Boosted</span>' : ''}
-                ${isGoogleUser ? '<span class="google-verified-badge"><i class="fab fa-google"></i> Google Verified</span>' : ''}
                 ${user?.verified ? '<span class="profile-verification"><i class="fas fa-check-circle"></i> Verified</span>' : ''}
             </div>
             <div style="margin-bottom:clamp(12px,1.5vw,20px);">
@@ -2160,7 +1803,6 @@ function renderProfileTab() {
         }
     };
     document.getElementById("logoutBtn").onclick = async () => {
-        googleAuth.signOut();
         await api.logout();
         currentSessionUser = null;
         showAuthScreen();
@@ -2265,18 +1907,6 @@ function renderCurrentTab() {
 // ============================================================
 // 11. AUTH SCREEN
 // ============================================================
-window.reinitializeGoogleButton = function() {
-    const container = document.getElementById('googleBtnContainer');
-    if (!container) return;
-    if (!googleAuth.isConfigured()) return;
-    googleAuth.initialize().then(ok => {
-        if (ok) {
-            container.innerHTML = ''; // clear first
-            googleAuth.renderButton('googleBtnContainer');
-        }
-    });
-};
-
 function showAuthScreen() {
     if (cameraEngineInstance) { cameraEngineInstance.stopStream(); cameraEngineInstance = null; clearLiveInterval(); }
     const root = document.getElementById("root");
@@ -2295,14 +1925,6 @@ function showAuthScreen() {
                     </select>
                 </div>
                 <button id="authSubmitBtn" class="auth-btn">Login Session</button>
-
-                <div class="auth-divider">or continue with</div>
-
-                <div id="googleBtnContainer" style="display:flex;justify-content:center;min-height:44px;"></div>
-                <button class="google-auth-btn" id="googleAuthFallbackBtn" style="display:none;">
-                    <i class="fab fa-google" style="color:#4285F4;font-size:18px;"></i> Continue with Google
-                </button>
-
                 <div class="auth-switch">New here? <span id="toggleAuthMode">Create account</span></div>
                 <div id="authError" class="auth-error"></div>
             </div>
@@ -2313,8 +1935,6 @@ function showAuthScreen() {
     const submitBtn = document.getElementById("authSubmitBtn");
     const toggle = document.getElementById("toggleAuthMode");
     const errorDiv = document.getElementById("authError");
-    const googleFallbackBtn = document.getElementById("googleAuthFallbackBtn");
-    const googleBtnContainer = document.getElementById("googleBtnContainer");
 
     toggle.onclick = () => {
         isLogin = !isLogin;
@@ -2368,70 +1988,6 @@ function showAuthScreen() {
             submitBtn.innerText = isLogin ? "Login Session" : "Create Account";
         }
     };
-
-    const handleGoogleSignIn = async () => {
-        try {
-            errorDiv.innerText = '';
-            const user = await googleAuth.signIn();
-            if (!user) throw new Error('Google sign-in failed');
-
-            try {
-                const response = await api.googleLogin(user.credential || JSON.stringify(user));
-                if (response.success) {
-                    currentSessionUser = response.user;
-                    localStorage.setItem('flamematch_session_pro', JSON.stringify(response.user));
-                    loadUserData(response.user.id);
-                    initMainApp();
-                    return;
-                }
-            } catch (apiError) {
-                console.warn('Backend Google auth failed, using local session:', apiError);
-            }
-
-            // Local fallback session
-            currentSessionUser = {
-                id: `google_${user.googleId}`,
-                email: user.email,
-                name: user.name,
-                age: 25,
-                country: 'Kenya',
-                photoURL: user.photoURL,
-                googleId: user.googleId,
-                emailVerified: user.emailVerified,
-                authProvider: 'google',
-                membership: 'free',
-                coins: 450,
-                verified: true
-            };
-            localStorage.setItem('flamematch_session_pro', JSON.stringify(currentSessionUser));
-            loadUserData(currentSessionUser.id);
-            showToast(`✅ Welcome, ${user.name}!`, '#4285F4');
-            initMainApp();
-        } catch (error) {
-            errorDiv.innerText = error.message || 'Google sign-in failed';
-        }
-    };
-
-    if (googleAuth.isConfigured()) {
-        googleAuth.initialize().then(ok => {
-            if (ok) {
-                try {
-                    googleAuth.renderButton('googleBtnContainer', { width: '320' });
-                } catch (e) {
-                    googleFallbackBtn.style.display = 'flex';
-                }
-            } else {
-                googleFallbackBtn.style.display = 'flex';
-            }
-        });
-        googleFallbackBtn.onclick = handleGoogleSignIn;
-    } else {
-        googleBtnContainer.innerHTML = `
-            <div style="text-align:center;padding:12px;color:#6f6b8a;font-size:12px;width:100%;">
-                <i class="fas fa-info-circle"></i> Google Sign-In not configured<br>
-                <span style="font-size:10px;opacity:0.7;">Contact admin to enable</span>
-            </div>`;
-    }
 }
 
 // ============================================================
@@ -2494,10 +2050,6 @@ async function initMainApp() {
         adminManager.initAdminUI();
     } catch (e) {
         console.error('Admin UI init error:', e);
-    }
-
-    if (googleAuth.isConfigured()) {
-        await googleAuth.initialize();
     }
 
     const storedSession = localStorage.getItem('flamematch_session_pro');
