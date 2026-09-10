@@ -13,9 +13,7 @@
             --bg-gradient: radial-gradient(circle at 30% 10%, #0b0918, #010002);
             --panel-bg: rgba(25, 24, 38, 0.85);
             --panel-border: rgba(236, 72, 153, 0.25);
-            --text-primary: #f8fafc;
             --text-secondary: #cbc3f0;
-            --accent-color: #ec4899;
             --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
             --card-radius: 48px;
             --app-max-width: 480px;
@@ -32,7 +30,7 @@
             min-height: 100vh; min-height: 100dvh; padding: 20px;
         }
 
-        /* ===== ADMIN PANEL ===== */
+        /* ADMIN PANEL */
         .admin-panel {
             position: fixed; bottom: 80px; right: 20px; z-index: 9998;
             background: rgba(10, 10, 18, 0.98); backdrop-filter: blur(20px);
@@ -83,7 +81,20 @@
         .admin-security-hint { font-size: 10px; color: #4a4a5a; display: flex; align-items: center; gap: 4px; margin-top: 6px; }
         .admin-security-hint i { color: #fbbf24; font-size: 12px; }
 
-        /* ===== APP ===== */
+        /* CONNECTION STATUS */
+        .conn-status {
+            position: fixed; top: 0; left: 0; right: 0;
+            padding: 6px; text-align: center; font-size: 11px;
+            font-weight: 700; z-index: 99998;
+            transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .conn-status.hidden { transform: translateY(-100%); }
+        .conn-status.checking { background: linear-gradient(135deg, #FBBF24, #F59E0B); color: #000; }
+        .conn-status.online { background: linear-gradient(135deg, #00B841, #008F3A); color: white; }
+        .conn-status.offline { background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; }
+
+        /* APP */
         .dating-app {
             max-width: var(--app-max-width); width: 100%;
             height: min(90vh, var(--app-max-height)); min-height: var(--app-min-height);
@@ -126,6 +137,21 @@
         .auth-error { color: #ff8989; font-size: 13px; text-align: center; margin-top: 8px; }
         .auth-switch { text-align: center; margin-top: 24px; color: #b9b1e6; font-size: clamp(13px, 1.2vw, 15px); }
         .auth-switch span { color: #ec4899; cursor: pointer; font-weight: bold; }
+
+        .config-warning {
+            background: rgba(251, 191, 36, 0.15);
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            border-radius: 16px; padding: 14px; margin-bottom: 16px;
+            display: flex; align-items: flex-start; gap: 10px;
+            font-size: 12px; color: var(--gold); line-height: 1.5;
+        }
+        .config-warning i { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+        .config-warning button {
+            background: var(--admin-gradient); border: none; color: white;
+            padding: 8px 14px; border-radius: 60px; font-weight: 700;
+            font-size: 12px; cursor: pointer; margin-top: 8px;
+            font-family: var(--font-sans);
+        }
 
         .main-header {
             padding: clamp(8px, 1.5vw, 14px) clamp(16px, 2vw, 24px);
@@ -460,7 +486,79 @@
 
 <script>
 // ============================================================
-// ADMIN KEY MANAGER — Backend URL + M-Pesa API Key
+// NOTE: NO KEYS, URLs, OR TOKENS ARE HARDCODED IN THIS FILE.
+// Everything is entered at runtime via the Admin Panel and
+// stored only in the user's own browser localStorage.
+// ============================================================
+
+// ============================================================
+// CONNECTION MONITOR
+// ============================================================
+class ConnectionMonitor {
+    constructor() {
+        this.status = 'unknown';
+        this.bar = null;
+    }
+
+    init() {
+        if (document.getElementById('connStatus')) return;
+        const bar = document.createElement('div');
+        bar.id = 'connStatus';
+        bar.className = 'conn-status hidden';
+        bar.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> <span>Checking backend...</span>';
+        document.body.appendChild(bar);
+        this.bar = bar;
+    }
+
+    show(status, message) {
+        if (!this.bar) return;
+        this.status = status;
+        this.bar.className = `conn-status ${status}`;
+        const icon = status === 'checking' ? 'fa-circle-notch fa-spin'
+                   : status === 'online' ? 'fa-check-circle'
+                   : 'fa-exclamation-triangle';
+        this.bar.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
+    }
+
+    hide() {
+        if (this.bar) this.bar.className = 'conn-status hidden';
+    }
+
+    async checkHealth() {
+        const baseURL = window.api?.getBaseURL();
+        if (!baseURL) {
+            this.show('offline', 'Backend not configured — tap the shield icon to set up');
+            setTimeout(() => this.hide(), 5000);
+            return false;
+        }
+
+        this.show('checking', 'Connecting to backend...');
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
+            const response = await fetch(`${baseURL}/api/health`, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            if (response.ok) {
+                const data = await response.json();
+                this.show('online', `Backend online · ${data.users || 0} users · M-Pesa: ${data.mpesaMode || 'ready'}`);
+                setTimeout(() => this.hide(), 3500);
+                return true;
+            } else {
+                this.show('offline', `Backend error (${response.status}) — check URL`);
+                setTimeout(() => this.hide(), 5000);
+                return false;
+            }
+        } catch (e) {
+            this.show('offline', `Cannot reach backend — ${e.message}`);
+            setTimeout(() => this.hide(), 6000);
+            return false;
+        }
+    }
+}
+
+// ============================================================
+// ADMIN KEY MANAGER
 // ============================================================
 class AdminKeyManager {
     constructor() {
@@ -560,7 +658,7 @@ class AdminKeyManager {
             else panel.classList.add('hidden');
         });
 
-        saveBtn?.addEventListener('click', () => {
+        saveBtn?.addEventListener('click', async () => {
             const apiKey = apiKeyInput.value.trim();
             const backendUrl = backendInput.value.trim();
 
@@ -572,6 +670,23 @@ class AdminKeyManager {
                 return;
             }
 
+            this.showStatus('⏳ Testing connection...', 'info');
+            try {
+                const cleanUrl = backendUrl.replace(/\/+$/, '');
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+                const res = await fetch(`${cleanUrl}/api/health`, { signal: controller.signal });
+                clearTimeout(timeoutId);
+
+                if (!res.ok) {
+                    this.showStatus(`⚠️ Backend returned ${res.status} — check URL`, 'error');
+                    return;
+                }
+            } catch (e) {
+                this.showStatus(`⚠️ Cannot reach backend — ${e.message}`, 'error');
+                return;
+            }
+
             if (this.saveConfig(apiKey, backendUrl)) {
                 this.showStatus('✅ Saved! Auto-hiding...', 'success');
                 apiKeyInput.value = '';
@@ -579,7 +694,11 @@ class AdminKeyManager {
                     window.api.setApiKey(this.apiKey);
                     window.api.setBaseURL(this.backendUrl);
                 }
+                window.connectionMonitor?.checkHealth();
                 setTimeout(() => this.hideAdminPanel(), 1500);
+                if (!currentSessionUser) {
+                    setTimeout(() => showAuthScreen(), 1800);
+                }
             }
         });
 
@@ -644,7 +763,6 @@ class AdminKeyManager {
             toggleBtn.style.background = 'rgba(0, 184, 65, 0.15)';
             toggleBtn.style.border = '1px solid rgba(0, 184, 65, 0.3)';
             toggleBtn.style.color = '#00B841';
-            setTimeout(() => toggleBtn.classList.add('hidden'), 4000);
         }
     }
 
@@ -661,11 +779,11 @@ class AdminKeyManager {
 }
 
 // ============================================================
-// API SERVICE — Real backend
+// API SERVICE
 // ============================================================
 class APIService {
     constructor() {
-        this.baseURL = localStorage.getItem('flamematch_backend_url') || '';
+        this.baseURL = '';
         this.token = localStorage.getItem('flamematch_token');
         this.apiKey = null;
     }
@@ -674,13 +792,11 @@ class APIService {
     getApiKey() { return this.apiKey; }
     setBaseURL(url) {
         this.baseURL = url ? url.replace(/\/+$/, '') : '';
-        if (url) localStorage.setItem('flamematch_backend_url', this.baseURL);
-        else localStorage.removeItem('flamematch_backend_url');
     }
     getBaseURL() { return this.baseURL; }
 
     async request(endpoint, options = {}) {
-        if (!this.baseURL) throw new Error('Backend not configured. Contact admin.');
+        if (!this.baseURL) throw new Error('Backend not configured. Tap the shield icon to set it up.');
 
         const headers = { 'Content-Type': 'application/json', ...options.headers };
         if (this.apiKey) headers['X-API-Key'] = this.apiKey;
@@ -688,8 +804,14 @@ class APIService {
 
         let response;
         try {
-            response = await fetch(`${this.baseURL}${endpoint}`, { ...options, headers });
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
+            response = await fetch(`${this.baseURL}${endpoint}`, { ...options, headers, signal: controller.signal });
+            clearTimeout(timeoutId);
         } catch (networkError) {
+            if (networkError.name === 'AbortError') {
+                throw new Error('Request timeout — backend may be slow or unreachable.');
+            }
             throw new Error('Cannot reach backend. Check URL and server status.');
         }
 
@@ -905,12 +1027,15 @@ class UIEngine {
 const api = new APIService();
 const adminManager = new AdminKeyManager();
 const mpesaEngine = new MpesaPaymentEngine(api);
+const connectionMonitor = new ConnectionMonitor();
 
+// Wire saved config (from localStorage) into the API service
 if (adminManager.isApiConfigured()) api.setApiKey(adminManager.getApiKey());
 if (adminManager.isBackendConfigured()) api.setBaseURL(adminManager.getBackendUrl());
 
 window.api = api;
 window.adminManager = adminManager;
+window.connectionMonitor = connectionMonitor;
 window.uiEngineInstance = new UIEngine();
 
 // ============================================================
@@ -1105,7 +1230,7 @@ function showMpesaPayment(packageId) {
     const backendOk = api.getBaseURL();
 
     if (!apiKeyOk || !backendOk) {
-        showToast('⚠️ Payment not configured. Contact admin.', '#ef4444');
+        showToast('⚠️ Payment not configured. Tap shield icon.', '#ef4444');
         return;
     }
 
@@ -1487,7 +1612,7 @@ function renderPremiumShop() {
             ${!fullyConfigured ? `
                 <div class="verify-email-banner" style="margin-top:8px;">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <div>⚠️ M-Pesa not configured. Contact admin to enable payments.</div>
+                    <div>⚠️ M-Pesa not configured. Tap the shield icon to set up.</div>
                 </div>` : ''}
         </div>`;
 
@@ -1580,9 +1705,25 @@ function renderCurrentTab() {
 function showAuthScreen() {
     if (cameraEngineInstance) { cameraEngineInstance.stopStream(); cameraEngineInstance = null; clearLiveInterval(); }
     const root = document.getElementById("root");
+    const backendOk = !!api.getBaseURL();
+
     root.innerHTML = `
         <div class="auth-container">
             <div class="auth-logo"><h1>FlameMatch</h1><p>Find your permanent flame 🔥</p></div>
+            ${!backendOk ? `
+                <div class="config-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div style="flex:1;">
+                        <strong>Backend not configured.</strong><br>
+                        Tap the shield icon (bottom-right) and enter:
+                        <ul style="margin:6px 0 0 16px;font-size:11px;">
+                            <li>Backend API URL (from Vercel)</li>
+                            <li>Admin API Key</li>
+                        </ul>
+                        <button id="openAdminBtn"><i class="fas fa-shield-alt"></i> Open Admin Panel</button>
+                    </div>
+                </div>
+            ` : ''}
             <div id="authForm">
                 <input type="email" id="authEmail" class="auth-input" placeholder="Email">
                 <input type="password" id="authPassword" class="auth-input" placeholder="Password">
@@ -1605,11 +1746,11 @@ function showAuthScreen() {
     const submitBtn = document.getElementById("authSubmitBtn");
     const toggle = document.getElementById("toggleAuthMode");
     const errorDiv = document.getElementById("authError");
+    const openAdminBtn = document.getElementById("openAdminBtn");
 
-    if (!api.getBaseURL()) {
-        errorDiv.innerText = 'Backend not configured. Contact admin.';
-        errorDiv.style.color = '#fbbf24';
-    }
+    openAdminBtn?.addEventListener('click', () => {
+        adminManager.showAdminPanel();
+    });
 
     toggle.onclick = () => {
         isLogin = !isLogin;
@@ -1624,8 +1765,13 @@ function showAuthScreen() {
         errorDiv.style.color = '#ff8989';
 
         if (!api.getBaseURL()) {
-            errorDiv.innerText = 'Backend not configured. Contact admin.';
+            errorDiv.innerText = 'Backend not configured. Tap shield icon.';
             errorDiv.style.color = '#fbbf24';
+            return;
+        }
+
+        if (!email || !password) {
+            errorDiv.innerText = 'Enter email and password';
             return;
         }
 
@@ -1726,7 +1872,12 @@ async function initMainApp() {
 // BOOTSTRAP
 // ============================================================
 (async function bootstrap() {
+    connectionMonitor.init();
     try { adminManager.initAdminUI(); } catch (e) { console.error('Admin UI error:', e); }
+
+    if (api.getBaseURL()) {
+        await connectionMonitor.checkHealth();
+    }
 
     const storedSession = localStorage.getItem('flamematch_session_pro');
     if (storedSession && api.getBaseURL()) {
