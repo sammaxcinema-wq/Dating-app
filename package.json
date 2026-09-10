@@ -1,0 +1,19 @@
+{
+  "name": "flamematch-backend",
+  "version": "1.0.0",
+  "description": "FlameMatch Pro backend with Paystack integration",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "axios": "^1.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
