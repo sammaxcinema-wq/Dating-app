@@ -7,12 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         :root {
             --bg-gradient: radial-gradient(circle at 30% 10%, #0b0918, #010002);
@@ -34,215 +29,105 @@
         body {
             background: var(--bg-gradient);
             font-family: var(--font-sans);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            min-height: 100dvh;
-            padding: 20px;
-            perspective: 1000px;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; min-height: 100dvh; padding: 20px; perspective: 1000px;
         }
 
-        /* ===== ADMIN PANEL ===== */
+        /* Demo mode banner */
+        .demo-banner {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: linear-gradient(135deg, #FBBF24, #F59E0B);
+            color: #000; text-align: center; padding: 6px;
+            font-size: 11px; font-weight: 700; z-index: 99999;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+
         .admin-panel {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            z-index: 9998;
-            background: rgba(10, 10, 18, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(236, 72, 153, 0.3);
-            border-radius: 20px;
-            padding: 16px 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-            max-width: 340px;
-            width: calc(100% - 40px);
+            position: fixed; bottom: 80px; right: 20px; z-index: 9998;
+            background: rgba(10, 10, 18, 0.95); backdrop-filter: blur(20px);
+            border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 20px;
+            padding: 16px 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            max-width: 340px; width: calc(100% - 40px);
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .admin-panel.hidden {
-            transform: translateY(calc(100% + 30px));
-            opacity: 0;
-            pointer-events: none;
-        }
+        .admin-panel.hidden { transform: translateY(calc(100% + 30px)); opacity: 0; pointer-events: none; }
         .admin-toggle-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 9999;
-            background: var(--admin-gradient);
-            border: none;
-            padding: 12px 18px;
-            border-radius: 60px;
-            color: white;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+            background: var(--admin-gradient); border: none; padding: 12px 18px;
+            border-radius: 60px; color: white; font-weight: 700; font-size: 13px;
+            cursor: pointer; box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;
             font-family: var(--font-sans);
         }
         .admin-toggle-btn:active { transform: scale(0.95); }
         .admin-toggle-btn.hidden { display: none; }
         .admin-toggle-btn i { font-size: 16px; }
-        .admin-panel h4 {
-            color: white;
-            font-size: 14px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .admin-panel h4 { color: white; font-size: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
         .admin-panel h4 i { color: #667eea; }
-        .admin-panel .status-badge {
-            font-size: 10px;
-            padding: 2px 10px;
-            border-radius: 60px;
-            margin-left: auto;
-        }
+        .admin-panel .status-badge { font-size: 10px; padding: 2px 10px; border-radius: 60px; margin-left: auto; }
         .admin-panel .status-badge.configured { background: #00B841; color: white; }
         .admin-panel .status-badge.not-configured { background: #ef4444; color: white; }
-        .admin-input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-        .admin-input-group label {
-            color: var(--text-secondary);
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .admin-input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+        .admin-input-group label { color: var(--text-secondary); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         .admin-input-group input {
-            background: #1e1c2c;
-            border: 1px solid rgba(236, 72, 153, 0.3);
-            border-radius: 12px;
-            padding: 10px 14px;
-            color: white;
-            font-size: 13px;
-            outline: none;
-            font-family: 'Courier New', monospace;
-            transition: all 0.3s ease;
+            background: #1e1c2c; border: 1px solid rgba(236, 72, 153, 0.3);
+            border-radius: 12px; padding: 10px 14px; color: white; font-size: 13px;
+            outline: none; font-family: 'Courier New', monospace; transition: all 0.3s ease;
         }
-        .admin-input-group input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
-        }
-        .admin-input-group input::placeholder {
-            color: #4a4a5a;
-            font-family: var(--font-sans);
-        }
+        .admin-input-group input:focus { border-color: #667eea; box-shadow: 0 0 20px rgba(102, 126, 234, 0.2); }
+        .admin-input-group input::placeholder { color: #4a4a5a; font-family: var(--font-sans); }
         .admin-actions { display: flex; gap: 8px; margin-top: 4px; }
         .admin-actions button {
-            flex: 1;
-            padding: 10px 16px;
-            border: none;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: var(--font-sans);
+            flex: 1; padding: 10px 16px; border: none; border-radius: 12px;
+            font-weight: 700; font-size: 13px; cursor: pointer;
+            transition: all 0.2s ease; font-family: var(--font-sans);
         }
         .admin-actions button:active { transform: scale(0.95); }
         .admin-save-btn { background: var(--admin-gradient); color: white; }
-        .admin-reset-btn {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-        .admin-status-msg {
-            font-size: 11px;
-            padding: 6px 10px;
-            border-radius: 8px;
-            margin-top: 6px;
-            text-align: center;
-        }
+        .admin-reset-btn { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .admin-status-msg { font-size: 11px; padding: 6px 10px; border-radius: 8px; margin-top: 6px; text-align: center; }
         .admin-status-msg.success { background: rgba(0, 184, 65, 0.15); color: #00B841; }
         .admin-status-msg.error { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
         .admin-status-msg.info { background: rgba(102, 126, 234, 0.15); color: #667eea; }
-        .admin-security-hint {
-            font-size: 10px;
-            color: #4a4a5a;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            margin-top: 6px;
-        }
+        .admin-security-hint { font-size: 10px; color: #4a4a5a; display: flex; align-items: center; gap: 4px; margin-top: 6px; }
         .admin-security-hint i { color: #fbbf24; font-size: 12px; }
 
-        /* ===== APP ===== */
         .dating-app {
-            max-width: var(--app-max-width);
-            width: 100%;
-            height: min(90vh, var(--app-max-height));
-            min-height: var(--app-min-height);
-            background: rgba(12, 10, 22, 0.85);
-            backdrop-filter: blur(2px);
+            max-width: var(--app-max-width); width: 100%;
+            height: min(90vh, var(--app-max-height)); min-height: var(--app-min-height);
+            background: rgba(12, 10, 22, 0.85); backdrop-filter: blur(2px);
             border-radius: var(--card-radius);
             box-shadow: 0 30px 50px -15px rgba(0, 0, 0, 0.8), 0 0 0 2px rgba(236, 72, 153, 0.4);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
+            overflow: hidden; display: flex; flex-direction: column; position: relative;
         }
         .auth-container {
-            max-width: var(--app-max-width);
-            width: 100%;
-            height: min(90vh, var(--app-max-height));
-            min-height: var(--app-min-height);
-            background: rgba(8, 6, 16, 0.96);
-            backdrop-filter: blur(20px);
+            max-width: var(--app-max-width); width: 100%;
+            height: min(90vh, var(--app-max-height)); min-height: var(--app-min-height);
+            background: rgba(8, 6, 16, 0.96); backdrop-filter: blur(20px);
             border-radius: var(--card-radius);
             box-shadow: 0 30px 50px -15px black, 0 0 0 2px rgba(236, 72, 153, 0.5);
-            padding: 32px 24px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            overflow-y: auto;
-            position: relative;
+            padding: 32px 24px; display: flex; flex-direction: column;
+            justify-content: center; overflow-y: auto; position: relative;
         }
         .auth-logo { text-align: center; margin-bottom: 40px; }
         .auth-logo h1 {
             font-size: clamp(2.5rem, 6vw, 3.5rem);
             background: linear-gradient(125deg, #F472B6, #EC4899, #A855F7);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            -webkit-background-clip: text; background-clip: text; color: transparent;
         }
         .auth-logo p { font-size: clamp(0.9rem, 2vw, 1.1rem); color: #c9c2f0; }
         .auth-input, .auth-select {
-            background: #1e1c2c;
-            border: 1px solid rgba(236, 72, 153, 0.4);
-            border-radius: 60px;
-            padding: 16px 20px;
-            width: 100%;
-            margin-bottom: 16px;
-            color: white;
-            font-size: clamp(14px, 1.5vw, 16px);
-            outline: none;
+            background: #1e1c2c; border: 1px solid rgba(236, 72, 153, 0.4);
+            border-radius: 60px; padding: 16px 20px; width: 100%; margin-bottom: 16px;
+            color: white; font-size: clamp(14px, 1.5vw, 16px); outline: none;
             transition: all 0.3s ease;
         }
-        .auth-input:focus, .auth-select:focus {
-            border-color: #ec4899;
-            box-shadow: 0 0 8px #ec4899;
-        }
+        .auth-input:focus, .auth-select:focus { border-color: #ec4899; box-shadow: 0 0 8px #ec4899; }
         .auth-btn {
-            background: linear-gradient(135deg, #ec4899, #be185d);
-            border: none;
-            border-radius: 60px;
-            padding: 14px;
-            font-weight: bold;
-            font-size: clamp(16px, 1.8vw, 19px);
-            color: white;
-            cursor: pointer;
-            margin-top: 12px;
-            transition: transform 0.2s ease;
-            width: 100%;
+            background: linear-gradient(135deg, #ec4899, #be185d); border: none;
+            border-radius: 60px; padding: 14px; font-weight: bold;
+            font-size: clamp(16px, 1.8vw, 19px); color: white; cursor: pointer;
+            margin-top: 12px; transition: transform 0.2s ease; width: 100%;
         }
         .auth-btn:active { transform: scale(0.97); }
         .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -251,367 +136,223 @@
         .auth-switch span { color: #ec4899; cursor: pointer; font-weight: bold; }
 
         .verify-email-banner {
-            background: rgba(251, 191, 36, 0.15);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 12px;
-            color: var(--gold);
+            background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 12px; padding: 12px; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--gold);
         }
         .verify-email-banner i { font-size: 18px; }
 
         .main-header {
             padding: clamp(8px, 1.5vw, 14px) clamp(16px, 2vw, 24px);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(10, 10, 18, 0.8);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--panel-border);
-            flex-shrink: 0;
-            min-height: 60px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(10, 10, 18, 0.8); backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--panel-border); flex-shrink: 0; min-height: 60px;
         }
         .logo-area h1 {
-            font-size: clamp(1.4rem, 3vw, 2rem);
-            font-weight: 800;
+            font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 800;
             background: linear-gradient(125deg, #F472B6, #EC4899, #A855F7);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            -webkit-background-clip: text; background-clip: text; color: transparent;
             letter-spacing: -0.5px;
         }
         .coin-badge {
-            background: rgba(32, 33, 48, 0.9);
-            backdrop-filter: blur(8px);
+            background: rgba(32, 33, 48, 0.9); backdrop-filter: blur(8px);
             padding: clamp(4px, 0.8vw, 8px) clamp(12px, 1.5vw, 18px);
-            border-radius: 60px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 700;
-            color: #FBBF24;
-            font-size: clamp(13px, 1.2vw, 16px);
+            border-radius: 60px; display: flex; align-items: center; gap: 6px;
+            font-weight: 700; color: #FBBF24; font-size: clamp(13px, 1.2vw, 16px);
             border: 0.5px solid rgba(251, 191, 36, 0.3);
         }
         .content-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: clamp(12px, 1.5vw, 20px);
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
+            flex: 1; overflow-y: auto; padding: clamp(12px, 1.5vw, 20px);
+            scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
         }
         .content-area::-webkit-scrollbar { width: 4px; }
         .content-area::-webkit-scrollbar-track { background: transparent; }
         .content-area::-webkit-scrollbar-thumb { background: rgba(236, 72, 153, 0.3); border-radius: 10px; }
         .modern-card {
-            position: relative;
-            background: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: var(--card-radius);
-            backdrop-filter: blur(12px);
-            overflow: hidden;
+            position: relative; background: var(--panel-bg);
+            border: 1px solid var(--panel-border); border-radius: var(--card-radius);
+            backdrop-filter: blur(12px); overflow: hidden;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            opacity: 0;
-            transform: translateY(40px) scale(0.98);
+            opacity: 0; transform: translateY(40px) scale(0.98);
         }
         .modern-card.is-visible { opacity: 1; transform: translateY(0) scale(1); }
         .profile-img {
-            height: clamp(220px, 40vh, 340px);
-            position: relative;
-            overflow: hidden;
-            border-radius: var(--card-radius) var(--card-radius) 0 0;
+            height: clamp(220px, 40vh, 340px); position: relative;
+            overflow: hidden; border-radius: var(--card-radius) var(--card-radius) 0 0;
         }
         .profile-img img { width: 100%; height: 100%; object-fit: cover; }
         .match-percent-badge {
-            position: absolute;
-            top: clamp(12px, 2vw, 24px);
-            right: clamp(12px, 2vw, 24px);
-            z-index: 3;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(12px);
+            position: absolute; top: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px);
+            z-index: 3; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px);
             padding: clamp(6px, 1vw, 10px) clamp(12px, 1.5vw, 20px);
-            border-radius: 60px;
-            font-weight: 800;
-            color: white;
-            border: 1px solid #f472b6;
-            font-size: clamp(12px, 1.2vw, 16px);
+            border-radius: 60px; font-weight: 800; color: white;
+            border: 1px solid #f472b6; font-size: clamp(12px, 1.2vw, 16px);
         }
         .profile-info { padding: clamp(16px, 2vw, 24px); }
         .profile-name {
-            font-size: clamp(22px, 3vw, 32px);
-            font-weight: 800;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            font-size: clamp(22px, 3vw, 32px); font-weight: 800; color: white;
+            display: flex; justify-content: space-between; align-items: center;
             flex-wrap: wrap;
         }
         .profile-occupation { font-size: clamp(12px, 1.2vw, 15px); color: #c084fc; margin-top: 4px; }
         .profile-bio { color: var(--text-secondary); margin-top: clamp(8px, 1vw, 14px); font-size: clamp(13px, 1.2vw, 15px); line-height: 1.5; }
         .action-buttons {
-            display: flex;
-            justify-content: space-around;
+            display: flex; justify-content: space-around;
             padding: clamp(8px, 1vw, 16px) clamp(16px, 2vw, 28px) clamp(16px, 2vw, 28px);
             gap: clamp(16px, 2vw, 28px);
         }
         .action-btn {
-            background: #24222f;
-            border: none;
-            width: clamp(56px, 8vw, 76px);
-            height: clamp(56px, 8vw, 76px);
-            border-radius: 50%;
-            font-size: clamp(24px, 3vw, 36px);
-            color: white;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #24222f; border: none;
+            width: clamp(56px, 8vw, 76px); height: clamp(56px, 8vw, 76px);
+            border-radius: 50%; font-size: clamp(24px, 3vw, 36px); color: white;
+            cursor: pointer; transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: center;
         }
         .action-btn:active { transform: scale(0.92); }
         .btn-like { background: linear-gradient(145deg, #ec4899, #be185d); box-shadow: 0 0 20px rgba(236, 72, 153, 0.4); }
         .btn-super { background: linear-gradient(145deg, #f59e0b, #b45309); }
         .btn-pass { background: #2e2a3e; color: #ffb3b3; }
         .bottom-nav {
-            background: rgba(8, 8, 14, 0.95);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid var(--panel-border);
-            display: flex;
+            background: rgba(8, 8, 14, 0.95); backdrop-filter: blur(20px);
+            border-top: 1px solid var(--panel-border); display: flex;
             justify-content: space-around;
             padding: clamp(6px, 0.8vw, 10px) clamp(8px, 1vw, 14px) clamp(12px, 1.5vw, 20px);
-            flex-shrink: 0;
-            gap: 4px;
+            flex-shrink: 0; gap: 4px;
         }
         .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            color: #6f6b8a;
-            cursor: pointer;
-            font-size: clamp(9px, 0.9vw, 12px);
-            font-weight: 600;
-            transition: all 0.2s ease;
-            padding: 4px 6px;
-            border-radius: 12px;
-            min-width: 44px;
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+            color: #6f6b8a; cursor: pointer; font-size: clamp(9px, 0.9vw, 12px);
+            font-weight: 600; transition: all 0.2s ease; padding: 4px 6px;
+            border-radius: 12px; min-width: 44px;
         }
         .nav-item i { font-size: clamp(18px, 2.2vw, 26px); transition: all 0.2s ease; }
         .nav-active { color: #f472b6; text-shadow: 0 0 12px rgba(236, 72, 153, 0.3); }
         .nav-item:active { transform: scale(0.92); }
         .match-item {
-            display: flex;
-            align-items: center;
-            gap: clamp(12px, 1.5vw, 18px);
+            display: flex; align-items: center; gap: clamp(12px, 1.5vw, 18px);
             padding: clamp(8px, 1vw, 14px) clamp(12px, 1.5vw, 18px);
-            margin-bottom: clamp(10px, 1.2vw, 16px);
-            cursor: pointer;
+            margin-bottom: clamp(10px, 1.2vw, 16px); cursor: pointer;
         }
         .match-avatar {
-            width: clamp(48px, 6vw, 64px);
-            height: clamp(48px, 6vw, 64px);
-            border-radius: 50%;
-            overflow: hidden;
-            border: 2px solid #ec4899;
-            flex-shrink: 0;
+            width: clamp(48px, 6vw, 64px); height: clamp(48px, 6vw, 64px);
+            border-radius: 50%; overflow: hidden; border: 2px solid #ec4899; flex-shrink: 0;
         }
         .match-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .match-info { flex: 1; min-width: 0; }
         .match-name {
-            font-weight: 800;
-            color: white;
-            font-size: clamp(14px, 1.3vw, 17px);
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 6px;
+            font-weight: 800; color: white; font-size: clamp(14px, 1.3vw, 17px);
+            display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
         }
         .match-percentage {
-            font-size: clamp(10px, 1vw, 13px);
-            color: #fbbf24;
-            background: #1e1c2c;
-            padding: 2px 10px;
-            border-radius: 40px;
+            font-size: clamp(10px, 1vw, 13px); color: #fbbf24;
+            background: #1e1c2c; padding: 2px 10px; border-radius: 40px;
         }
         .chat-btn {
-            background: #ec4899;
-            border: none;
+            background: #ec4899; border: none;
             padding: clamp(6px, 0.8vw, 10px) clamp(14px, 1.5vw, 22px);
-            border-radius: 40px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            flex-shrink: 0;
-            font-size: clamp(12px, 1vw, 14px);
+            border-radius: 40px; color: white; font-weight: 700; cursor: pointer;
+            transition: all 0.2s ease; flex-shrink: 0; font-size: clamp(12px, 1vw, 14px);
         }
         .chat-btn:active { transform: scale(0.95); }
         .chat-header-match {
-            display: flex;
-            align-items: center;
-            gap: clamp(10px, 1.2vw, 16px);
+            display: flex; align-items: center; gap: clamp(10px, 1.2vw, 16px);
             margin-bottom: clamp(12px, 1.5vw, 20px);
-            background: rgba(18, 18, 26, 0.9);
-            border-radius: 60px;
-            padding: clamp(8px, 1vw, 12px) clamp(14px, 1.5vw, 20px);
-            flex-shrink: 0;
+            background: rgba(18, 18, 26, 0.9); border-radius: 60px;
+            padding: clamp(8px, 1vw, 12px) clamp(14px, 1.5vw, 20px); flex-shrink: 0;
         }
         .messages-box {
-            background: rgba(8, 8, 16, 0.7);
-            border-radius: 36px;
-            padding: clamp(14px, 1.5vw, 20px);
-            height: clamp(280px, 45vh, 500px);
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
+            background: rgba(8, 8, 16, 0.7); border-radius: 36px;
+            padding: clamp(14px, 1.5vw, 20px); height: clamp(280px, 45vh, 500px);
+            overflow-y: auto; display: flex; flex-direction: column;
         }
         .msg-bubble {
             max-width: 85%;
             padding: clamp(8px, 1vw, 12px) clamp(14px, 1.5vw, 18px);
-            border-radius: 26px;
-            margin-bottom: 6px;
-            word-break: break-word;
+            border-radius: 26px; margin-bottom: 6px; word-break: break-word;
             font-size: clamp(13px, 1.1vw, 15px);
         }
         .msg-sent { background: linear-gradient(135deg, #ec4899, #be185d); align-self: flex-end; color: white; }
         .msg-received { background: #252432; align-self: flex-start; color: white; }
         .chat-input-area {
-            display: flex;
-            gap: clamp(8px, 1vw, 14px);
-            margin-top: clamp(10px, 1.2vw, 16px);
-            background: #12121c;
-            border-radius: 60px;
-            padding: clamp(4px, 0.6vw, 8px) clamp(10px, 1.2vw, 16px);
-            align-items: center;
-            flex-shrink: 0;
+            display: flex; gap: clamp(8px, 1vw, 14px);
+            margin-top: clamp(10px, 1.2vw, 16px); background: #12121c;
+            border-radius: 60px; padding: clamp(4px, 0.6vw, 8px) clamp(10px, 1.2vw, 16px);
+            align-items: center; flex-shrink: 0;
         }
         .chat-input-area input[type="text"] {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: white;
-            padding: clamp(8px, 1vw, 14px);
-            outline: none;
-            font-size: clamp(14px, 1.2vw, 16px);
-            min-width: 0;
+            flex: 1; background: transparent; border: none; color: white;
+            padding: clamp(8px, 1vw, 14px); outline: none;
+            font-size: clamp(14px, 1.2vw, 16px); min-width: 0;
         }
         .chat-input-area button {
-            background: #ec4899;
-            border: none;
-            width: clamp(36px, 5vw, 46px);
-            height: clamp(36px, 5vw, 46px);
-            border-radius: 50%;
-            color: white;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #ec4899; border: none;
+            width: clamp(36px, 5vw, 46px); height: clamp(36px, 5vw, 46px);
+            border-radius: 50%; color: white; cursor: pointer;
+            transition: all 0.2s ease; flex-shrink: 0; display: flex;
+            align-items: center; justify-content: center;
             font-size: clamp(16px, 1.5vw, 20px);
         }
         .chat-input-area button:active { transform: scale(0.92); }
         .live-video-wrapper video {
-            width: 100%;
-            border-radius: 40px;
-            transform: scaleX(-1);
-            background: #000;
-            object-fit: cover;
-            max-height: clamp(300px, 45vh, 500px);
-            aspect-ratio: 4/3;
+            width: 100%; border-radius: 40px; transform: scaleX(-1);
+            background: #000; object-fit: cover;
+            max-height: clamp(300px, 45vh, 500px); aspect-ratio: 4/3;
         }
         .live-controls {
-            display: flex;
-            gap: clamp(14px, 2vw, 24px);
-            justify-content: center;
-            padding: clamp(14px, 1.5vw, 22px);
-            flex-wrap: wrap;
+            display: flex; gap: clamp(14px, 2vw, 24px);
+            justify-content: center; padding: clamp(14px, 1.5vw, 22px); flex-wrap: wrap;
         }
         .live-btn {
             background: linear-gradient(145deg, #ec4899, #a21caf);
             border: none;
             padding: clamp(10px, 1.2vw, 16px) clamp(18px, 2.5vw, 28px);
-            border-radius: 60px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: clamp(13px, 1.2vw, 16px);
+            border-radius: 60px; color: white; font-weight: bold; cursor: pointer;
+            transition: all 0.2s ease; font-size: clamp(13px, 1.2vw, 16px);
         }
         .live-btn:active { transform: scale(0.94); }
         .my-profile-card { text-align: center; padding: clamp(20px, 3vw, 36px) clamp(16px, 2vw, 28px); }
         .user-profile-photo {
-            width: clamp(90px, 12vw, 130px);
-            height: clamp(90px, 12vw, 130px);
-            border-radius: 50%;
-            overflow: hidden;
-            margin: 0 auto;
+            width: clamp(90px, 12vw, 130px); height: clamp(90px, 12vw, 130px);
+            border-radius: 50%; overflow: hidden; margin: 0 auto;
             border: 3px solid #ec4899;
         }
         .user-profile-photo img { width: 100%; height: 100%; object-fit: cover; }
         .upload-label {
             background: #2e2a3e;
             padding: clamp(8px, 1vw, 12px) clamp(14px, 1.8vw, 20px);
-            border-radius: 60px;
-            display: inline-block;
-            margin: 8px;
-            cursor: pointer;
-            color: white;
-            font-size: clamp(13px, 1.2vw, 15px);
+            border-radius: 60px; display: inline-block; margin: 8px;
+            cursor: pointer; color: white; font-size: clamp(13px, 1.2vw, 15px);
             transition: all 0.2s ease;
         }
         .upload-label:active { transform: scale(0.95); }
         .premium-badge {
             background: linear-gradient(135deg, #FBBF24, #F59E0B);
-            padding: 2px 12px;
-            border-radius: 60px;
-            font-size: 10px;
-            font-weight: 700;
-            color: #000;
+            padding: 2px 12px; border-radius: 60px; font-size: 10px;
+            font-weight: 700; color: #000;
         }
         .membership-card {
-            background: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: var(--card-radius);
-            padding: 20px;
-            margin-bottom: 16px;
+            background: var(--panel-bg); border: 1px solid var(--panel-border);
+            border-radius: var(--card-radius); padding: 20px; margin-bottom: 16px;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .membership-card.pro {
-            border-color: #FBBF24;
-            background: rgba(251, 191, 36, 0.1);
+            border-color: #FBBF24; background: rgba(251, 191, 36, 0.1);
             box-shadow: 0 0 30px rgba(251, 191, 36, 0.1);
         }
         .membership-card .price { font-size: 28px; font-weight: 800; color: white; }
         .membership-card .price span { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
         .membership-card ul { list-style: none; margin: 16px 0; }
         .membership-card ul li {
-            color: var(--text-secondary);
-            padding: 6px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            color: var(--text-secondary); padding: 6px 0;
+            display: flex; align-items: center; gap: 10px;
         }
         .membership-card ul li i { color: var(--gold); width: 20px; }
         .mpesa-pay-btn {
             background: linear-gradient(135deg, #00B841, #008F3A);
-            border: none;
-            padding: 14px 24px;
-            border-radius: 60px;
-            color: white;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            width: 100%;
-            transition: transform 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
+            border: none; padding: 14px 24px; border-radius: 60px; color: white;
+            font-weight: 700; font-size: 16px; cursor: pointer; width: 100%;
+            transition: transform 0.2s ease; display: flex;
+            align-items: center; justify-content: center; gap: 12px;
             font-family: var(--font-sans);
         }
         .mpesa-pay-btn:active { transform: scale(0.97); }
@@ -619,42 +360,22 @@
         .boost-indicator {
             background: rgba(251, 191, 36, 0.15);
             border: 1px solid rgba(251, 191, 36, 0.3);
-            border-radius: 60px;
-            padding: 4px 12px;
-            font-size: 11px;
-            color: var(--gold);
+            border-radius: 60px; padding: 4px 12px; font-size: 11px; color: var(--gold);
         }
         .profile-verification {
-            background: #1e8b3c;
-            color: white;
-            padding: 2px 10px;
-            border-radius: 60px;
-            font-size: 10px;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
+            background: #1e8b3c; color: white; padding: 2px 10px;
+            border-radius: 60px; font-size: 10px; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 4px;
         }
         .mpesa-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(20px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            padding: 20px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999; padding: 20px;
         }
         .mpesa-modal-content {
-            background: #1a1a2e;
-            border-radius: var(--card-radius);
-            padding: 32px 24px;
-            max-width: 400px;
-            width: 100%;
+            background: #1a1a2e; border-radius: var(--card-radius);
+            padding: 32px 24px; max-width: 400px; width: 100%;
             border: 1px solid var(--panel-border);
         }
         .mpesa-modal-content h2 { color: white; margin-bottom: 8px; }
@@ -662,126 +383,68 @@
         .mpesa-input-group { margin-bottom: 16px; }
         .mpesa-input-group label { color: var(--text-secondary); font-size: 13px; display: block; margin-bottom: 6px; }
         .mpesa-input-group input {
-            width: 100%;
-            padding: 14px 16px;
-            background: #12121c;
-            border: 1px solid rgba(236, 72, 153, 0.3);
-            border-radius: 12px;
-            color: white;
-            font-size: 16px;
-            outline: none;
+            width: 100%; padding: 14px 16px; background: #12121c;
+            border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 12px;
+            color: white; font-size: 16px; outline: none;
         }
         .mpesa-confirm-btn {
             background: linear-gradient(135deg, #00B841, #008F3A);
-            border: none;
-            padding: 16px;
-            border-radius: 60px;
-            color: white;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 8px;
-            transition: transform 0.2s ease;
+            border: none; padding: 16px; border-radius: 60px; color: white;
+            font-weight: 700; font-size: 16px; cursor: pointer;
+            width: 100%; margin-top: 8px; transition: transform 0.2s ease;
         }
         .mpesa-close-btn {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 12px;
-            border-radius: 60px;
-            color: white;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 8px;
+            background: transparent; border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px; border-radius: 60px; color: white;
+            cursor: pointer; width: 100%; margin-top: 8px;
         }
         .transaction-status {
-            padding: 12px;
-            border-radius: 12px;
-            margin: 12px 0;
-            text-align: center;
-            font-weight: 600;
+            padding: 12px; border-radius: 12px; margin: 12px 0;
+            text-align: center; font-weight: 600;
         }
         .transaction-status.success { background: rgba(0, 184, 65, 0.2); color: #00B841; }
         .transaction-status.pending { background: rgba(251, 191, 36, 0.2); color: #FBBF24; }
         .transaction-status.failed { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
         .swipe-hint {
-            text-align: center;
-            font-size: clamp(10px, 1vw, 12px);
-            margin-top: clamp(10px, 1.2vw, 16px);
-            color: #aa99e6;
-            opacity: 0.8;
+            text-align: center; font-size: clamp(10px, 1vw, 12px);
+            margin-top: clamp(10px, 1.2vw, 16px); color: #aa99e6; opacity: 0.8;
         }
         .chat-media-attachment {
-            max-width: 100%;
-            border-radius: 16px;
-            margin-top: 6px;
-            display: block;
-            max-height: 300px;
-            width: auto;
+            max-width: 100%; border-radius: 16px; margin-top: 6px;
+            display: block; max-height: 300px; width: auto;
         }
         .video-call-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 100;
-            border-radius: var(--card-radius);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 100; border-radius: var(--card-radius);
+            display: flex; flex-direction: column; overflow: hidden;
         }
         .remote-video { width: 100%; height: 100%; object-fit: cover; }
         .local-video-pip {
-            position: absolute;
-            top: clamp(12px, 2vw, 24px);
-            right: clamp(12px, 2vw, 24px);
-            width: clamp(80px, 12vw, 140px);
-            height: clamp(120px, 18vw, 200px);
-            border-radius: 16px;
-            object-fit: cover;
-            border: 2px solid #ec4899;
-            transform: scaleX(-1);
-            background: #222;
-            z-index: 110;
+            position: absolute; top: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px);
+            width: clamp(80px, 12vw, 140px); height: clamp(120px, 18vw, 200px);
+            border-radius: 16px; object-fit: cover; border: 2px solid #ec4899;
+            transform: scaleX(-1); background: #222; z-index: 110;
             box-shadow: 0 8px 32px rgba(0,0,0,0.6);
         }
         .call-controls {
-            position: absolute;
-            bottom: clamp(20px, 4vw, 50px);
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            gap: clamp(16px, 2.5vw, 32px);
-            z-index: 110;
-            padding: 0 16px;
+            position: absolute; bottom: clamp(20px, 4vw, 50px); left: 0;
+            width: 100%; display: flex; justify-content: center;
+            gap: clamp(16px, 2.5vw, 32px); z-index: 110; padding: 0 16px;
         }
         .call-btn {
-            width: clamp(48px, 6vw, 64px);
-            height: clamp(48px, 6vw, 64px);
-            border-radius: 50%;
-            border: none;
-            color: white;
-            font-size: clamp(18px, 2vw, 24px);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: clamp(48px, 6vw, 64px); height: clamp(48px, 6vw, 64px);
+            border-radius: 50%; border: none; color: white;
+            font-size: clamp(18px, 2vw, 24px); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
             transition: all 0.2s ease;
         }
         .call-btn:active { transform: scale(0.9); }
         .btn-hangup { background: #ef4444; }
         .btn-mute { background: rgba(255,255,255,0.2); backdrop-filter: blur(8px); }
         .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
+            display: inline-block; width: 20px; height: 20px;
+            border: 3px solid rgba(255,255,255,0.3); border-radius: 50%;
+            border-top-color: #fff; animation: spin 1s ease-in-out infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -806,8 +469,27 @@
 
 <script>
 // ============================================================
-// 1. CLASS DEFINITIONS
+// DEMO MODE: Local-only auth & data (no backend required)
 // ============================================================
+const DEMO_MODE = true; // Set to false when you deploy your backend
+
+// -------- LOCAL STORAGE DB --------
+const LocalDB = {
+    getUsers() { try { return JSON.parse(localStorage.getItem('fm_users')) || []; } catch(e) { return []; } },
+    saveUsers(users) { localStorage.setItem('fm_users', JSON.stringify(users)); },
+    addUser(user) {
+        const users = this.getUsers();
+        users.push(user);
+        this.saveUsers(users);
+        return user;
+    },
+    findUser(email, password) {
+        return this.getUsers().find(u => u.email === email && u.password === btoa(password));
+    },
+    findUserByEmail(email) {
+        return this.getUsers().find(u => u.email === email);
+    }
+};
 
 // -------- ADMIN KEY MANAGER --------
 class AdminKeyManager {
@@ -817,7 +499,6 @@ class AdminKeyManager {
         this.isConfigured = false;
         this.loadConfig();
     }
-
     loadConfig() {
         try {
             const config = localStorage.getItem(this.storageKey);
@@ -826,46 +507,29 @@ class AdminKeyManager {
                 this.apiKey = parsed.apiKey;
                 this.isConfigured = parsed.isConfigured || false;
             }
-        } catch (e) {
-            console.error('Failed to load admin config:', e);
-        }
+        } catch (e) { console.error('Config load error:', e); }
     }
-
     saveConfig(apiKey) {
         try {
-            const config = {
-                apiKey: apiKey,
-                isConfigured: true,
-                configuredAt: new Date().toISOString()
-            };
-            localStorage.setItem(this.storageKey, JSON.stringify(config));
+            localStorage.setItem(this.storageKey, JSON.stringify({
+                apiKey, isConfigured: true, configuredAt: new Date().toISOString()
+            }));
             this.apiKey = apiKey;
             this.isConfigured = true;
             return true;
-        } catch (e) {
-            console.error('Failed to save admin config:', e);
-            return false;
-        }
+        } catch (e) { return false; }
     }
-
     resetConfig() {
-        try {
-            localStorage.removeItem(this.storageKey);
-            this.apiKey = null;
-            this.isConfigured = false;
-            return true;
-        } catch (e) {
-            console.error('Failed to reset config:', e);
-            return false;
-        }
+        localStorage.removeItem(this.storageKey);
+        this.apiKey = null;
+        this.isConfigured = false;
+        return true;
     }
-
     getApiKey() { return this.apiKey; }
     isApiConfigured() { return !!this.apiKey; }
 
     initAdminUI() {
         if (document.getElementById('adminPanel')) return;
-
         const panelHTML = `
             <div id="adminPanel" class="admin-panel hidden">
                 <h4>
@@ -890,13 +554,9 @@ class AdminKeyManager {
             </button>
         `;
         document.body.insertAdjacentHTML('beforeend', panelHTML);
-
         this.attachEvents();
         this.updateUI();
-
-        if (this.isApiConfigured()) {
-            this.hideAdminPanel();
-        }
+        if (this.isApiConfigured()) this.hideAdminPanel();
     }
 
     attachEvents() {
@@ -914,40 +574,27 @@ class AdminKeyManager {
 
         saveBtn?.addEventListener('click', () => {
             const apiKey = apiKeyInput.value.trim();
-
-            if (!apiKey) {
-                this.showStatus('⚠️ Enter an API key', 'error');
-                return;
-            }
-            if (apiKey.length < 8) {
-                this.showStatus('⚠️ API key too short (min 8 chars)', 'error');
-                return;
-            }
-
-            const saved = this.saveConfig(apiKey);
-            if (saved) {
-                this.showStatus('✅ Configuration saved! Auto-hiding...', 'success');
+            if (!apiKey) { this.showStatus('⚠️ Enter an API key', 'error'); return; }
+            if (apiKey.length < 8) { this.showStatus('⚠️ API key too short', 'error'); return; }
+            if (this.saveConfig(apiKey)) {
+                this.showStatus('✅ Saved! Auto-hiding...', 'success');
                 apiKeyInput.value = '';
                 if (window.api) window.api.setApiKey(this.apiKey);
                 setTimeout(() => this.hideAdminPanel(), 1500);
-            } else {
-                this.showStatus('❌ Failed to save configuration', 'error');
             }
         });
 
         resetBtn?.addEventListener('click', () => {
-            if (confirm('⚠️ Reset API key? This will disable M-Pesa payments.')) {
+            if (confirm('⚠️ Reset API key?')) {
                 this.resetConfig();
                 if (window.api) window.api.setApiKey(null);
                 this.updateUI();
-                this.showStatus('🔄 Configuration reset', 'info');
+                this.showStatus('🔄 Reset', 'info');
                 this.showAdminPanel();
             }
         });
 
-        apiKeyInput?.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') saveBtn?.click();
-        });
+        apiKeyInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveBtn?.click(); });
 
         document.addEventListener('click', (e) => {
             if (!panel.classList.contains('hidden')) {
@@ -959,10 +606,7 @@ class AdminKeyManager {
 
     showStatus(msg, type) {
         const el = document.getElementById('adminStatusMsg');
-        if (el) {
-            el.textContent = msg;
-            el.className = `admin-status-msg ${type}`;
-        }
+        if (el) { el.textContent = msg; el.className = `admin-status-msg ${type}`; }
     }
 
     updateUI() {
@@ -971,15 +615,9 @@ class AdminKeyManager {
         const apiOk = this.isApiConfigured();
 
         if (statusBadge) {
-            if (apiOk) {
-                statusBadge.textContent = '✅ Configured';
-                statusBadge.className = 'status-badge configured';
-            } else {
-                statusBadge.textContent = '⚠️ Not Setup';
-                statusBadge.className = 'status-badge not-configured';
-            }
+            statusBadge.textContent = apiOk ? '✅ Configured' : '⚠️ Not Setup';
+            statusBadge.className = `status-badge ${apiOk ? 'configured' : 'not-configured'}`;
         }
-
         if (apiKeyInput) {
             apiKeyInput.placeholder = apiOk ? '•••••••••••• (configured)' : 'Enter M-Pesa API Key';
         }
@@ -1002,12 +640,11 @@ class AdminKeyManager {
 
     showAdminPanel() {
         document.getElementById('adminPanel')?.classList.remove('hidden');
-        const btn = document.getElementById('adminToggleBtn');
-        if (btn) btn.classList.remove('hidden');
+        document.getElementById('adminToggleBtn')?.classList.remove('hidden');
     }
 }
 
-// -------- API SERVICE --------
+// -------- API SERVICE (with demo fallback) --------
 class APIService {
     constructor() {
         this.baseURL = window.API_URL || 'http://localhost:3000/api';
@@ -1026,26 +663,22 @@ class APIService {
         if (this.apiKey) headers['X-API-Key'] = this.apiKey;
         if (this.token) headers['Authorization'] = `Bearer ${this.token}`;
 
-        try {
-            const response = await fetch(`${this.baseURL}${endpoint}`, {
-                ...options,
-                headers
-            });
-            const data = await response.json();
-            if (!response.ok) {
-                if (response.status === 401) {
-                    localStorage.removeItem('flamematch_token');
-                }
-                throw new Error(data.error || 'API request failed');
-            }
-            return data;
-        } catch (error) {
-            console.error('API Error:', error);
-            throw error;
-        }
+        const response = await fetch(`${this.baseURL}${endpoint}`, { ...options, headers });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'API request failed');
+        return data;
     }
 
     async login(email, password) {
+        if (DEMO_MODE) {
+            await new Promise(r => setTimeout(r, 600)); // simulate network
+            const user = LocalDB.findUser(email, password);
+            if (!user) throw new Error('Invalid credentials');
+            const token = 'demo_token_' + user.id;
+            this.token = token;
+            localStorage.setItem('flamematch_token', token);
+            return { success: true, token, user: { ...user, password: undefined } };
+        }
         const response = await this.request('/auth/login', {
             method: 'POST',
             body: JSON.stringify({ email, password })
@@ -1058,6 +691,38 @@ class APIService {
     }
 
     async register(userData) {
+        if (DEMO_MODE) {
+            await new Promise(r => setTimeout(r, 600));
+            if (LocalDB.findUserByEmail(userData.email)) {
+                throw new Error('Email already registered');
+            }
+            const user = {
+                id: 'user_' + Date.now(),
+                email: userData.email,
+                password: btoa(userData.password),
+                name: userData.name,
+                age: parseInt(userData.age),
+                country: userData.country,
+                photoURL: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',
+                bio: "✨ Let's connect!",
+                membership: 'free',
+                coins: 450,
+                verified: false,
+                boostActive: false,
+                superLikesUsed: 0,
+                dailySwipes: 0,
+                lastSwipeReset: new Date().toISOString(),
+                interests: ['Travel', 'Music', 'Food'],
+                lifestyle: 'Balanced',
+                education: 'bachelor',
+                emailVerified: false
+            };
+            LocalDB.addUser(user);
+            const token = 'demo_token_' + user.id;
+            this.token = token;
+            localStorage.setItem('flamematch_token', token);
+            return { success: true, token, user: { ...user, password: undefined } };
+        }
         const response = await this.request('/auth/register', {
             method: 'POST',
             body: JSON.stringify(userData)
@@ -1069,32 +734,66 @@ class APIService {
         return response;
     }
 
-    async getCurrentUser() { return this.request('/auth/me'); }
+    async getCurrentUser() {
+        if (DEMO_MODE) {
+            const session = localStorage.getItem('flamematch_session_pro');
+            return session ? { success: true, user: JSON.parse(session) } : { success: false };
+        }
+        return this.request('/auth/me');
+    }
+
     async logout() {
+        if (DEMO_MODE) {
+            localStorage.removeItem('flamematch_token');
+            this.token = null;
+            return { success: true };
+        }
         try { await this.request('/auth/logout', { method: 'POST' }); } catch (e) {}
         localStorage.removeItem('flamematch_token');
         this.token = null;
     }
-    async getMatches() { return this.request('/matches'); }
+
     async likeProfile(profileId) {
+        if (DEMO_MODE) {
+            await new Promise(r => setTimeout(r, 400));
+            const matched = Math.random() > 0.4;
+            return {
+                success: true,
+                matched,
+                match: matched ? {
+                    id: 'match_' + Date.now(),
+                    userId: profileId,
+                    name: 'Match',
+                    matchPercentage: 85 + Math.floor(Math.random() * 14)
+                } : null
+            };
+        }
         return this.request('/matches/like', {
             method: 'POST',
             body: JSON.stringify({ profileId })
         });
     }
-    async sendMessage(matchId, text, attachment = null, attachmentType = null) {
-        return this.request('/matches/message', {
-            method: 'POST',
-            body: JSON.stringify({ matchId, text, attachment, attachmentType })
-        });
-    }
+
     async initiateMpesaPayment(phoneNumber, packageId) {
+        if (DEMO_MODE) {
+            await new Promise(r => setTimeout(r, 1500));
+            return {
+                success: true,
+                transactionId: 'DEMO_MPESA_' + Date.now(),
+                message: 'STK Push sent (demo mode)'
+            };
+        }
         return this.request('/mpesa/initiate', {
             method: 'POST',
             body: JSON.stringify({ phoneNumber, packageId })
         });
     }
+
     async verifyTransaction(transactionId) {
+        if (DEMO_MODE) {
+            await new Promise(r => setTimeout(r, 2000));
+            return { status: Math.random() > 0.15 ? 'success' : 'failed' };
+        }
         return this.request(`/mpesa/verify/${transactionId}`);
     }
 }
@@ -1104,18 +803,16 @@ class CameraEngine {
     constructor(videoElementId) {
         this.videoElement = typeof videoElementId === 'string' ? document.getElementById(videoElementId) : videoElementId;
         this.localStream = null;
-        if (!this.videoElement) throw new Error("Target video container missing.");
+        if (!this.videoElement) throw new Error("Target video missing.");
     }
     async startStream() {
         try {
-            if (!navigator.mediaDevices?.getUserMedia) throw new Error("MediaDevices API unavailable.");
+            if (!navigator.mediaDevices?.getUserMedia) throw new Error("Camera API unavailable.");
             this.localStream = await navigator.mediaDevices.getUserMedia({
                 audio: { echoCancellation: true, noiseSuppression: true },
                 video: {
                     width: { ideal: 1280, max: 1920 },
                     height: { ideal: 720, max: 1080 },
-                    aspectRatio: 1.777777778,
-                    frameRate: { ideal: 30 },
                     facingMode: "user"
                 }
             });
@@ -1131,16 +828,12 @@ class CameraEngine {
     }
     stopStream() {
         if (!this.localStream) return;
-        this.localStream.getTracks().forEach(track => {
-            track.stop();
-            track.enabled = false;
-        });
+        this.localStream.getTracks().forEach(track => { track.stop(); track.enabled = false; });
         this.videoElement.srcObject = null;
         this.localStream = null;
     }
     handleError(error) {
         const msg = error.name === 'NotAllowedError' ? "Permission denied." : `Camera Error: ${error.message}`;
-        console.error("[CameraEngine]", msg);
         showToast(msg, "#ff4d4d");
     }
 }
@@ -1198,13 +891,10 @@ class ProfileFactory {
 
 // -------- M-PESA ENGINE --------
 class MpesaPaymentEngine {
-    constructor(apiService) {
-        this.api = apiService;
-        this.transactions = [];
-    }
+    constructor(apiService) { this.api = apiService; this.transactions = []; }
     async processPayment(phoneNumber, amount, packageName, userId) {
         if (!this.api.getApiKey()) {
-            showToast('⚠️ M-Pesa API not configured. Contact admin.', '#ef4444');
+            showToast('⚠️ M-Pesa API not configured.', '#ef4444');
             throw new Error('M-Pesa API not configured');
         }
         const packageMap = { 'Silver': 'silver', 'Gold': 'gold', 'Platinum': 'platinum' };
@@ -1226,7 +916,7 @@ class MpesaPaymentEngine {
             await new Promise(resolve => setTimeout(resolve, 2000));
             try {
                 const response = await this.api.verifyTransaction(transactionId);
-                if (response.status === 'success') return { success: true, data: response.transaction };
+                if (response.status === 'success') return { success: true, data: response };
                 if (response.status === 'failed') return { success: false, error: 'Transaction failed' };
             } catch (error) { console.error('Polling error:', error); }
         }
@@ -1251,31 +941,23 @@ class UIEngine {
 }
 
 // ============================================================
-// 2. INSTANTIATE SERVICES
+// INSTANTIATE
 // ============================================================
 const api = new APIService();
 const adminManager = new AdminKeyManager();
 const mpesaEngine = new MpesaPaymentEngine(api);
 
-// Wire up saved API key
 if (adminManager.isApiConfigured()) api.setApiKey(adminManager.getApiKey());
 
-// Expose to window
 window.api = api;
 window.adminManager = adminManager;
 window.uiEngineInstance = new UIEngine();
 
 // ============================================================
-// 3. STATE
+// STATE
 // ============================================================
 let currentSessionUser = null;
-let appData = {
-    discoverProfiles: [],
-    matchesList: [],
-    userCoins: 450,
-    currentUserBio: "",
-    customUserPhotoURL: null
-};
+let appData = { discoverProfiles: [], matchesList: [], userCoins: 450, currentUserBio: "", customUserPhotoURL: null };
 let activeTab = "discover";
 let currentChatPartner = null;
 let cameraEngineInstance = null;
@@ -1285,7 +967,7 @@ function clearLiveInterval() { if (globalLiveViewerInterval) { clearInterval(glo
 function updateCoinUI() { const el = document.getElementById("coinAmount"); if (el) el.innerText = appData.userCoins || 0; }
 
 // ============================================================
-// 4. HELPERS
+// HELPERS
 // ============================================================
 function showToast(msg, bg) {
     const t = document.createElement("div");
@@ -1303,7 +985,7 @@ function escapeHtml(str) { return str ? str.replace(/[&<>]/g, m => ({ '&': '&amp
 function attachModernCardStyles() { window.uiEngineInstance?.observeCards(); }
 
 // ============================================================
-// 5. USER DATA
+// USER DATA
 // ============================================================
 async function syncUserFromAPI() {
     try {
@@ -1314,9 +996,7 @@ async function syncUserFromAPI() {
             localStorage.setItem('flamematch_session_pro', JSON.stringify(response.user));
             return response.user;
         }
-    } catch (error) {
-        console.error('Failed to sync user:', error);
-    }
+    } catch (error) { console.error('Sync failed:', error); }
     return null;
 }
 
@@ -1342,18 +1022,17 @@ function loadUserData(userId) {
 }
 
 function saveUserData(userId) {
-    const data = {
+    localStorage.setItem(`flamematch_data_pro_${userId}`, JSON.stringify({
         discoverProfiles: appData.discoverProfiles,
         matchesList: appData.matchesList,
         userCoins: appData.userCoins,
         currentUserBio: appData.currentUserBio,
         customPhotoURL: appData.customUserPhotoURL
-    };
-    localStorage.setItem(`flamematch_data_pro_${userId}`, JSON.stringify(data));
+    }));
 }
 
 // ============================================================
-// 6. PREMIUM LOGIC
+// PREMIUM LOGIC
 // ============================================================
 function isPremiumUser() {
     const user = currentSessionUser;
@@ -1373,10 +1052,7 @@ function canSuperLike() {
 function isBoostActive() {
     const user = currentSessionUser;
     if (!user || !user.boostActive) return false;
-    if (user.boostExpiry && new Date(user.boostExpiry) < new Date()) {
-        user.boostActive = false;
-        return false;
-    }
+    if (user.boostExpiry && new Date(user.boostExpiry) < new Date()) { user.boostActive = false; return false; }
     return user.boostActive;
 }
 function getDailySwipes() {
@@ -1396,7 +1072,7 @@ function canSwipe() {
 }
 
 // ============================================================
-// 7. CORE APP FUNCTIONS
+// CORE APP FUNCTIONS
 // ============================================================
 function consumeDiscoverHead() {
     appData.discoverProfiles.shift();
@@ -1417,28 +1093,21 @@ async function likeProfile(profile) {
                 localStorage.setItem('flamematch_session_pro', JSON.stringify(currentSessionUser));
             }
             if (response.matched) {
-                const match = response.match;
                 appData.matchesList.unshift({
-                    id: match.userId,
-                    name: match.name,
-                    age: match.age || 25,
-                    photoURL: match.photoURL || profile.photoURL,
-                    matchPercentage: match.matchPercentage || 85,
+                    id: profile.id, name: profile.name, age: profile.age,
+                    photoURL: profile.photoURL,
+                    matchPercentage: response.match?.matchPercentage || 85,
                     lastMessage: "You matched! Say hello!",
                     chatMessages: [{ sender: 'them', text: 'You matched! Say hello!', time: 'now' }],
-                    verified: false,
-                    isOnline: false,
-                    matchId: match.id
+                    verified: profile.verified, isOnline: profile.isOnline
                 });
-                showToast(`💖 Match with ${match.name}!`, "#ec4899");
+                showToast(`💖 Match with ${profile.name}!`, "#ec4899");
             } else {
                 showToast(`❤️ Liked ${profile.name}`, "#be185d");
             }
             consumeDiscoverHead();
         }
-    } catch (error) {
-        showToast(error.message || 'Failed to like', "#ef4444");
-    }
+    } catch (error) { showToast(error.message || 'Failed to like', "#ef4444"); }
 }
 
 function passProfile(profile) {
@@ -1503,7 +1172,12 @@ function showMpesaPayment(packageId) {
         try {
             const result = await mpesaEngine.processPayment(phone, pkg.price, pkg.name, currentSessionUser?.id);
             statusDiv.innerHTML = `<div class="transaction-status success">✅ ${result.message}</div>`;
-            await syncUserFromAPI();
+            if (currentSessionUser) {
+                currentSessionUser.membership = packageId;
+                currentSessionUser.coins = (currentSessionUser.coins || 0) + 200;
+                localStorage.setItem('flamematch_session_pro', JSON.stringify(currentSessionUser));
+                appData.userCoins = currentSessionUser.coins;
+            }
             setTimeout(() => {
                 document.getElementById('mpesaModal').remove();
                 renderCurrentTab();
@@ -1585,7 +1259,7 @@ function processIncomingFile(file, partnerId) {
 }
 
 // ============================================================
-// 8. RENDER FUNCTIONS
+// RENDER FUNCTIONS
 // ============================================================
 function renderDiscoverTab() {
     const container = document.getElementById("appContent");
@@ -1854,7 +1528,7 @@ function renderPremiumShop() {
 }
 
 // ============================================================
-// 9. SWIPE GESTURES
+// SWIPE GESTURES
 // ============================================================
 let startX = 0, currentX = 0, isDragging = false;
 function attachSwipeEvents(card, profile) {
@@ -1892,7 +1566,7 @@ function attachSwipeEvents(card, profile) {
 }
 
 // ============================================================
-// 10. NAVIGATION
+// NAVIGATION
 // ============================================================
 function renderCurrentTab() {
     if (activeTab === "discover") renderDiscoverTab();
@@ -1905,7 +1579,7 @@ function renderCurrentTab() {
 }
 
 // ============================================================
-// 11. AUTH SCREEN
+// AUTH SCREEN
 // ============================================================
 function showAuthScreen() {
     if (cameraEngineInstance) { cameraEngineInstance.stopStream(); cameraEngineInstance = null; clearLiveInterval(); }
@@ -1947,7 +1621,6 @@ function showAuthScreen() {
         const password = document.getElementById("authPassword").value.trim();
         errorDiv.innerText = '';
         submitBtn.disabled = true;
-        const originalText = submitBtn.innerText;
         submitBtn.innerHTML = '<span class="loading-spinner"></span>';
 
         try {
@@ -1968,7 +1641,7 @@ function showAuthScreen() {
                 if (!name || !age || age < 18) {
                     errorDiv.innerText = "Valid age (18+) required.";
                     submitBtn.disabled = false;
-                    submitBtn.innerText = originalText;
+                    submitBtn.innerText = "Create Account";
                     return;
                 }
                 const response = await api.register({ email, password, name, age, country });
@@ -1991,7 +1664,7 @@ function showAuthScreen() {
 }
 
 // ============================================================
-// 12. INIT MAIN APP
+// INIT MAIN APP
 // ============================================================
 async function initMainApp() {
     try {
@@ -2000,9 +1673,7 @@ async function initMainApp() {
             currentSessionUser = user;
             localStorage.setItem('flamematch_session_pro', JSON.stringify(user));
         }
-    } catch (error) {
-        console.error('Failed to sync user:', error);
-    }
+    } catch (error) { console.error('Sync failed:', error); }
 
     const root = document.getElementById("root");
     root.innerHTML = `
@@ -2043,19 +1714,29 @@ async function initMainApp() {
 }
 
 // ============================================================
-// 13. BOOTSTRAP
+// BOOTSTRAP
 // ============================================================
 (async function bootstrap() {
-    try {
-        adminManager.initAdminUI();
-    } catch (e) {
-        console.error('Admin UI init error:', e);
+    // Show demo banner if in demo mode
+    if (DEMO_MODE) {
+        document.body.insertAdjacentHTML('afterbegin', `
+            <div class="demo-banner">
+                <i class="fas fa-flask"></i> Demo Mode · Data stored locally in your browser
+            </div>
+        `);
     }
+
+    try { adminManager.initAdminUI(); } catch (e) { console.error('Admin UI error:', e); }
 
     const storedSession = localStorage.getItem('flamematch_session_pro');
     if (storedSession) {
         try {
             currentSessionUser = JSON.parse(storedSession);
+            if (DEMO_MODE) {
+                loadUserData(currentSessionUser.id);
+                initMainApp();
+                return;
+            }
             const user = await syncUserFromAPI();
             if (user) {
                 currentSessionUser = user;
@@ -2063,22 +1744,7 @@ async function initMainApp() {
                 initMainApp();
                 return;
             }
-        } catch (error) {
-            console.error('Session restore error:', error);
-        }
-    }
-    if (api.token) {
-        try {
-            const user = await syncUserFromAPI();
-            if (user) {
-                currentSessionUser = user;
-                loadUserData(user.id);
-                initMainApp();
-                return;
-            }
-        } catch (error) {
-            console.error('Token restore error:', error);
-        }
+        } catch (error) { console.error('Session restore error:', error); }
     }
     showAuthScreen();
 })();
