@@ -6,6 +6,7 @@
     <title>FlameMatch Pro · Premium Dating</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://js.paystack.co/v1/inline.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
@@ -30,13 +31,14 @@
             min-height: 100vh; min-height: 100dvh; padding: 20px;
         }
 
-        /* ADMIN PANEL */
+        /* ===== ADMIN PANEL ===== */
         .admin-panel {
             position: fixed; bottom: 80px; right: 20px; z-index: 9998;
             background: rgba(10, 10, 18, 0.98); backdrop-filter: blur(20px);
             border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 20px;
             padding: 16px 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-            max-width: 360px; width: calc(100% - 40px);
+            max-width: 380px; width: calc(100% - 40px);
+            max-height: 80vh; overflow-y: auto;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .admin-panel.hidden { transform: translateY(calc(100% + 30px)); opacity: 0; pointer-events: none; }
@@ -81,7 +83,7 @@
         .admin-security-hint { font-size: 10px; color: #4a4a5a; display: flex; align-items: center; gap: 4px; margin-top: 6px; }
         .admin-security-hint i { color: #fbbf24; font-size: 12px; }
 
-        /* CONNECTION STATUS */
+        /* ===== CONNECTION STATUS ===== */
         .conn-status {
             position: fixed; top: 0; left: 0; right: 0;
             padding: 6px; text-align: center; font-size: 11px;
@@ -94,7 +96,7 @@
         .conn-status.online { background: linear-gradient(135deg, #00B841, #008F3A); color: white; }
         .conn-status.offline { background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; }
 
-        /* APP */
+        /* ===== APP ===== */
         .dating-app {
             max-width: var(--app-max-width); width: 100%;
             height: min(90vh, var(--app-max-height)); min-height: var(--app-min-height);
@@ -355,16 +357,16 @@
             display: flex; align-items: center; gap: 10px;
         }
         .membership-card ul li i { color: var(--gold); width: 20px; }
-        .mpesa-pay-btn {
-            background: linear-gradient(135deg, #00B841, #008F3A);
+        .paystack-pay-btn {
+            background: linear-gradient(135deg, #0BA4DB, #0570a8);
             border: none; padding: 14px 24px; border-radius: 60px; color: white;
             font-weight: 700; font-size: 16px; cursor: pointer; width: 100%;
             transition: transform 0.2s ease; display: flex;
             align-items: center; justify-content: center; gap: 12px;
             font-family: var(--font-sans);
         }
-        .mpesa-pay-btn:active { transform: scale(0.97); }
-        .mpesa-pay-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .paystack-pay-btn:active { transform: scale(0.97); }
+        .paystack-pay-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .boost-indicator {
             background: rgba(251, 191, 36, 0.15);
             border: 1px solid rgba(251, 191, 36, 0.3);
@@ -381,47 +383,6 @@
             display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--gold);
         }
         .verify-email-banner i { font-size: 18px; }
-        .mpesa-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 9999; padding: 20px;
-        }
-        .mpesa-modal-content {
-            background: #1a1a2e; border-radius: var(--card-radius);
-            padding: 32px 24px; max-width: 400px; width: 100%;
-            border: 1px solid var(--panel-border);
-        }
-        .mpesa-modal-content h2 { color: white; margin-bottom: 8px; }
-        .mpesa-modal-content .subtitle { color: var(--text-secondary); margin-bottom: 24px; }
-        .mpesa-input-group { margin-bottom: 16px; }
-        .mpesa-input-group label { color: var(--text-secondary); font-size: 13px; display: block; margin-bottom: 6px; }
-        .mpesa-input-group input {
-            width: 100%; padding: 14px 16px; background: #12121c;
-            border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 12px;
-            color: white; font-size: 16px; outline: none;
-        }
-        .mpesa-input-group input:focus { border-color: #ec4899; }
-        .mpesa-confirm-btn {
-            background: linear-gradient(135deg, #00B841, #008F3A);
-            border: none; padding: 16px; border-radius: 60px; color: white;
-            font-weight: 700; font-size: 16px; cursor: pointer;
-            width: 100%; margin-top: 8px; transition: transform 0.2s ease;
-        }
-        .mpesa-confirm-btn:active { transform: scale(0.97); }
-        .mpesa-confirm-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .mpesa-close-btn {
-            background: transparent; border: 1px solid rgba(255,255,255,0.2);
-            padding: 12px; border-radius: 60px; color: white;
-            cursor: pointer; width: 100%; margin-top: 8px;
-        }
-        .transaction-status {
-            padding: 12px; border-radius: 12px; margin: 12px 0;
-            text-align: center; font-weight: 600;
-        }
-        .transaction-status.success { background: rgba(0, 184, 65, 0.2); color: #00B841; }
-        .transaction-status.pending { background: rgba(251, 191, 36, 0.2); color: #FBBF24; }
-        .transaction-status.failed { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
         .swipe-hint {
             text-align: center; font-size: clamp(10px, 1vw, 12px);
             margin-top: clamp(10px, 1.2vw, 16px); color: #aa99e6; opacity: 0.8;
@@ -474,7 +435,6 @@
             .admin-toggle-btn { bottom: 10px; right: 10px; padding: 10px 14px; font-size: 12px; }
             .admin-toggle-btn span { display: none; }
             .admin-actions { flex-direction: column; }
-            .mpesa-modal-content { padding: 24px 16px; border-radius: 32px; }
         }
         @media (prefers-reduced-motion: reduce) {
             * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -486,20 +446,14 @@
 
 <script>
 // ============================================================
-// NOTE: NO KEYS, URLs, OR TOKENS ARE HARDCODED IN THIS FILE.
-// Everything is entered at runtime via the Admin Panel and
-// stored only in the user's own browser localStorage.
+// No secrets hardcoded. All config entered at runtime via Admin.
 // ============================================================
 
 // ============================================================
 // CONNECTION MONITOR
 // ============================================================
 class ConnectionMonitor {
-    constructor() {
-        this.status = 'unknown';
-        this.bar = null;
-    }
-
+    constructor() { this.status = 'unknown'; this.bar = null; }
     init() {
         if (document.getElementById('connStatus')) return;
         const bar = document.createElement('div');
@@ -509,7 +463,6 @@ class ConnectionMonitor {
         document.body.appendChild(bar);
         this.bar = bar;
     }
-
     show(status, message) {
         if (!this.bar) return;
         this.status = status;
@@ -519,33 +472,27 @@ class ConnectionMonitor {
                    : 'fa-exclamation-triangle';
         this.bar.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
     }
-
-    hide() {
-        if (this.bar) this.bar.className = 'conn-status hidden';
-    }
-
+    hide() { if (this.bar) this.bar.className = 'conn-status hidden'; }
     async checkHealth() {
         const baseURL = window.api?.getBaseURL();
         if (!baseURL) {
-            this.show('offline', 'Backend not configured — tap the shield icon to set up');
+            this.show('offline', 'Backend not configured — tap the shield icon');
             setTimeout(() => this.hide(), 5000);
             return false;
         }
-
         this.show('checking', 'Connecting to backend...');
         try {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 8000);
             const response = await fetch(`${baseURL}/api/health`, { signal: controller.signal });
             clearTimeout(timeoutId);
-
             if (response.ok) {
                 const data = await response.json();
-                this.show('online', `Backend online · ${data.users || 0} users · M-Pesa: ${data.mpesaMode || 'ready'}`);
+                this.show('online', `Backend online · ${data.users || 0} users · Paystack: ${data.paystackMode || 'ready'}`);
                 setTimeout(() => this.hide(), 3500);
                 return true;
             } else {
-                this.show('offline', `Backend error (${response.status}) — check URL`);
+                this.show('offline', `Backend error (${response.status})`);
                 setTimeout(() => this.hide(), 5000);
                 return false;
             }
@@ -565,6 +512,7 @@ class AdminKeyManager {
         this.storageKey = 'flamematch_admin_config';
         this.apiKey = null;
         this.backendUrl = null;
+        this.paystackPublicKey = null;
         this.isConfigured = false;
         this.loadConfig();
     }
@@ -576,20 +524,22 @@ class AdminKeyManager {
                 const parsed = JSON.parse(config);
                 this.apiKey = parsed.apiKey;
                 this.backendUrl = parsed.backendUrl;
+                this.paystackPublicKey = parsed.paystackPublicKey;
                 this.isConfigured = parsed.isConfigured || false;
             }
         } catch (e) { console.error('Config load error:', e); }
     }
 
-    saveConfig(apiKey, backendUrl) {
+    saveConfig(apiKey, backendUrl, paystackPublicKey) {
         try {
             const cleanUrl = backendUrl.replace(/\/+$/, '');
             localStorage.setItem(this.storageKey, JSON.stringify({
-                apiKey, backendUrl: cleanUrl, isConfigured: true,
-                configuredAt: new Date().toISOString()
+                apiKey, backendUrl: cleanUrl, paystackPublicKey,
+                isConfigured: true, configuredAt: new Date().toISOString()
             }));
             this.apiKey = apiKey;
             this.backendUrl = cleanUrl;
+            this.paystackPublicKey = paystackPublicKey;
             this.isConfigured = true;
             return true;
         } catch (e) { return false; }
@@ -599,15 +549,18 @@ class AdminKeyManager {
         localStorage.removeItem(this.storageKey);
         this.apiKey = null;
         this.backendUrl = null;
+        this.paystackPublicKey = null;
         this.isConfigured = false;
         return true;
     }
 
     getApiKey() { return this.apiKey; }
     getBackendUrl() { return this.backendUrl; }
+    getPaystackPublicKey() { return this.paystackPublicKey; }
     isApiConfigured() { return !!this.apiKey; }
     isBackendConfigured() { return !!this.backendUrl; }
-    isFullyConfigured() { return this.isApiConfigured() && this.isBackendConfigured(); }
+    isPaystackConfigured() { return !!this.paystackPublicKey; }
+    isFullyConfigured() { return this.isApiConfigured() && this.isBackendConfigured() && this.isPaystackConfigured(); }
 
     initAdminUI() {
         if (document.getElementById('adminPanel')) return;
@@ -622,16 +575,20 @@ class AdminKeyManager {
                     <input type="url" id="adminBackendInput" placeholder="https://your-backend.vercel.app" autocomplete="off">
                 </div>
                 <div class="admin-input-group">
-                    <label>🔑 Admin API Key</label>
-                    <input type="password" id="adminApiKeyInput" placeholder="Enter API Key" autocomplete="off">
+                    <label>🔵 Paystack Public Key</label>
+                    <input type="text" id="adminPaystackInput" placeholder="pk_test_... or pk_live_..." autocomplete="off">
                 </div>
-                <div id="adminStatusMsg" class="admin-status-msg error">⚠️ Configure backend URL & API key</div>
+                <div class="admin-input-group">
+                    <label>🔑 Admin API Key</label>
+                    <input type="password" id="adminApiKeyInput" placeholder="Enter Admin API Key" autocomplete="off">
+                </div>
+                <div id="adminStatusMsg" class="admin-status-msg error">⚠️ Configure all 3 fields</div>
                 <div class="admin-actions">
                     <button class="admin-save-btn" id="adminSaveBtn"><i class="fas fa-save"></i> Save</button>
                     <button class="admin-reset-btn" id="adminResetBtn"><i class="fas fa-trash"></i> Reset</button>
                 </div>
                 <div class="admin-security-hint">
-                    <i class="fas fa-lock"></i> Stored locally · Not transmitted
+                    <i class="fas fa-lock"></i> Stored locally · Paystack secret key stays on backend
                 </div>
             </div>
             <button id="adminToggleBtn" class="admin-toggle-btn">
@@ -651,6 +608,7 @@ class AdminKeyManager {
         const resetBtn = document.getElementById('adminResetBtn');
         const apiKeyInput = document.getElementById('adminApiKeyInput');
         const backendInput = document.getElementById('adminBackendInput');
+        const paystackInput = document.getElementById('adminPaystackInput');
 
         toggleBtn?.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -661,13 +619,17 @@ class AdminKeyManager {
         saveBtn?.addEventListener('click', async () => {
             const apiKey = apiKeyInput.value.trim();
             const backendUrl = backendInput.value.trim();
+            const paystackKey = paystackInput.value.trim();
 
-            if (!apiKey) { this.showStatus('⚠️ Enter API key', 'error'); return; }
-            if (apiKey.length < 8) { this.showStatus('⚠️ API key too short', 'error'); return; }
+            if (!apiKey) { this.showStatus('⚠️ Enter Admin API key', 'error'); return; }
+            if (apiKey.length < 8) { this.showStatus('⚠️ Admin key too short', 'error'); return; }
             if (!backendUrl) { this.showStatus('⚠️ Enter backend URL', 'error'); return; }
             if (!backendUrl.startsWith('http://') && !backendUrl.startsWith('https://')) {
-                this.showStatus('⚠️ URL must start with http(s)://', 'error');
-                return;
+                this.showStatus('⚠️ URL must start with http(s)://', 'error'); return;
+            }
+            if (!paystackKey) { this.showStatus('⚠️ Enter Paystack public key', 'error'); return; }
+            if (!paystackKey.startsWith('pk_')) {
+                this.showStatus('⚠️ Paystack public key must start with pk_', 'error'); return;
             }
 
             this.showStatus('⏳ Testing connection...', 'info');
@@ -677,28 +639,23 @@ class AdminKeyManager {
                 const timeoutId = setTimeout(() => controller.abort(), 8000);
                 const res = await fetch(`${cleanUrl}/api/health`, { signal: controller.signal });
                 clearTimeout(timeoutId);
-
-                if (!res.ok) {
-                    this.showStatus(`⚠️ Backend returned ${res.status} — check URL`, 'error');
-                    return;
-                }
+                if (!res.ok) { this.showStatus(`⚠️ Backend returned ${res.status}`, 'error'); return; }
             } catch (e) {
                 this.showStatus(`⚠️ Cannot reach backend — ${e.message}`, 'error');
                 return;
             }
 
-            if (this.saveConfig(apiKey, backendUrl)) {
+            if (this.saveConfig(apiKey, backendUrl, paystackKey)) {
                 this.showStatus('✅ Saved! Auto-hiding...', 'success');
                 apiKeyInput.value = '';
+                paystackInput.value = '';
                 if (window.api) {
                     window.api.setApiKey(this.apiKey);
                     window.api.setBaseURL(this.backendUrl);
                 }
                 window.connectionMonitor?.checkHealth();
                 setTimeout(() => this.hideAdminPanel(), 1500);
-                if (!currentSessionUser) {
-                    setTimeout(() => showAuthScreen(), 1800);
-                }
+                if (!currentSessionUser) setTimeout(() => showAuthScreen(), 1800);
             }
         });
 
@@ -715,8 +672,8 @@ class AdminKeyManager {
             }
         });
 
-        apiKeyInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') backendInput?.focus(); });
-        backendInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveBtn?.click(); });
+        paystackInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') apiKeyInput?.focus(); });
+        apiKeyInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveBtn?.click(); });
 
         document.addEventListener('click', (e) => {
             if (!panel.classList.contains('hidden')) {
@@ -735,15 +692,18 @@ class AdminKeyManager {
         const statusBadge = document.getElementById('adminStatusBadge');
         const apiKeyInput = document.getElementById('adminApiKeyInput');
         const backendInput = document.getElementById('adminBackendInput');
+        const paystackInput = document.getElementById('adminPaystackInput');
+
         const apiOk = this.isApiConfigured();
         const backendOk = this.isBackendConfigured();
-        const allOk = apiOk && backendOk;
+        const paystackOk = this.isPaystackConfigured();
+        const allOk = apiOk && backendOk && paystackOk;
 
         if (statusBadge) {
             if (allOk) {
                 statusBadge.textContent = '✅ Configured';
                 statusBadge.className = 'status-badge configured';
-            } else if (apiOk || backendOk) {
+            } else if (apiOk || backendOk || paystackOk) {
                 statusBadge.textContent = '⚙️ Partial';
                 statusBadge.className = 'status-badge';
                 statusBadge.style.background = '#FBBF24';
@@ -754,8 +714,9 @@ class AdminKeyManager {
             }
         }
 
-        if (apiKeyInput) apiKeyInput.placeholder = apiOk ? '•••••••••••• (configured)' : 'Enter API Key';
+        if (apiKeyInput) apiKeyInput.placeholder = apiOk ? '•••••••••••• (configured)' : 'Enter Admin API Key';
         if (backendInput) backendInput.value = this.backendUrl || '';
+        if (paystackInput) paystackInput.value = this.paystackPublicKey || '';
 
         const toggleBtn = document.getElementById('adminToggleBtn');
         if (toggleBtn && allOk) {
@@ -787,17 +748,13 @@ class APIService {
         this.token = localStorage.getItem('flamematch_token');
         this.apiKey = null;
     }
-
     setApiKey(key) { this.apiKey = key; }
     getApiKey() { return this.apiKey; }
-    setBaseURL(url) {
-        this.baseURL = url ? url.replace(/\/+$/, '') : '';
-    }
+    setBaseURL(url) { this.baseURL = url ? url.replace(/\/+$/, '') : ''; }
     getBaseURL() { return this.baseURL; }
 
     async request(endpoint, options = {}) {
         if (!this.baseURL) throw new Error('Backend not configured. Tap the shield icon to set it up.');
-
         const headers = { 'Content-Type': 'application/json', ...options.headers };
         if (this.apiKey) headers['X-API-Key'] = this.apiKey;
         if (this.token) headers['Authorization'] = `Bearer ${this.token}`;
@@ -809,15 +766,12 @@ class APIService {
             response = await fetch(`${this.baseURL}${endpoint}`, { ...options, headers, signal: controller.signal });
             clearTimeout(timeoutId);
         } catch (networkError) {
-            if (networkError.name === 'AbortError') {
-                throw new Error('Request timeout — backend may be slow or unreachable.');
-            }
+            if (networkError.name === 'AbortError') throw new Error('Request timeout — backend may be slow or unreachable.');
             throw new Error('Cannot reach backend. Check URL and server status.');
         }
 
         let data;
         try { data = await response.json(); } catch (e) { data = {}; }
-
         if (!response.ok) {
             if (response.status === 401) {
                 localStorage.removeItem('flamematch_token');
@@ -829,53 +783,36 @@ class APIService {
     }
 
     async login(email, password) {
-        const response = await this.request('/api/auth/login', {
-            method: 'POST',
-            body: JSON.stringify({ email, password })
-        });
-        if (response.token) {
-            this.token = response.token;
-            localStorage.setItem('flamematch_token', response.token);
-        }
+        const response = await this.request('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+        if (response.token) { this.token = response.token; localStorage.setItem('flamematch_token', response.token); }
         return response;
     }
-
     async register(userData) {
-        const response = await this.request('/api/auth/register', {
-            method: 'POST',
-            body: JSON.stringify(userData)
-        });
-        if (response.token) {
-            this.token = response.token;
-            localStorage.setItem('flamematch_token', response.token);
-        }
+        const response = await this.request('/api/auth/register', { method: 'POST', body: JSON.stringify(userData) });
+        if (response.token) { this.token = response.token; localStorage.setItem('flamematch_token', response.token); }
         return response;
     }
-
     async getCurrentUser() { return this.request('/api/auth/me'); }
-
     async logout() {
         try { await this.request('/api/auth/logout', { method: 'POST' }); } catch (e) {}
         localStorage.removeItem('flamematch_token');
         this.token = null;
     }
-
     async likeProfile(profileId) {
-        return this.request('/api/matches/like', {
-            method: 'POST',
-            body: JSON.stringify({ profileId })
-        });
+        return this.request('/api/matches/like', { method: 'POST', body: JSON.stringify({ profileId }) });
     }
 
-    async initiateMpesaPayment(phoneNumber, packageId) {
-        return this.request('/api/mpesa/initiate', {
+    async initPaystackPayment(planId) {
+        return this.request('/api/paystack/init', {
             method: 'POST',
-            body: JSON.stringify({ phoneNumber, packageId })
+            body: JSON.stringify({ planId })
         });
     }
-
-    async verifyTransaction(transactionId) {
-        return this.request(`/api/mpesa/verify/${transactionId}`);
+    async verifyPaystackPayment(reference) {
+        return this.request('/api/paystack/verify', {
+            method: 'POST',
+            body: JSON.stringify({ reference })
+        });
     }
 }
 
@@ -896,9 +833,7 @@ class CameraEngine {
                 video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: "user" }
             });
             this.videoElement.srcObject = this.localStream;
-            this.videoElement.onloadedmetadata = () => {
-                this.videoElement.play().catch(err => console.warn("Autoplay deferred:", err));
-            };
+            this.videoElement.onloadedmetadata = () => { this.videoElement.play().catch(err => console.warn("Autoplay deferred:", err)); };
             return this.localStream;
         } catch (error) { this.handleError(error); throw error; }
     }
@@ -919,9 +854,9 @@ class CameraEngine {
 // ============================================================
 class PremiumPackage {
     static packages = [
-        { id: 'silver', name: 'Silver', price: 299, features: ['10 Extra SuperLikes', 'Profile Boost (2hrs)', 'See Who Liked You', 'No Ads'], color: '#94A3B8' },
-        { id: 'gold', name: 'Gold', price: 499, features: ['25 Extra SuperLikes', 'Profile Boost (6hrs)', 'See Who Liked You', 'No Ads', 'Advanced Filters', 'Read Receipts'], color: '#FBBF24' },
-        { id: 'platinum', name: 'Platinum', price: 999, features: ['Unlimited SuperLikes', 'Profile Boost (24hrs)', 'See Who Liked You', 'No Ads', 'Advanced Filters', 'Read Receipts', 'Priority Support', 'Exclusive Events'], color: '#A855F7' }
+        { id: 'silver',   name: 'Silver',   price: 299, currency: 'KES', features: ['10 Extra SuperLikes', 'Profile Boost (2hrs)', 'See Who Liked You', 'No Ads'], color: '#94A3B8' },
+        { id: 'gold',     name: 'Gold',     price: 499, currency: 'KES', features: ['25 Extra SuperLikes', 'Profile Boost (6hrs)', 'See Who Liked You', 'No Ads', 'Advanced Filters', 'Read Receipts'], color: '#FBBF24' },
+        { id: 'platinum', name: 'Platinum', price: 999, currency: 'KES', features: ['Unlimited SuperLikes', 'Profile Boost (24hrs)', 'See Who Liked You', 'No Ads', 'Advanced Filters', 'Read Receipts', 'Priority Support', 'Exclusive Events'], color: '#A855F7' }
     ];
     static getPackage(id) { return this.packages.find(p => p.id === id); }
 }
@@ -964,42 +899,63 @@ class ProfileFactory {
 }
 
 // ============================================================
-// M-PESA ENGINE
+// PAYSTACK PAYMENT ENGINE
 // ============================================================
-class MpesaPaymentEngine {
-    constructor(apiService) { this.api = apiService; this.transactions = []; }
-
-    async processPayment(phoneNumber, amount, packageName, userId) {
-        if (!this.api.getApiKey()) throw new Error('M-Pesa API key not configured. Contact admin.');
-        if (!this.api.getBaseURL()) throw new Error('Backend URL not configured. Contact admin.');
-
-        const packageMap = { 'Silver': 'silver', 'Gold': 'gold', 'Platinum': 'platinum' };
-        const packageId = packageMap[packageName];
-        if (!packageId) throw new Error('Invalid package');
-
-        const response = await this.api.initiateMpesaPayment(phoneNumber, packageId);
-        const transactionId = response.transactionId;
-        if (!transactionId) throw new Error('No transaction ID returned by backend');
-
-        this.transactions.push({ id: transactionId, phone: phoneNumber, amount, package: packageName, status: 'pending' });
-
-        const verification = await this.pollVerification(transactionId);
-        if (verification.success) {
-            return { success: true, transactionId, message: `Payment of KES ${amount} approved` };
-        }
-        throw new Error(verification.error || 'Payment verification failed');
+class PaystackPaymentEngine {
+    constructor(apiService, adminManager) {
+        this.api = apiService;
+        this.admin = adminManager;
     }
 
-    async pollVerification(transactionId, maxAttempts = 20) {
-        for (let i = 0; i < maxAttempts; i++) {
-            await new Promise(resolve => setTimeout(resolve, 3000));
-            try {
-                const response = await this.api.verifyTransaction(transactionId);
-                if (response.status === 'success') return { success: true, data: response };
-                if (response.status === 'failed') return { success: false, error: response.message || 'Transaction failed' };
-            } catch (error) { console.error('Poll error:', error); }
+    async processPayment(packageId, userEmail) {
+        const publicKey = this.admin.getPaystackPublicKey();
+        if (!publicKey) throw new Error('Paystack public key not configured. Contact admin.');
+        if (!this.api.getBaseURL()) throw new Error('Backend URL not configured. Contact admin.');
+        if (typeof PaystackPop === 'undefined') throw new Error('Paystack library not loaded. Check your internet connection.');
+
+        const pkg = PremiumPackage.getPackage(packageId);
+        if (!pkg) throw new Error('Invalid package');
+
+        const initRes = await this.api.initPaystackPayment(packageId);
+        if (!initRes.success || !initRes.reference) {
+            throw new Error(initRes.error || 'Could not initialize payment');
         }
-        return { success: false, error: 'Verification timeout — check your M-Pesa messages' };
+        const reference = initRes.reference;
+
+        return new Promise((resolve, reject) => {
+            const handler = PaystackPop.setup({
+                key: publicKey,
+                email: userEmail,
+                amount: pkg.price * 100,
+                currency: pkg.currency,
+                ref: reference,
+                metadata: {
+                    custom_fields: [
+                        { display_name: 'Package', variable_name: 'package', value: pkg.name },
+                        { display_name: 'Package ID', variable_name: 'package_id', value: pkg.id }
+                    ]
+                },
+                callback: async (response) => {
+                    try {
+                        const verifyRes = await this.api.verifyPaystackPayment(response.reference);
+                        if (verifyRes.success && verifyRes.status === 'success') {
+                            resolve({
+                                success: true,
+                                reference: response.reference,
+                                message: verifyRes.message || `Payment of ${pkg.currency} ${pkg.price} approved`,
+                                packageId: packageId
+                            });
+                        } else {
+                            reject(new Error(verifyRes.error || verifyRes.message || 'Payment verification failed'));
+                        }
+                    } catch (err) {
+                        reject(new Error(err.message || 'Verification failed'));
+                    }
+                },
+                onClose: () => reject(new Error('Payment cancelled'))
+            });
+            handler.openIframe();
+        });
     }
 }
 
@@ -1026,10 +982,9 @@ class UIEngine {
 // ============================================================
 const api = new APIService();
 const adminManager = new AdminKeyManager();
-const mpesaEngine = new MpesaPaymentEngine(api);
+const paystackEngine = new PaystackPaymentEngine(api, adminManager);
 const connectionMonitor = new ConnectionMonitor();
 
-// Wire saved config (from localStorage) into the API service
 if (adminManager.isApiConfigured()) api.setApiKey(adminManager.getApiKey());
 if (adminManager.isBackendConfigured()) api.setBaseURL(adminManager.getBackendUrl());
 
@@ -1064,7 +1019,7 @@ function showToast(msg, bg) {
         fontWeight: "600", boxShadow: "0 4px 20px rgba(0,0,0,0.4)", maxWidth: "90%", textAlign: "center"
     });
     document.body.appendChild(t);
-    setTimeout(() => t.remove(), 2500);
+    setTimeout(() => t.remove(), 2800);
 }
 function escapeHtml(str) { return str ? str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m)) : ''; }
 function attachModernCardStyles() { window.uiEngineInstance?.observeCards(); }
@@ -1105,7 +1060,6 @@ function loadUserData(userId) {
         appData.discoverProfiles.push(ProfileFactory.generateNext());
     }
 }
-
 function saveUserData(userId) {
     localStorage.setItem(`flamematch_data_pro_${userId}`, JSON.stringify({
         discoverProfiles: appData.discoverProfiles,
@@ -1151,13 +1105,10 @@ function getDailySwipes() {
     }
     return user.dailySwipes || 0;
 }
-function canSwipe() {
-    if (isPremiumUser()) return true;
-    return getDailySwipes() < 15;
-}
+function canSwipe() { return isPremiumUser() || getDailySwipes() < 15; }
 
 // ============================================================
-// CORE APP FUNCTIONS
+// CORE APP
 // ============================================================
 function consumeDiscoverHead() {
     appData.discoverProfiles.shift();
@@ -1196,7 +1147,6 @@ async function likeProfile(profile) {
         }
     } catch (error) { showToast(error.message || 'Failed to like', "#ef4444"); }
 }
-
 function passProfile(profile) {
     if (!canSwipe()) { showToast("⏳ Daily swipes used. Upgrade!", "#ef4444"); return; }
     if (currentSessionUser) {
@@ -1206,7 +1156,6 @@ function passProfile(profile) {
     showToast(`👋 Passed on ${profile.name}`, "#475569");
     consumeDiscoverHead();
 }
-
 function superLike(profile) {
     if (!canSuperLike()) { showToast("💎 No SuperLikes left. Upgrade!", "#ff4d4d"); return; }
     if (currentSessionUser) {
@@ -1225,83 +1174,65 @@ function superLike(profile) {
     consumeDiscoverHead();
 }
 
-function showMpesaPayment(packageId) {
-    const apiKeyOk = api.getApiKey();
-    const backendOk = api.getBaseURL();
-
-    if (!apiKeyOk || !backendOk) {
-        showToast('⚠️ Payment not configured. Tap shield icon.', '#ef4444');
-        return;
-    }
-
+// ============================================================
+// PAYSTACK PAYMENT FLOW
+// ============================================================
+async function startPaystackPayment(packageId) {
     const pkg = PremiumPackage.getPackage(packageId);
     if (!pkg) return;
 
-    const modal = document.createElement('div');
-    modal.className = 'mpesa-modal';
-    modal.id = 'mpesaModal';
-    modal.innerHTML = `
-        <div class="mpesa-modal-content">
-            <h2>💰 M-Pesa Payment</h2>
-            <p class="subtitle">${pkg.name} Package · KES ${pkg.price}</p>
-            <div class="mpesa-input-group">
-                <label>📱 M-Pesa Phone Number</label>
-                <input type="tel" id="mpesaPhone" placeholder="254712345678" value="">
-                <small style="color:#6f6b8a;font-size:11px;margin-top:4px;display:block;">
-                    Format: 2547XXXXXXXX or 07XXXXXXXX
-                </small>
-            </div>
-            <div id="transactionStatus"></div>
-            <button class="mpesa-confirm-btn" id="mpesaConfirmBtn"><i class="fas fa-check-circle"></i> Pay KES ${pkg.price}</button>
-            <button class="mpesa-close-btn" id="mpesaCloseBtn">Cancel</button>
-        </div>
-    `;
-    document.body.appendChild(modal);
+    if (!adminManager.getPaystackPublicKey()) {
+        showToast('⚠️ Paystack not configured. Tap shield icon.', '#ef4444');
+        return;
+    }
+    if (!api.getBaseURL()) {
+        showToast('⚠️ Backend not configured. Tap shield icon.', '#ef4444');
+        return;
+    }
+    if (!currentSessionUser?.email) {
+        showToast('⚠️ Please log in first', '#ef4444');
+        return;
+    }
+    if (typeof PaystackPop === 'undefined') {
+        showToast('⚠️ Paystack not loaded. Check internet.', '#ef4444');
+        return;
+    }
 
-    const confirmBtn = document.getElementById('mpesaConfirmBtn');
-    const closeBtn = document.getElementById('mpesaCloseBtn');
-    const statusDiv = document.getElementById('transactionStatus');
-    const phoneInput = document.getElementById('mpesaPhone');
+    const loadingToast = document.createElement('div');
+    loadingToast.innerText = '⏳ Opening secure payment...';
+    Object.assign(loadingToast.style, {
+        position: 'fixed', bottom: '90px', left: '50%', transform: 'translateX(-50%)',
+        backgroundColor: '#0BA4DB', padding: '12px 24px', borderRadius: '60px',
+        color: 'white', zIndex: '9999', fontWeight: '600', fontSize: '14px'
+    });
+    document.body.appendChild(loadingToast);
 
-    confirmBtn.onclick = async () => {
-        const phone = phoneInput.value.trim();
-        if (!phone) {
-            statusDiv.innerHTML = `<div class="transaction-status failed">❌ Enter phone number</div>`;
-            return;
+    try {
+        const result = await paystackEngine.processPayment(packageId, currentSessionUser.email);
+        loadingToast.remove();
+
+        if (currentSessionUser) {
+            currentSessionUser.membership = packageId;
+            currentSessionUser.membershipExpiry = new Date(Date.now() + 30 * 86400000).toISOString();
+            currentSessionUser.coins = (currentSessionUser.coins || 0) + 200;
+            currentSessionUser.boostActive = true;
+            const hours = packageId === 'platinum' ? 24 : packageId === 'gold' ? 6 : 2;
+            currentSessionUser.boostExpiry = new Date(Date.now() + hours * 3600000).toISOString();
+            localStorage.setItem('flamematch_session_pro', JSON.stringify(currentSessionUser));
+            appData.userCoins = currentSessionUser.coins;
         }
 
-        statusDiv.innerHTML = `<div class="transaction-status pending">📲 Sending STK Push to ${phone}...<br><small>Check your phone for M-Pesa prompt</small></div>`;
-        confirmBtn.disabled = true;
-        confirmBtn.innerHTML = '<span class="loading-spinner"></span> Processing...';
-
-        try {
-            const result = await mpesaEngine.processPayment(phone, pkg.price, pkg.name, currentSessionUser?.id);
-            statusDiv.innerHTML = `<div class="transaction-status success">✅ ${result.message}</div>`;
-
-            if (currentSessionUser) {
-                currentSessionUser.membership = packageId;
-                currentSessionUser.membershipExpiry = new Date(Date.now() + 30 * 86400000).toISOString();
-                currentSessionUser.coins = (currentSessionUser.coins || 0) + 200;
-                currentSessionUser.boostActive = true;
-                const hours = packageId === 'platinum' ? 24 : packageId === 'gold' ? 6 : 2;
-                currentSessionUser.boostExpiry = new Date(Date.now() + hours * 3600000).toISOString();
-                localStorage.setItem('flamematch_session_pro', JSON.stringify(currentSessionUser));
-                appData.userCoins = currentSessionUser.coins;
-            }
-
-            setTimeout(() => {
-                document.getElementById('mpesaModal').remove();
-                renderCurrentTab();
-                showToast(`🎉 ${pkg.name} activated!`, '#00B841');
-            }, 1800);
-        } catch (error) {
-            statusDiv.innerHTML = `<div class="transaction-status failed">❌ ${error.message}</div>`;
-            confirmBtn.disabled = false;
-            confirmBtn.innerHTML = `<i class="fas fa-check-circle"></i> Retry Payment`;
+        showToast(`🎉 ${pkg.name} activated! Ref: ${result.reference.slice(-8)}`, '#00B841');
+        await syncUserFromAPI();
+        renderCurrentTab();
+    } catch (error) {
+        loadingToast.remove();
+        if (error.message && error.message.toLowerCase().includes('cancel')) {
+            showToast('Payment cancelled', '#475569');
+        } else {
+            showToast(error.message || 'Payment failed', '#ef4444');
         }
-    };
-
-    closeBtn.onclick = () => document.getElementById('mpesaModal').remove();
+    }
 }
 
 function applyBoost() {
@@ -1373,7 +1304,7 @@ function processIncomingFile(file, partnerId) {
 }
 
 // ============================================================
-// RENDER FUNCTIONS
+// RENDER
 // ============================================================
 function renderDiscoverTab() {
     const container = document.getElementById("appContent");
@@ -1470,7 +1401,6 @@ function renderChatScreen(partnerId) {
                 ${mediaMarkup}
             </div>`;
     });
-
     container.innerHTML = `
         <div class="modern-card" style="padding:clamp(14px,2vw,24px);height:100%;display:flex;flex-direction:column;">
             <div class="chat-header-match">
@@ -1532,7 +1462,6 @@ function renderLiveTab() {
     const startBtn = document.getElementById("startLiveBtn");
     const stopBtn = document.getElementById("stopLiveBtn");
     const statusSpan = document.getElementById("liveStatusMsg");
-
     startBtn.onclick = async () => {
         if (cameraEngineInstance?.localStream) return;
         try {
@@ -1559,7 +1488,6 @@ function renderProfileTab() {
     const container = document.getElementById("appContent");
     const avatarURL = appData.customUserPhotoURL || user?.photoURL || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80";
     const membership = getMembershipLevel();
-
     container.innerHTML = `
         <div class="modern-card my-profile-card">
             ${user && !user.emailVerified ? `
@@ -1601,7 +1529,9 @@ function renderProfileTab() {
 function renderPremiumShop() {
     const container = document.getElementById("appContent");
     const membership = getMembershipLevel();
-    const fullyConfigured = api.getApiKey() && api.getBaseURL();
+    const backendOk = !!api.getBaseURL();
+    const paystackOk = !!adminManager.getPaystackPublicKey();
+    const ready = backendOk && paystackOk;
 
     let html = `
         <div style="margin-bottom:20px;">
@@ -1609,10 +1539,14 @@ function renderPremiumShop() {
                 <h3 style="color:white;">💎 Premium Plans</h3>
                 <span class="boost-indicator">${isBoostActive() ? '🚀 Active' : '📈 Available'}</span>
             </div>
-            ${!fullyConfigured ? `
+            <p style="color:var(--text-secondary);font-size:12px;margin-top:6px;">
+                <i class="fas fa-shield-alt" style="color:#0BA4DB;"></i>
+                Secure payments via <strong style="color:#0BA4DB;">Paystack</strong> — cards, M-Pesa, bank transfer & USSD
+            </p>
+            ${!ready ? `
                 <div class="verify-email-banner" style="margin-top:8px;">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <div>⚠️ M-Pesa not configured. Tap the shield icon to set up.</div>
+                    <div>⚠️ Payments not configured. Tap the shield icon to set up.</div>
                 </div>` : ''}
         </div>`;
 
@@ -1625,13 +1559,13 @@ function renderPremiumShop() {
                         <span style="color:white;font-weight:700;font-size:20px;">${pkg.name}</span>
                         ${isActive ? '<span style="background:#00B841;color:white;padding:2px 10px;border-radius:60px;font-size:11px;font-weight:700;margin-left:8px;">ACTIVE</span>' : ''}
                     </div>
-                    <div class="price">KES ${pkg.price} <span>/mo</span></div>
+                    <div class="price">${pkg.currency} ${pkg.price} <span>/mo</span></div>
                 </div>
                 <ul>${pkg.features.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('')}</ul>
                 ${!isActive ? `
-                    <button class="mpesa-pay-btn" onclick="showMpesaPayment('${pkg.id}')" ${!fullyConfigured ? 'disabled' : ''}>
-                        <i class="fas fa-phone"></i> Pay with M-Pesa
-                    </button>` : `<button style="background:#2e2a3e;border:1px solid #00B841;padding:14px;border-radius:60px;color:#00B841;font-weight:700;cursor:pointer;width:100%;">✅ Active</button>`}
+                    <button class="paystack-pay-btn" onclick="startPaystackPayment('${pkg.id}')" ${!ready ? 'disabled' : ''}>
+                        <i class="fas fa-credit-card"></i> Pay ${pkg.currency} ${pkg.price}
+                    </button>` : `<button style="background:#2e2a3e;border:1px solid #00B841;padding:14px;border-radius:60px;color:#00B841;font-weight:700;cursor:pointer;width:100%;">✅ Active Plan</button>`}
             </div>`;
     });
 
@@ -1642,7 +1576,7 @@ function renderPremiumShop() {
                 ${isBoostActive() ? '<span style="background:#FBBF24;color:#000;padding:2px 10px;border-radius:60px;font-size:11px;font-weight:700;">ACTIVE</span>' : ''}
             </div>
             <p style="color:var(--text-secondary);margin:8px 0;">10x more visibility</p>
-            ${!isBoostActive() ? `<button class="mpesa-pay-btn" onclick="applyBoost()" style="background:linear-gradient(135deg,#FBBF24,#F59E0B);color:#000;"><i class="fas fa-rocket"></i> Activate</button>` : `<button style="background:#2e2a3e;border:1px solid #FBBF24;padding:14px;border-radius:60px;color:#FBBF24;font-weight:700;cursor:pointer;width:100%;">⏳ Active</button>`}
+            ${!isBoostActive() ? `<button class="paystack-pay-btn" onclick="applyBoost()" style="background:linear-gradient(135deg,#FBBF24,#F59E0B);color:#000;"><i class="fas fa-rocket"></i> Activate</button>` : `<button style="background:#2e2a3e;border:1px solid #FBBF24;padding:14px;border-radius:60px;color:#FBBF24;font-weight:700;cursor:pointer;width:100%;">⏳ Active</button>`}
         </div>`;
     container.innerHTML = html;
     attachModernCardStyles();
@@ -1717,7 +1651,8 @@ function showAuthScreen() {
                         <strong>Backend not configured.</strong><br>
                         Tap the shield icon (bottom-right) and enter:
                         <ul style="margin:6px 0 0 16px;font-size:11px;">
-                            <li>Backend API URL (from Vercel)</li>
+                            <li>Backend API URL</li>
+                            <li>Paystack Public Key</li>
                             <li>Admin API Key</li>
                         </ul>
                         <button id="openAdminBtn"><i class="fas fa-shield-alt"></i> Open Admin Panel</button>
@@ -1748,9 +1683,7 @@ function showAuthScreen() {
     const errorDiv = document.getElementById("authError");
     const openAdminBtn = document.getElementById("openAdminBtn");
 
-    openAdminBtn?.addEventListener('click', () => {
-        adminManager.showAdminPanel();
-    });
+    openAdminBtn?.addEventListener('click', () => adminManager.showAdminPanel());
 
     toggle.onclick = () => {
         isLogin = !isLogin;
@@ -1769,11 +1702,7 @@ function showAuthScreen() {
             errorDiv.style.color = '#fbbf24';
             return;
         }
-
-        if (!email || !password) {
-            errorDiv.innerText = 'Enter email and password';
-            return;
-        }
+        if (!email || !password) { errorDiv.innerText = 'Enter email and password'; return; }
 
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span class="loading-spinner"></span>';
@@ -1875,9 +1804,7 @@ async function initMainApp() {
     connectionMonitor.init();
     try { adminManager.initAdminUI(); } catch (e) { console.error('Admin UI error:', e); }
 
-    if (api.getBaseURL()) {
-        await connectionMonitor.checkHealth();
-    }
+    if (api.getBaseURL()) await connectionMonitor.checkHealth();
 
     const storedSession = localStorage.getItem('flamematch_session_pro');
     if (storedSession && api.getBaseURL()) {
@@ -1895,7 +1822,7 @@ async function initMainApp() {
     showAuthScreen();
 })();
 
-window.showMpesaPayment = showMpesaPayment;
+window.startPaystackPayment = startPaystackPayment;
 window.applyBoost = applyBoost;
 </script>
 </body>
