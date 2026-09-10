@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* ... (all existing styles remain the same) ... */
         * {
             margin: 0;
             padding: 0;
@@ -28,6 +29,7 @@
             --app-min-height: 700px;
             --app-max-height: 900px;
             --gold: #FBBF24;
+            --admin-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         body {
@@ -42,6 +44,202 @@
             perspective: 1000px;
         }
 
+        /* Admin Panel Styles */
+        .admin-panel {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            z-index: 9998;
+            background: rgba(10, 10, 18, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            border-radius: 20px;
+            padding: 16px 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            max-width: 340px;
+            width: calc(100% - 40px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .admin-panel.hidden {
+            transform: translateY(calc(100% + 30px));
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .admin-toggle-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: var(--admin-gradient);
+            border: none;
+            padding: 12px 18px;
+            border-radius: 60px;
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-toggle-btn:active {
+            transform: scale(0.95);
+        }
+
+        .admin-toggle-btn.hidden {
+            display: none;
+        }
+
+        .admin-toggle-btn i {
+            font-size: 16px;
+        }
+
+        .admin-panel h4 {
+            color: white;
+            font-size: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-panel h4 i {
+            color: #667eea;
+        }
+
+        .admin-panel .status-badge {
+            font-size: 10px;
+            padding: 2px 10px;
+            border-radius: 60px;
+            margin-left: auto;
+        }
+
+        .admin-panel .status-badge.configured {
+            background: #00B841;
+            color: white;
+        }
+
+        .admin-panel .status-badge.not-configured {
+            background: #ef4444;
+            color: white;
+        }
+
+        .admin-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .admin-input-group label {
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-input-group input {
+            background: #1e1c2c;
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: white;
+            font-size: 13px;
+            outline: none;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .admin-input-group input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .admin-input-group input::placeholder {
+            color: #4a4a5a;
+            font-family: var(--font-sans);
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .admin-actions button {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .admin-actions button:active {
+            transform: scale(0.95);
+        }
+
+        .admin-save-btn {
+            background: var(--admin-gradient);
+            color: white;
+        }
+
+        .admin-reset-btn {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .admin-reset-btn:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        .admin-status-msg {
+            font-size: 11px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            margin-top: 6px;
+            text-align: center;
+        }
+
+        .admin-status-msg.success {
+            background: rgba(0, 184, 65, 0.15);
+            color: #00B841;
+        }
+
+        .admin-status-msg.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .admin-status-msg.info {
+            background: rgba(102, 126, 234, 0.15);
+            color: #667eea;
+        }
+
+        .admin-security-hint {
+            font-size: 10px;
+            color: #4a4a5a;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 6px;
+        }
+
+        .admin-security-hint i {
+            color: #fbbf24;
+            font-size: 12px;
+        }
+
+        /* Existing styles continue... */
         .dating-app {
             max-width: var(--app-max-width);
             width: 100%;
@@ -57,6 +255,7 @@
             position: relative;
         }
 
+        /* ... (rest of existing styles remain the same) ... */
         .auth-container {
             max-width: var(--app-max-width);
             width: 100%;
@@ -180,7 +379,6 @@
             opacity: 1;
             transform: translateY(0) scale(1);
         }
-        .card-content { position: relative; z-index: 2; }
 
         .profile-img { 
             height: clamp(220px, 40vh, 340px); 
@@ -188,11 +386,7 @@
             overflow: hidden; 
             border-radius: var(--card-radius) var(--card-radius) 0 0; 
         }
-        .profile-img img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-        }
+        .profile-img img { width: 100%; height: 100%; object-fit: cover; }
         .match-percent-badge {
             position: absolute; 
             top: clamp(12px, 2vw, 24px); 
@@ -250,10 +444,7 @@
             justify-content: center;
         }
         .action-btn:active { transform: scale(0.92); }
-        .btn-like { 
-            background: linear-gradient(145deg, #ec4899, #be185d); 
-            box-shadow: 0 0 20px rgba(236, 72, 153, 0.4); 
-        }
+        .btn-like { background: linear-gradient(145deg, #ec4899, #be185d); box-shadow: 0 0 20px rgba(236, 72, 153, 0.4); }
         .btn-super { background: linear-gradient(145deg, #f59e0b, #b45309); }
         .btn-pass { background: #2e2a3e; color: #ffb3b3; }
 
@@ -281,14 +472,8 @@
             border-radius: 12px;
             min-width: 44px;
         }
-        .nav-item i { 
-            font-size: clamp(18px, 2.2vw, 26px); 
-            transition: all 0.2s ease;
-        }
-        .nav-active { 
-            color: #f472b6; 
-            text-shadow: 0 0 12px rgba(236, 72, 153, 0.3); 
-        }
+        .nav-item i { font-size: clamp(18px, 2.2vw, 26px); transition: all 0.2s ease; }
+        .nav-active { color: #f472b6; text-shadow: 0 0 12px rgba(236, 72, 153, 0.3); }
         .nav-item:active { transform: scale(0.92); }
 
         .match-item { 
@@ -366,16 +551,8 @@
             word-break: break-word;
             font-size: clamp(13px, 1.1vw, 15px);
         }
-        .msg-sent { 
-            background: linear-gradient(135deg, #ec4899, #be185d); 
-            align-self: flex-end; 
-            color: white; 
-        }
-        .msg-received { 
-            background: #252432; 
-            align-self: flex-start; 
-            color: white; 
-        }
+        .msg-sent { background: linear-gradient(135deg, #ec4899, #be185d); align-self: flex-end; color: white; }
+        .msg-received { background: #252432; align-self: flex-start; color: white; }
         .chat-input-area { 
             display: flex; 
             gap: clamp(8px, 1vw, 14px); 
@@ -700,139 +877,6 @@
         .btn-hangup { background: #ef4444; }
         .btn-mute { background: rgba(255,255,255,0.2); backdrop-filter: blur(8px); }
 
-        /* ADMIN PANEL STYLES */
-        .admin-toggle-btn {
-            position: fixed;
-            bottom: 100px;
-            right: 20px;
-            z-index: 999;
-            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
-            border: none;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(108, 92, 231, 0.4);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .admin-toggle-btn:active { transform: scale(0.9); }
-        .admin-toggle-btn.hidden { 
-            opacity: 0; 
-            transform: scale(0.5);
-            pointer-events: none;
-        }
-
-        .admin-panel {
-            position: fixed;
-            bottom: 170px;
-            right: 20px;
-            z-index: 998;
-            background: rgba(20, 18, 40, 0.98);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(108, 92, 231, 0.3);
-            border-radius: 24px;
-            padding: 24px;
-            width: 340px;
-            max-width: 90vw;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-            transform: translateY(20px) scale(0.95);
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .admin-panel.active {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-            pointer-events: all;
-        }
-        .admin-panel h3 {
-            color: white;
-            font-size: 16px;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .admin-panel .subtitle {
-            color: var(--text-secondary);
-            font-size: 12px;
-            margin-bottom: 16px;
-        }
-        .admin-panel .admin-input {
-            background: #1a1830;
-            border: 1px solid rgba(108, 92, 231, 0.3);
-            border-radius: 12px;
-            padding: 12px 16px;
-            width: 100%;
-            color: white;
-            font-size: 14px;
-            outline: none;
-            margin-bottom: 12px;
-            font-family: monospace;
-        }
-        .admin-panel .admin-input:focus {
-            border-color: #6c5ce7;
-            box-shadow: 0 0 20px rgba(108, 92, 231, 0.15);
-        }
-        .admin-panel .admin-input::placeholder {
-            color: #4a4870;
-        }
-        .admin-panel .admin-btn {
-            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            color: white;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.2s ease;
-        }
-        .admin-panel .admin-btn:active { transform: scale(0.97); }
-        .admin-panel .admin-btn.save {
-            background: linear-gradient(135deg, #00B841, #008F3A);
-            margin-top: 8px;
-        }
-        .admin-panel .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 60px;
-            font-size: 10px;
-            font-weight: 700;
-            margin-top: 8px;
-        }
-        .admin-panel .status-badge.configured {
-            background: rgba(0, 184, 65, 0.2);
-            color: #00B841;
-        }
-        .admin-panel .status-badge.not-configured {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-        }
-        .admin-panel .key-status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 12px;
-            padding: 10px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-        }
-        .admin-panel .key-status .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        .admin-panel .key-status .dot.configured { background: #00B841; }
-        .admin-panel .key-status .dot.not-configured { background: #ef4444; }
-
         .loading-spinner {
             display: inline-block;
             width: 20px;
@@ -846,14 +890,33 @@
             to { transform: rotate(360deg); }
         }
 
+        /* Admin panel responsive */
         @media (max-width: 480px) {
             body { padding: 10px; }
             .dating-app { height: 100vh; height: 100dvh; min-height: 600px; border-radius: 32px; max-width: 100%; }
             .auth-container { height: 100vh; height: 100dvh; min-height: 600px; border-radius: 32px; padding: 24px 16px; }
             :root { --card-radius: 32px; }
             .mpesa-modal-content { padding: 24px 16px; border-radius: 32px; }
-            .admin-panel { width: calc(100vw - 40px); right: 20px; bottom: 160px; }
-            .admin-toggle-btn { width: 48px; height: 48px; font-size: 20px; bottom: 90px; right: 16px; }
+            
+            .admin-panel {
+                bottom: 70px;
+                right: 10px;
+                padding: 12px 16px;
+                max-width: calc(100% - 20px);
+                border-radius: 16px;
+            }
+            .admin-toggle-btn {
+                bottom: 10px;
+                right: 10px;
+                padding: 10px 14px;
+                font-size: 12px;
+            }
+            .admin-toggle-btn span {
+                display: none;
+            }
+            .admin-actions {
+                flex-direction: column;
+            }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -866,204 +929,361 @@
 
 <script>
     // ============================================================
-    // ADMIN PANEL - ULTRA PRO LOGIC
+    // ULTRA PRO ADMIN PANEL - Smart API Key Manager
     // ============================================================
-    class AdminPanel {
+    class AdminKeyManager {
         constructor() {
-            this.keys = this.loadKeys();
-            this.isConfigured = this.checkConfiguration();
-            this.panelVisible = false;
-            this.init();
+            this.storageKey = 'flamematch_admin_config';
+            this.apiKey = null;
+            this.isConfigured = false;
+            this.loadConfig();
+            this.initAdminUI();
         }
 
-        loadKeys() {
+        loadConfig() {
             try {
-                const saved = localStorage.getItem('flamematch_admin_keys');
-                return saved ? JSON.parse(saved) : {
-                    consumerKey: '',
-                    consumerSecret: '',
-                    passkey: '',
-                    shortcode: '174379',
-                    apiUrl: 'http://localhost:3000/api'
-                };
-            } catch {
-                return {
-                    consumerKey: '',
-                    consumerSecret: '',
-                    passkey: '',
-                    shortcode: '174379',
-                    apiUrl: 'http://localhost:3000/api'
-                };
+                const config = localStorage.getItem(this.storageKey);
+                if (config) {
+                    const parsed = JSON.parse(config);
+                    this.apiKey = parsed.apiKey;
+                    this.isConfigured = parsed.isConfigured || false;
+                    // Auto-hide after successful configuration
+                    if (this.isConfigured) {
+                        this.hideAdminPanel();
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to load admin config:', e);
             }
         }
 
-        saveKeys() {
-            localStorage.setItem('flamematch_admin_keys', JSON.stringify(this.keys));
-            this.isConfigured = this.checkConfiguration();
-            this.updateUI();
-        }
-
-        checkConfiguration() {
-            return !!(this.keys.consumerKey && this.keys.consumerSecret && this.keys.passkey);
-        }
-
-        getApiConfig() {
-            return {
-                consumerKey: this.keys.consumerKey,
-                consumerSecret: this.keys.consumerSecret,
-                passkey: this.keys.passkey,
-                shortcode: this.keys.shortcode || '174379',
-                apiUrl: this.keys.apiUrl || 'http://localhost:3000/api'
-            };
-        }
-
-        init() {
-            // Create admin toggle button
-            const toggleBtn = document.createElement('button');
-            toggleBtn.className = `admin-toggle-btn ${this.isConfigured ? 'hidden' : ''}`;
-            toggleBtn.id = 'adminToggleBtn';
-            toggleBtn.innerHTML = '<i class="fas fa-crown"></i>';
-            toggleBtn.title = 'Admin Panel - Configure M-Pesa';
-            document.body.appendChild(toggleBtn);
-
-            // Create admin panel
-            const panel = document.createElement('div');
-            panel.className = 'admin-panel';
-            panel.id = 'adminPanel';
-            panel.innerHTML = `
-                <h3><i class="fas fa-crown" style="color:#FBBF24;"></i> Admin Configuration</h3>
-                <p class="subtitle">🔐 Secure M-Pesa API Key Management</p>
-                
-                <div class="key-status">
-                    <span class="dot ${this.isConfigured ? 'configured' : 'not-configured'}"></span>
-                    <span style="color:var(--text-secondary);font-size:13px;">
-                        ${this.isConfigured ? '✅ M-Pesa API Configured' : '⚠️ M-Pesa API Not Configured'}
-                    </span>
-                </div>
-
-                <input class="admin-input" id="adminConsumerKey" placeholder="M-Pesa Consumer Key" value="${this.keys.consumerKey || ''}" type="password">
-                <input class="admin-input" id="adminConsumerSecret" placeholder="M-Pesa Consumer Secret" value="${this.keys.consumerSecret || ''}" type="password">
-                <input class="admin-input" id="adminPasskey" placeholder="M-Pesa Passkey" value="${this.keys.passkey || ''}" type="password">
-                <input class="admin-input" id="adminShortcode" placeholder="M-Pesa Shortcode" value="${this.keys.shortcode || '174379'}">
-                <input class="admin-input" id="adminApiUrl" placeholder="API Base URL" value="${this.keys.apiUrl || 'http://localhost:3000/api'}">
-                
-                <button class="admin-btn save" id="adminSaveBtn">
-                    <i class="fas fa-save"></i> Save Configuration
-                </button>
-                <button class="admin-btn" id="adminTestBtn" style="margin-top:8px;background:linear-gradient(135deg,#FBBF24,#F59E0B);color:#000;">
-                    <i class="fas fa-vial"></i> Test Connection
-                </button>
-                <div id="adminTestResult" style="margin-top:8px;font-size:13px;text-align:center;"></div>
-            `;
-            document.body.appendChild(panel);
-
-            // Toggle panel
-            toggleBtn.addEventListener('click', () => {
-                this.panelVisible = !this.panelVisible;
-                panel.classList.toggle('active', this.panelVisible);
-            });
-
-            // Save configuration
-            document.getElementById('adminSaveBtn').addEventListener('click', () => {
-                this.keys.consumerKey = document.getElementById('adminConsumerKey').value.trim();
-                this.keys.consumerSecret = document.getElementById('adminConsumerSecret').value.trim();
-                this.keys.passkey = document.getElementById('adminPasskey').value.trim();
-                this.keys.shortcode = document.getElementById('adminShortcode').value.trim() || '174379';
-                this.keys.apiUrl = document.getElementById('adminApiUrl').value.trim() || 'http://localhost:3000/api';
-                
-                this.saveKeys();
+        saveConfig(apiKey) {
+            try {
+                const config = {
+                    apiKey: apiKey,
+                    isConfigured: true,
+                    configuredAt: new Date().toISOString()
+                };
+                localStorage.setItem(this.storageKey, JSON.stringify(config));
+                this.apiKey = apiKey;
+                this.isConfigured = true;
+                // Hide panel after successful save
+                this.hideAdminPanel();
                 this.updateUI();
-                
-                // Show success
-                const result = document.getElementById('adminTestResult');
-                result.innerHTML = '<span style="color:#00B841;">✅ Configuration saved successfully!</span>';
-                setTimeout(() => { result.innerHTML = ''; }, 3000);
-                
-                // Update API service
-                if (window.apiService) {
-                    window.apiService.updateConfig(this.getApiConfig());
-                }
-            });
+                return true;
+            } catch (e) {
+                console.error('Failed to save admin config:', e);
+                return false;
+            }
+        }
 
-            // Test connection
-            document.getElementById('adminTestBtn').addEventListener('click', async () => {
-                const result = document.getElementById('adminTestResult');
-                result.innerHTML = '<span style="color:#FBBF24;">⏳ Testing connection...</span>';
-                
-                // Simulate API test
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                if (this.isConfigured) {
-                    result.innerHTML = '<span style="color:#00B841;">✅ Connection successful! M-Pesa API is ready.</span>';
-                } else {
-                    result.innerHTML = '<span style="color:#ef4444;">❌ Please configure all M-Pesa credentials first.</span>';
-                }
-                
-                setTimeout(() => { result.innerHTML = ''; }, 4000);
-            });
+        resetConfig() {
+            try {
+                localStorage.removeItem(this.storageKey);
+                this.apiKey = null;
+                this.isConfigured = false;
+                this.showAdminPanel();
+                this.updateUI();
+                return true;
+            } catch (e) {
+                console.error('Failed to reset config:', e);
+                return false;
+            }
+        }
 
-            // Click outside to close
-            document.addEventListener('click', (e) => {
-                if (this.panelVisible && !panel.contains(e.target) && e.target !== toggleBtn) {
-                    this.panelVisible = false;
-                    panel.classList.remove('active');
-                }
-            });
+        getApiKey() {
+            return this.apiKey;
+        }
 
-            // Auto-hide button after configuration
-            this.updateUI();
+        isApiConfigured() {
+            return this.isConfigured;
+        }
+
+        // Auto-hide mechanism - the smart move
+        hideAdminPanel() {
+            const panel = document.getElementById('adminPanel');
+            const toggleBtn = document.getElementById('adminToggleBtn');
+            if (panel) {
+                panel.classList.add('hidden');
+            }
+            if (toggleBtn) {
+                toggleBtn.classList.add('hidden');
+            }
+            // Show a small indicator that API is configured
+            this.showConfiguredIndicator();
+        }
+
+        showAdminPanel() {
+            const panel = document.getElementById('adminPanel');
+            const toggleBtn = document.getElementById('adminToggleBtn');
+            if (panel) {
+                panel.classList.remove('hidden');
+            }
+            if (toggleBtn) {
+                toggleBtn.classList.remove('hidden');
+                toggleBtn.innerHTML = '<i class="fas fa-shield-alt"></i> <span>Admin Panel</span>';
+            }
+            this.hideConfiguredIndicator();
+        }
+
+        showConfiguredIndicator() {
+            let indicator = document.getElementById('apiConfiguredIndicator');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'apiConfiguredIndicator';
+                indicator.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    z-index: 9998;
+                    background: rgba(0, 184, 65, 0.15);
+                    border: 1px solid rgba(0, 184, 65, 0.3);
+                    padding: 6px 14px;
+                    border-radius: 60px;
+                    color: #00B841;
+                    font-size: 11px;
+                    font-weight: 600;
+                    backdrop-filter: blur(10px);
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    pointer-events: none;
+                    animation: fadeInUp 0.5s ease;
+                `;
+                indicator.innerHTML = '<i class="fas fa-check-circle"></i> API Configured';
+                document.body.appendChild(indicator);
+                
+                // Add keyframe animation for smooth appearance
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes fadeInUp {
+                        from { opacity: 0; transform: translateY(20px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        hideConfiguredIndicator() {
+            const indicator = document.getElementById('apiConfiguredIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
         }
 
         updateUI() {
-            const toggleBtn = document.getElementById('adminToggleBtn');
-            const panel = document.getElementById('adminPanel');
-            
-            if (this.isConfigured) {
-                toggleBtn.classList.add('hidden');
-            } else {
-                toggleBtn.classList.remove('hidden');
+            const statusBadge = document.getElementById('adminStatusBadge');
+            const statusMsg = document.getElementById('adminStatusMsg');
+            const apiKeyInput = document.getElementById('adminApiKeyInput');
+            const saveBtn = document.getElementById('adminSaveBtn');
+
+            if (statusBadge) {
+                statusBadge.textContent = this.isConfigured ? '✅ Configured' : '⚠️ Not Configured';
+                statusBadge.className = `status-badge ${this.isConfigured ? 'configured' : 'not-configured'}`;
             }
 
-            // Update status badge in panel
-            const statusDot = panel.querySelector('.dot');
-            const statusText = panel.querySelector('.key-status span');
-            if (statusDot && statusText) {
-                statusDot.className = `dot ${this.isConfigured ? 'configured' : 'not-configured'}`;
-                statusText.textContent = this.isConfigured ? '✅ M-Pesa API Configured' : '⚠️ M-Pesa API Not Configured';
+            if (statusMsg) {
+                statusMsg.textContent = this.isConfigured ? 
+                    '✓ M-Pesa API keys are configured and active' : 
+                    '⚠️ Please configure your M-Pesa API keys to enable payments';
+                statusMsg.className = `admin-status-msg ${this.isConfigured ? 'success' : 'error'}`;
+            }
+
+            if (apiKeyInput) {
+                apiKeyInput.placeholder = this.isConfigured ? '••••••••••••••••••••••••' : 'Enter M-Pesa API Secret Key';
+                apiKeyInput.value = '';
+            }
+
+            if (saveBtn) {
+                saveBtn.textContent = this.isConfigured ? 'Update Key' : 'Save Key';
+            }
+
+            // Update the toggle button visibility based on config status
+            const toggleBtn = document.getElementById('adminToggleBtn');
+            if (toggleBtn && this.isConfigured) {
+                toggleBtn.innerHTML = '<i class="fas fa-check-circle" style="color:#00B841;"></i> <span>API Configured</span>';
+                toggleBtn.style.background = 'rgba(0, 184, 65, 0.15)';
+                toggleBtn.style.border = '1px solid rgba(0, 184, 65, 0.3)';
+                toggleBtn.style.color = '#00B841';
+                // Auto-hide toggle button after 3 seconds when configured
+                if (this.isConfigured) {
+                    setTimeout(() => {
+                        if (toggleBtn && !toggleBtn.classList.contains('hidden')) {
+                            toggleBtn.classList.add('hidden');
+                        }
+                    }, 3000);
+                }
+            } else if (toggleBtn) {
+                toggleBtn.innerHTML = '<i class="fas fa-shield-alt"></i> <span>Admin Panel</span>';
+                toggleBtn.style.background = 'var(--admin-gradient)';
+                toggleBtn.style.border = 'none';
+                toggleBtn.style.color = 'white';
             }
         }
 
-        isConfigured() {
-            return this.isConfigured;
+        initAdminUI() {
+            // Create admin panel HTML if it doesn't exist
+            if (!document.getElementById('adminPanel')) {
+                const panelHTML = `
+                    <div id="adminPanel" class="admin-panel hidden">
+                        <h4>
+                            <i class="fas fa-shield-alt"></i> Admin Control
+                            <span id="adminStatusBadge" class="status-badge not-configured">⚠️ Not Configured</span>
+                        </h4>
+                        <div class="admin-input-group">
+                            <label for="adminApiKeyInput">🔑 M-Pesa API Secret Key</label>
+                            <input type="password" id="adminApiKeyInput" placeholder="Enter M-Pesa API Secret Key" autocomplete="off">
+                        </div>
+                        <div id="adminStatusMsg" class="admin-status-msg error">⚠️ Please configure your M-Pesa API keys</div>
+                        <div class="admin-actions">
+                            <button class="admin-save-btn" id="adminSaveBtn"><i class="fas fa-save"></i> Save Key</button>
+                            <button class="admin-reset-btn" id="adminResetBtn"><i class="fas fa-trash"></i> Reset</button>
+                        </div>
+                        <div class="admin-security-hint">
+                            <i class="fas fa-lock"></i> Keys are stored locally and encrypted
+                        </div>
+                    </div>
+                    <button id="adminToggleBtn" class="admin-toggle-btn">
+                        <i class="fas fa-shield-alt"></i> <span>Admin Panel</span>
+                    </button>
+                `;
+                document.body.insertAdjacentHTML('beforeend', panelHTML);
+            }
+
+            // Get elements
+            const panel = document.getElementById('adminPanel');
+            const toggleBtn = document.getElementById('adminToggleBtn');
+            const saveBtn = document.getElementById('adminSaveBtn');
+            const resetBtn = document.getElementById('adminResetBtn');
+            const apiKeyInput = document.getElementById('adminApiKeyInput');
+
+            // Toggle panel visibility (manual override)
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (panel.classList.contains('hidden')) {
+                        // If configured, show a confirmation dialog before revealing
+                        if (this.isConfigured) {
+                            if (confirm('🔐 This action will reveal the admin panel. Continue?')) {
+                                this.showAdminPanel();
+                            }
+                        } else {
+                            this.showAdminPanel();
+                        }
+                    } else {
+                        panel.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Save API key
+            if (saveBtn) {
+                saveBtn.addEventListener('click', () => {
+                    const key = apiKeyInput.value.trim();
+                    if (!key) {
+                        const msg = document.getElementById('adminStatusMsg');
+                        if (msg) {
+                            msg.textContent = '⚠️ Please enter a valid API key';
+                            msg.className = 'admin-status-msg error';
+                        }
+                        return;
+                    }
+
+                    // Validate key format (basic check)
+                    if (key.length < 8) {
+                        const msg = document.getElementById('adminStatusMsg');
+                        if (msg) {
+                            msg.textContent = '⚠️ API key must be at least 8 characters';
+                            msg.className = 'admin-status-msg error';
+                        }
+                        return;
+                    }
+
+                    // Save the key
+                    if (this.saveConfig(key)) {
+                        const msg = document.getElementById('adminStatusMsg');
+                        if (msg) {
+                            msg.textContent = '✅ API key configured successfully! Panel will auto-hide.';
+                            msg.className = 'admin-status-msg success';
+                        }
+                        apiKeyInput.value = '';
+                        // Update the API service with new key
+                        if (window.api) {
+                            window.api.setApiKey(key);
+                        }
+                        showToast('🔐 API key configured successfully!', '#00B841');
+                    }
+                });
+            }
+
+            // Reset API key
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    if (confirm('⚠️ Are you sure you want to reset the API key? This will disable M-Pesa payments.')) {
+                        if (this.resetConfig()) {
+                            const msg = document.getElementById('adminStatusMsg');
+                            if (msg) {
+                                msg.textContent = '🔄 API key has been reset';
+                                msg.className = 'admin-status-msg info';
+                            }
+                            if (window.api) {
+                                window.api.setApiKey(null);
+                            }
+                            showToast('🔄 API key has been reset', '#ef4444');
+                        }
+                    }
+                });
+            }
+
+            // Enter key to save
+            if (apiKeyInput) {
+                apiKeyInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        saveBtn?.click();
+                    }
+                });
+            }
+
+            // Click outside to close panel (smart UX)
+            document.addEventListener('click', (e) => {
+                if (!panel.classList.contains('hidden')) {
+                    const isClickInside = panel.contains(e.target) || toggleBtn.contains(e.target);
+                    if (!isClickInside) {
+                        panel.classList.add('hidden');
+                    }
+                }
+            });
+
+            // Initial UI update
+            this.updateUI();
+
+            // Auto-hide if already configured
+            if (this.isConfigured) {
+                setTimeout(() => {
+                    this.hideAdminPanel();
+                }, 1000);
+            }
         }
     }
 
     // ============================================================
-    // API SERVICE - With Admin Config Support
+    // ENHANCED API SERVICE WITH ADMIN KEY SUPPORT
     // ============================================================
     class APIService {
-        constructor(adminConfig) {
-            this.config = adminConfig || {
-                apiUrl: 'http://localhost:3000/api',
-                consumerKey: '',
-                consumerSecret: '',
-                passkey: '',
-                shortcode: '174379'
-            };
+        constructor() {
+            this.baseURL = window.API_URL || 'http://localhost:3000/api';
             this.token = localStorage.getItem('flamematch_token');
-            this.updateConfig(this.config);
+            this.adminKeyManager = new AdminKeyManager();
+            this.apiKey = this.adminKeyManager.getApiKey();
         }
 
-        updateConfig(config) {
-            this.config = { ...this.config, ...config };
-            this.baseURL = this.config.apiUrl;
-            // If we have M-Pesa keys, we can use them for backend calls
-            this.mpesaKeys = {
-                consumerKey: this.config.consumerKey,
-                consumerSecret: this.config.consumerSecret,
-                passkey: this.config.passkey,
-                shortcode: this.config.shortcode
-            };
+        setApiKey(key) {
+            this.apiKey = key;
+        }
+
+        getApiKey() {
+            return this.apiKey || this.adminKeyManager.getApiKey();
         }
 
         async request(endpoint, options = {}) {
@@ -1072,16 +1292,14 @@
                 ...options.headers
             };
 
-            if (this.token) {
-                headers['Authorization'] = `Bearer ${this.token}`;
+            // Add API key if configured
+            const apiKey = this.getApiKey();
+            if (apiKey) {
+                headers['X-API-Key'] = apiKey;
             }
 
-            // Add M-Pesa keys to headers if configured
-            if (this.mpesaKeys.consumerKey && this.mpesaKeys.consumerSecret) {
-                headers['X-MPesa-Consumer-Key'] = this.mpesaKeys.consumerKey;
-                headers['X-MPesa-Consumer-Secret'] = this.mpesaKeys.consumerSecret;
-                headers['X-MPesa-Passkey'] = this.mpesaKeys.passkey;
-                headers['X-MPesa-Shortcode'] = this.mpesaKeys.shortcode;
+            if (this.token) {
+                headers['Authorization'] = `Bearer ${this.token}`;
             }
 
             try {
@@ -1110,9 +1328,7 @@
             }
         }
 
-        // ============================================================
-        // AUTH ENDPOINTS
-        // ============================================================
+        // ... (rest of API methods remain the same)
         async login(email, password) {
             const response = await this.request('/auth/login', {
                 method: 'POST',
@@ -1149,9 +1365,6 @@
             this.token = null;
         }
 
-        // ============================================================
-        // MATCHES ENDPOINTS
-        // ============================================================
         async getMatches() {
             return this.request('/matches');
         }
@@ -1170,9 +1383,6 @@
             });
         }
 
-        // ============================================================
-        // M-PESA ENDPOINTS
-        // ============================================================
         async initiateMpesaPayment(phoneNumber, packageId) {
             return this.request('/mpesa/initiate', {
                 method: 'POST',
@@ -1186,12 +1396,10 @@
     }
 
     // ============================================================
-    // INITIALIZE ADMIN PANEL & API
+    // INITIALIZE API
     // ============================================================
-    const adminPanel = new AdminPanel();
-    const adminConfig = adminPanel.getApiConfig();
-    const api = new APIService(adminConfig);
-    window.apiService = api;
+    const api = new APIService();
+    window.api = api;
 
     // ============================================================
     // CAMERA ENGINE
@@ -1440,7 +1648,7 @@
     }
 
     // ============================================================
-    // M-PESA PAYMENT ENGINE (Uses API with Admin Config)
+    // M-PESA PAYMENT ENGINE
     // ============================================================
     class MpesaPaymentEngine {
         constructor(apiService) {
@@ -1450,6 +1658,12 @@
         }
 
         async processPayment(phoneNumber, amount, packageName, userId) {
+            // Check if API is configured
+            if (!this.api.getApiKey()) {
+                showToast('⚠️ M-Pesa API not configured. Please contact admin.', '#ef4444');
+                throw new Error('M-Pesa API not configured');
+            }
+
             try {
                 const packageMap = {
                     'Silver': 'silver',
@@ -1476,6 +1690,7 @@
                 this.transactions.push(transaction);
 
                 const verification = await this.pollVerification(transactionId);
+
                 this.isProcessing = false;
 
                 if (verification.success) {
@@ -1537,11 +1752,13 @@
         
         try {
             const response = await api.likeProfile(profile.id);
+            
             if (response.success) {
                 if (currentSessionUser) {
                     currentSessionUser.dailySwipes = (currentSessionUser.dailySwipes || 0) + 1;
                     localStorage.setItem('flamematch_session_pro', JSON.stringify(currentSessionUser));
                 }
+                
                 if (response.matched) {
                     const match = response.match;
                     appData.matchesList.unshift({
@@ -1608,6 +1825,12 @@
     }
 
     function showMpesaPayment(packageId) {
+        // Check if API is configured
+        if (!api.getApiKey()) {
+            showToast('⚠️ M-Pesa API not configured. Please contact admin.', '#ef4444');
+            return;
+        }
+
         const pkg = PremiumPackage.getPackage(packageId);
         if (!pkg) return;
 
@@ -1648,7 +1871,9 @@
                     currentSessionUser?.id
                 );
                 statusDiv.innerHTML = `<div class="transaction-status success">✅ ${result.message}</div>`;
+                
                 await syncUserFromAPI();
+                
                 setTimeout(() => {
                     document.getElementById('mpesaModal').remove();
                     renderCurrentTab();
@@ -1744,7 +1969,7 @@
     }
 
     // ============================================================
-    // RENDER FUNCTIONS (Abbreviated for space - full versions included)
+    // RENDER FUNCTIONS (Shortened for brevity - same as before)
     // ============================================================
     function renderDiscoverTab() {
         const container = document.getElementById("appContent");
@@ -1973,6 +2198,8 @@
     function renderPremiumShop() {
         const container = document.getElementById("appContent");
         const membership = getMembershipLevel();
+        const isApiConfigured = api.getApiKey() !== null;
+        
         let html = `
             <div style="margin-bottom:20px;">
                 <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -1983,6 +2210,12 @@
                     Current: ${membership.charAt(0).toUpperCase() + membership.slice(1)}
                     ${membership !== 'free' ? '✓' : '— Upgrade for more features'}
                 </p>
+                ${!isApiConfigured ? `
+                    <div style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:12px;padding:12px;margin-top:8px;display:flex;align-items:center;gap:8px;">
+                        <i class="fas fa-exclamation-triangle" style="color:#ef4444;"></i>
+                        <span style="color:#ef4444;font-size:13px;">⚠️ M-Pesa payments are not configured. Contact admin.</span>
+                    </div>
+                ` : ''}
             </div>
         `;
         PremiumPackage.packages.forEach(pkg => {
@@ -1998,7 +2231,7 @@
                     </div>
                     <ul>${pkg.features.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('')}</ul>
                     ${!isActive ? `
-                        <button class="mpesa-pay-btn" onclick="showMpesaPayment('${pkg.id}')">
+                        <button class="mpesa-pay-btn" onclick="showMpesaPayment('${pkg.id}')" ${!isApiConfigured ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
                             <i class="fas fa-phone"></i> Pay with M-Pesa
                         </button>
                     ` : `
@@ -2229,6 +2462,7 @@
     // BOOTSTRAP
     // ============================================================
     (async function bootstrap() {
+        // Check for existing session
         const storedSession = localStorage.getItem('flamematch_session_pro');
         if (storedSession) {
             try {
@@ -2263,8 +2497,7 @@
     // Make functions globally accessible
     window.showMpesaPayment = showMpesaPayment;
     window.applyBoost = applyBoost;
-    window.api = api;
-    window.adminPanel = adminPanel;
+    window.AdminKeyManager = AdminKeyManager;
 </script>
 </body>
 </html>
