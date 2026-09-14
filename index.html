@@ -588,8 +588,89 @@
 
 <script>
 // ============================================================
-// FLAMEMATCH PRO — Client with guided admin setup
+// FLAMEMATCH PRO — Frontend connected to Render backend
 // ============================================================
+
+// ============================================================
+// ⚙️ CENTRAL CONFIG — CHANGE THIS ONE LINE FOR PRODUCTION
+// ============================================================
+// Replace with your actual Render backend URL (HTTPS, no trailing slash)
+const API_BASE_URL = "https://REPLACE_WITH_MY_RENDER_URL.onrender.com";
+// ============================================================
+
+// ============================================================
+// 🔒 SECURITY — Never add Paystack secret key here.
+//     Secret key lives ONLY in Render environment variables.
+// ============================================================
+
+// ============================================================
+// CENTRAL API HELPER — all backend calls go through this
+// ============================================================
+async function apiRequest(endpoint, options = {}) {
+    const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : '/' + endpoint}`;
+    const timeoutMs = options.timeoutMs || 30000; // 30s — handles Render cold starts
+
+    const headers = {
+        'Content-Type': 'application/json',
+        ...(options.headers || {})
+    };
+
+    // Attach auth token if present
+    const token = localStorage.getItem('flamematch_token');
+    if (token && !headers['Authorization']) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    let response;
+    try {
+        response = await fetch(url, {
+            ...options,
+            headers,
+            signal: controller.signal
+        });
+    } catch (err) {
+        clearTimeout(timeoutId);
+        if (err.name === 'AbortError') {
+            throw new Error('Server is waking up (cold start). Please try again in a moment.');
+        }
+        throw new Error('Cannot reach server. Check your connection and try again.');
+    }
+    clearTimeout(timeoutId);
+
+    // Parse response safely — backend should return JSON, but protect against HTML/empty
+    const contentType = response.headers.get('content-type') || '';
+    let data = null;
+    let rawText = '';
+    try {
+        rawText = await response.text();
+        if (contentType.includes('application/json') && rawText) {
+            data = JSON.parse(rawText);
+        } else {
+            // Non-JSON response — likely a 404 HTML page from a wrong URL
+            if (rawText.includes('<!DOCTYPE') || rawText.includes('<html')) {
+                throw new Error('Backend URL is incorrect or backend is not deployed. Check API_BASE_URL.');
+            }
+            try { data = rawText ? JSON.parse(rawText) : null; } catch { data = null; }
+        }
+    } catch (parseErr) {
+        if (parseErr.message.includes('Backend URL is incorrect')) throw parseErr;
+        data = null;
+    }
+
+    if (!response.ok) {
+        const msg = data?.message || data?.error || `Request failed (${response.status})`;
+        // 401 — clear stale session
+        if (response.status === 401) {
+            localStorage.removeItem('flamematch_token');
+        }
+        throw new Error(msg);
+    }
+
+    return data || { success: true };
+}
 
 // ============================================================
 // CONNECTION MONITOR
@@ -616,534 +697,67 @@ class ConnectionMonitor {
     }
     hide() { if (this.bar) this.bar.className = 'conn-status hidden'; }
     async checkHealth() {
-        const baseURL = window.api?.getBaseURL();
-        if (!baseURL) {
-            this.show('offline', 'Backend not configured — tap the shield icon');
-            setTimeout(() => this.hide(), 5000);
+        if (!API_BASE_URL || API_BASE_URL.includes('REPLACE_WITH_MY_RENDER_URL')) {
+            this.show('offline', 'Backend URL not configured — see API_BASE_URL');
+            setTimeout(() => this.hide(), 6000);
             return false;
         }
         this.show('checking', 'Connecting to backend...');
         try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 8000);
-            const response = await fetch(`${baseURL}/api/health`, { signal: controller.signal });
-            clearTimeout(timeoutId);
-            if (response.ok) {
-                const data = await response.json();
-                const mode = data.paystackMode || 'ready';
-                const cfg = data.configured === false ? '⚠️ key missing' : '';
-                this.show('online', `Backend online · Paystack: ${mode} ${cfg}`.trim());
-                setTimeout(() => this.hide(), 3500);
-                return true;
-            } else {
-                this.show('offline', `Backend error (${response.status})`);
-                setTimeout(() => this.hide(), 5000);
-                return false;
-            }
+            const data = await apiRequest('/api/health', { timeoutMs: 20000 });
+            const mode = data.paystackMode || 'ready';
+            const cfg = data.paystackConfigured === false ? '⚠️ Paystack not set' : '';
+            this.show('online', `Backend online · Paystack: ${mode} ${cfg}`.trim());
+            setTimeout(() => this.hide(), 3500);
+            return true;
         } catch (e) {
-            this.show('offline', `Cannot reach backend — ${e.message}`);
-            setTimeout(() => this.hide(), 6000);
+            this.show('offline', e.message);
+            setTimeout(() => this.hide(), 7000);
             return false;
         }
     }
 }
 
 // ============================================================
-// ADMIN KEY MANAGER — Friendly guided setup
-// ============================================================
-class AdminKeyManager {
-    constructor() {
-        this.storageKey = 'flamematch_admin_config';
-        this.apiKey = null;
-        this.backendUrl = null;
-        this.paystackPublicKey = null;
-        this.isConfigured = false;
-        this.currentStep = 1;
-        this.loadConfig();
-    }
-
-    loadConfig() {
-        try {
-            const config = localStorage.getItem(this.storageKey);
-            if (config) {
-                const parsed = JSON.parse(config);
-                this.apiKey = parsed.apiKey;
-                this.backendUrl = parsed.backendUrl;
-                this.paystackPublicKey = parsed.paystackPublicKey;
-                this.isConfigured = parsed.isConfigured || false;
-            }
-        } catch (e) { console.error('Config load error:', e); }
-    }
-
-    saveConfig(apiKey, backendUrl, paystackPublicKey) {
-        try {
-            const cleanUrl = backendUrl.replace(/\/+$/, '');
-            localStorage.setItem(this.storageKey, JSON.stringify({
-                apiKey, backendUrl: cleanUrl, paystackPublicKey,
-                isConfigured: true, configuredAt: new Date().toISOString()
-            }));
-            this.apiKey = apiKey;
-            this.backendUrl = cleanUrl;
-            this.paystackPublicKey = paystackPublicKey;
-            this.isConfigured = true;
-            return true;
-        } catch (e) { return false; }
-    }
-
-    resetConfig() {
-        localStorage.removeItem(this.storageKey);
-        this.apiKey = null;
-        this.backendUrl = null;
-        this.paystackPublicKey = null;
-        this.isConfigured = false;
-        this.currentStep = 1;
-        return true;
-    }
-
-    getApiKey() { return this.apiKey; }
-    getBackendUrl() { return this.backendUrl; }
-    getPaystackPublicKey() { return this.paystackPublicKey; }
-    isApiConfigured() { return !!this.apiKey; }
-    isBackendConfigured() { return !!this.backendUrl; }
-    isPaystackConfigured() { return !!this.paystackPublicKey; }
-    isFullyConfigured() { return this.isApiConfigured() && this.isBackendConfigured() && this.isPaystackConfigured(); }
-
-    initAdminUI() {
-        if (document.getElementById('adminPanel')) return;
-
-        const panelHTML = `
-            <div id="adminPanel" class="admin-panel hidden">
-                <div class="admin-header">
-                    <div style="display:flex;align-items:center;gap:10px;">
-                        <div class="admin-icon-badge"><i class="fas fa-magic"></i></div>
-                        <div>
-                            <h4>Quick Setup</h4>
-                            <p class="admin-subtitle">Takes 2 minutes · 3 steps</p>
-                        </div>
-                    </div>
-                    <span id="adminStatusBadge" class="status-badge not-configured">Not Setup</span>
-                </div>
-
-                <div class="admin-progress">
-                    <div class="step-dot active" data-step="1">1</div>
-                    <div class="step-line"></div>
-                    <div class="step-dot" data-step="2">2</div>
-                    <div class="step-line"></div>
-                    <div class="step-dot" data-step="3">3</div>
-                </div>
-
-                <!-- STEP 1 -->
-                <div class="admin-guide-card" id="step1Guide">
-                    <div class="guide-title">
-                        <i class="fas fa-globe"></i> Step 1 — Backend URL
-                    </div>
-                    <p class="guide-desc">
-                        This is the URL of your <strong>Vercel backend</strong> project (the one with the <code>/api/</code> folder). It looks like <code>https://your-name.vercel.app</code>.
-                    </p>
-                    <details class="guide-help">
-                        <summary><i class="fas fa-question-circle"></i> Where do I find this?</summary>
-                        <ol>
-                            <li>Go to <a href="https://vercel.com/dashboard" target="_blank" rel="noopener">vercel.com/dashboard</a></li>
-                            <li>Click your <strong>backend</strong> project</li>
-                            <li>Copy the URL shown at the top</li>
-                            <li>Paste it in the field below</li>
-                        </ol>
-                        <p class="guide-note">💡 No backend yet? Deploy it first on Vercel, then come back.</p>
-                    </details>
-                </div>
-
-                <div class="admin-input-group" id="step1Group">
-                    <label>🌐 Backend API URL</label>
-                    <div class="input-with-paste">
-                        <input type="url" id="adminBackendInput" placeholder="https://your-backend.vercel.app" autocomplete="off" inputmode="url">
-                        <button class="paste-btn" data-target="adminBackendInput" title="Paste from clipboard"><i class="fas fa-paste"></i></button>
-                    </div>
-                    <div class="field-hint">Must start with <code>https://</code></div>
-                </div>
-
-                <!-- STEP 2 -->
-                <div class="admin-guide-card" id="step2Guide" style="display:none;">
-                    <div class="guide-title">
-                        <i class="fas fa-credit-card"></i> Step 2 — Paystack Public Key
-                    </div>
-                    <p class="guide-desc">
-                        The <strong>public</strong> key from your Paystack account. Safe for the browser — starts with <code>pk_</code>.
-                    </p>
-                    <details class="guide-help">
-                        <summary><i class="fas fa-question-circle"></i> Where do I get this?</summary>
-                        <ol>
-                            <li>Log in to <a href="https://dashboard.paystack.com" target="_blank" rel="noopener">dashboard.paystack.com</a></li>
-                            <li>Go to <strong>Settings → API Keys & Webhooks</strong></li>
-                            <li>Copy the <strong>Public Key</strong> (starts with <code>pk_test_</code> or <code>pk_live_</code>)</li>
-                            <li>Paste it below</li>
-                        </ol>
-                        <p class="guide-note">🔒 Never paste your <strong>secret key</strong> here — that stays on Vercel only.</p>
-                    </details>
-                </div>
-
-                <div class="admin-input-group" id="step2Group" style="display:none;">
-                    <label>🔵 Paystack Public Key</label>
-                    <div class="input-with-paste">
-                        <input type="text" id="adminPaystackInput" placeholder="pk_test_... or pk_live_..." autocomplete="off" spellcheck="false">
-                        <button class="paste-btn" data-target="adminPaystackInput" title="Paste from clipboard"><i class="fas fa-paste"></i></button>
-                    </div>
-                    <div class="field-hint">Must start with <code>pk_</code></div>
-                </div>
-
-                <!-- STEP 3 -->
-                <div class="admin-guide-card" id="step3Guide" style="display:none;">
-                    <div class="guide-title">
-                        <i class="fas fa-key"></i> Step 3 — Admin API Key
-                    </div>
-                    <p class="guide-desc">
-                        The <strong>shared secret</strong> you set as <code>ADMIN_API_KEY</code> on Vercel. Locks down registration and payment endpoints.
-                    </p>
-                    <details class="guide-help">
-                        <summary><i class="fas fa-question-circle"></i> Where do I find this?</summary>
-                        <ol>
-                            <li>Go to <a href="https://vercel.com/dashboard" target="_blank" rel="noopener">vercel.com/dashboard</a></li>
-                            <li>Click your <strong>backend</strong> project</li>
-                            <li>Go to <strong>Settings → Environment Variables</strong></li>
-                            <li>Find <code>ADMIN_API_KEY</code> → click the eye icon → copy it</li>
-                            <li>Paste it below</li>
-                        </ol>
-                        <p class="guide-note">⚠️ If you haven't set this on Vercel yet, do that first (any 32+ char random string).</p>
-                    </details>
-                </div>
-
-                <div class="admin-input-group" id="step3Group" style="display:none;">
-                    <label>🔑 Admin API Key</label>
-                    <div class="input-with-paste">
-                        <input type="password" id="adminApiKeyInput" placeholder="Paste your ADMIN_API_KEY here" autocomplete="off" spellcheck="false">
-                        <button class="paste-btn" data-target="adminApiKeyInput" title="Paste from clipboard"><i class="fas fa-paste"></i></button>
-                    </div>
-                    <div class="field-hint">Same value you set on Vercel as <code>ADMIN_API_KEY</code></div>
-                </div>
-
-                <div id="adminStatusMsg" class="admin-status-msg info">
-                    <i class="fas fa-info-circle"></i> Fill all 3 steps, then tap Save
-                </div>
-
-                <div class="admin-actions">
-                    <button class="admin-back-btn" id="adminBackBtn" style="display:none;"><i class="fas fa-arrow-left"></i> Back</button>
-                    <button class="admin-save-btn" id="adminSaveBtn"><i class="fas fa-check"></i> Save & Finish</button>
-                    <button class="admin-reset-btn" id="adminResetBtn" title="Reset setup"><i class="fas fa-trash"></i></button>
-                </div>
-
-                <div class="admin-security-hint">
-                    <i class="fas fa-lock"></i> Stored locally · Secret key stays on Vercel
-                </div>
-            </div>
-            <button id="adminToggleBtn" class="admin-toggle-btn">
-                <i class="fas fa-shield-alt"></i> <span>Setup</span>
-            </button>
-        `;
-        document.body.insertAdjacentHTML('beforeend', panelHTML);
-        this.attachEvents();
-        this.updateUI();
-        if (this.isFullyConfigured()) this.hideAdminPanel();
-    }
-
-    attachEvents() {
-        const panel = document.getElementById('adminPanel');
-        const toggleBtn = document.getElementById('adminToggleBtn');
-        const saveBtn = document.getElementById('adminSaveBtn');
-        const resetBtn = document.getElementById('adminResetBtn');
-        const backBtn = document.getElementById('adminBackBtn');
-        const apiKeyInput = document.getElementById('adminApiKeyInput');
-        const backendInput = document.getElementById('adminBackendInput');
-        const paystackInput = document.getElementById('adminPaystackInput');
-
-        toggleBtn?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (panel.classList.contains('hidden')) this.showAdminPanel();
-            else panel.classList.add('hidden');
-        });
-
-        // Paste buttons
-        document.querySelectorAll('.paste-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                e.preventDefault();
-                try {
-                    const text = await navigator.clipboard.readText();
-                    const target = document.getElementById(btn.dataset.target);
-                    if (target) {
-                        target.value = text.trim();
-                        target.dispatchEvent(new Event('input', { bubbles: true }));
-                        this.validateLive();
-                    }
-                } catch (err) {
-                    this.showStatus('⚠️ Clipboard blocked — paste manually', 'error');
-                }
-            });
-        });
-
-        // Live validation
-        [backendInput, paystackInput, apiKeyInput].forEach(inp => {
-            inp?.addEventListener('input', () => this.validateLive());
-        });
-
-        // Auto-advance steps on valid input
-        backendInput?.addEventListener('blur', () => {
-            if (backendInput.value.startsWith('http') && this.currentStep === 1) this.goToStep(2);
-        });
-        paystackInput?.addEventListener('blur', () => {
-            if (paystackInput.value.startsWith('pk_') && this.currentStep === 2) this.goToStep(3);
-        });
-
-        // Back button
-        backBtn?.addEventListener('click', () => {
-            if (this.currentStep > 1) this.goToStep(this.currentStep - 1);
-        });
-
-        // Save
-        saveBtn?.addEventListener('click', async () => {
-            const backendUrl = backendInput.value.trim();
-            const paystackKey = paystackInput.value.trim();
-            const apiKey = apiKeyInput.value.trim();
-
-            if (!backendUrl) { this.goToStep(1); this.showStatus('⚠️ Enter your backend URL first', 'error'); backendInput.focus(); return; }
-            if (!backendUrl.startsWith('http')) { this.goToStep(1); this.showStatus('⚠️ URL must start with http(s)://', 'error'); backendInput.focus(); return; }
-            if (!paystackKey) { this.goToStep(2); this.showStatus('⚠️ Enter your Paystack public key', 'error'); paystackInput.focus(); return; }
-            if (!paystackKey.startsWith('pk_')) { this.goToStep(2); this.showStatus('⚠️ Paystack key must start with pk_', 'error'); paystackInput.focus(); return; }
-            if (!apiKey) { this.goToStep(3); this.showStatus('⚠️ Enter your Admin API Key', 'error'); apiKeyInput.focus(); return; }
-            if (apiKey.length < 16) { this.goToStep(3); this.showStatus('⚠️ Admin Key should be at least 16 chars', 'error'); apiKeyInput.focus(); return; }
-
-            this.showStatus('<i class="fas fa-spinner fa-spin"></i> Testing connection...', 'info');
-            try {
-                const cleanUrl = backendUrl.replace(/\/+$/, '');
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000);
-                const res = await fetch(`${cleanUrl}/api/health`, { signal: controller.signal });
-                clearTimeout(timeoutId);
-                if (!res.ok) {
-                    this.showStatus(`⚠️ Backend returned ${res.status}. Check your URL.`, 'error');
-                    return;
-                }
-                const health = await res.json().catch(() => ({}));
-                if (health.configured === false) {
-                    this.showStatus('⚠️ Backend reachable, but PAYSTACK_SECRET_KEY is missing on Vercel', 'error');
-                    return;
-                }
-            } catch (e) {
-                this.showStatus(`⚠️ Cannot reach backend — ${e.message}`, 'error');
-                return;
-            }
-
-            if (this.saveConfig(apiKey, backendUrl, paystackKey)) {
-                this.showStatus('<i class="fas fa-check-circle"></i> All set! You\'re ready to go.', 'success');
-                if (window.api) {
-                    window.api.setApiKey(this.apiKey);
-                    window.api.setBaseURL(this.backendUrl);
-                }
-                window.connectionMonitor?.checkHealth();
-                setTimeout(() => this.hideAdminPanel(), 2000);
-                if (!currentSessionUser) setTimeout(() => showAuthScreen(), 2200);
-            } else {
-                this.showStatus('⚠️ Could not save — try again', 'error');
-            }
-        });
-
-        // Reset
-        resetBtn?.addEventListener('click', () => {
-            if (confirm('Reset all setup? You can re-enter it anytime.')) {
-                this.resetConfig();
-                if (window.api) {
-                    window.api.setApiKey(null);
-                    window.api.setBaseURL(null);
-                }
-                backendInput.value = '';
-                paystackInput.value = '';
-                apiKeyInput.value = '';
-                this.updateUI();
-                this.goToStep(1);
-                this.showStatus('🔄 Reset done. Start with Step 1.', 'info');
-            }
-        });
-
-        apiKeyInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveBtn?.click(); });
-
-        document.addEventListener('click', (e) => {
-            if (!panel.classList.contains('hidden')) {
-                const isInside = panel.contains(e.target) || toggleBtn.contains(e.target);
-                if (!isInside) panel.classList.add('hidden');
-            }
-        });
-    }
-
-    goToStep(step) {
-        this.currentStep = Math.max(1, Math.min(3, step));
-
-        document.querySelectorAll('.step-dot').forEach(d => {
-            const n = parseInt(d.dataset.step);
-            d.classList.toggle('active', n === this.currentStep);
-            d.classList.toggle('done', n < this.currentStep);
-        });
-
-        document.getElementById('step1Group').style.display = this.currentStep === 1 ? 'block' : 'none';
-        document.getElementById('step2Group').style.display = this.currentStep === 2 ? 'block' : 'none';
-        document.getElementById('step3Group').style.display = this.currentStep === 3 ? 'block' : 'none';
-
-        document.getElementById('step1Guide').style.display = this.currentStep === 1 ? 'block' : 'none';
-        document.getElementById('step2Guide').style.display = this.currentStep === 2 ? 'block' : 'none';
-        document.getElementById('step3Guide').style.display = this.currentStep === 3 ? 'block' : 'none';
-
-        document.getElementById('adminBackBtn').style.display = this.currentStep > 1 ? 'flex' : 'none';
-
-        setTimeout(() => {
-            if (this.currentStep === 1) document.getElementById('adminBackendInput')?.focus();
-            if (this.currentStep === 2) document.getElementById('adminPaystackInput')?.focus();
-            if (this.currentStep === 3) document.getElementById('adminApiKeyInput')?.focus();
-        }, 100);
-    }
-
-    validateLive() {
-        const backendUrl = document.getElementById('adminBackendInput')?.value.trim() || '';
-        const pk = document.getElementById('adminPaystackInput')?.value.trim() || '';
-        const ak = document.getElementById('adminApiKeyInput')?.value.trim() || '';
-
-        const step1Ok = backendUrl.startsWith('http');
-        const step2Ok = pk.startsWith('pk_') && pk.length > 10;
-        const step3Ok = ak.length >= 16;
-
-        const dots = document.querySelectorAll('.step-dot');
-        if (dots[0]) { dots[0].classList.toggle('done', step1Ok); }
-        if (dots[1]) { dots[1].classList.toggle('done', step2Ok); }
-        if (dots[2]) { dots[2].classList.toggle('done', step3Ok); }
-
-        const saveBtn = document.getElementById('adminSaveBtn');
-        if (saveBtn) saveBtn.disabled = !(step1Ok && step2Ok && step3Ok);
-    }
-
-    showStatus(msg, type) {
-        const el = document.getElementById('adminStatusMsg');
-        if (el) { el.innerHTML = msg; el.className = `admin-status-msg ${type}`; }
-    }
-
-    updateUI() {
-        const statusBadge = document.getElementById('adminStatusBadge');
-        const backendInput = document.getElementById('adminBackendInput');
-        const paystackInput = document.getElementById('adminPaystackInput');
-        const apiKeyInput = document.getElementById('adminApiKeyInput');
-
-        const apiOk = this.isApiConfigured();
-        const backendOk = this.isBackendConfigured();
-        const paystackOk = this.isPaystackConfigured();
-        const allOk = apiOk && backendOk && paystackOk;
-        const someOk = apiOk || backendOk || paystackOk;
-
-        if (statusBadge) {
-            if (allOk) {
-                statusBadge.innerHTML = '<i class="fas fa-check-circle"></i> Ready';
-                statusBadge.className = 'status-badge configured';
-                statusBadge.style.background = '';
-                statusBadge.style.color = '';
-            } else if (someOk) {
-                statusBadge.innerHTML = '<i class="fas fa-tools"></i> In progress';
-                statusBadge.className = 'status-badge';
-                statusBadge.style.background = '#FBBF24';
-                statusBadge.style.color = '#000';
-            } else {
-                statusBadge.innerHTML = '<i class="fas fa-circle"></i> Not Setup';
-                statusBadge.className = 'status-badge not-configured';
-                statusBadge.style.background = '';
-                statusBadge.style.color = '';
-            }
-        }
-
-        if (backendInput) backendInput.value = this.backendUrl || '';
-        if (paystackInput) paystackInput.value = this.paystackPublicKey || '';
-        if (apiKeyInput) apiKeyInput.value = this.apiKey || '';
-
-        if (backendOk && paystackOk && !apiOk) this.goToStep(3);
-        else if (backendOk && !paystackOk) this.goToStep(2);
-        else this.goToStep(1);
-
-        this.validateLive();
-
-        const toggleBtn = document.getElementById('adminToggleBtn');
-        if (toggleBtn && allOk) {
-            toggleBtn.innerHTML = '<i class="fas fa-check-circle" style="color:#00B841;"></i> <span>Ready</span>';
-            toggleBtn.style.background = 'rgba(0, 184, 65, 0.15)';
-            toggleBtn.style.border = '1px solid rgba(0, 184, 65, 0.3)';
-            toggleBtn.style.color = '#00B841';
-        }
-    }
-
-    hideAdminPanel() {
-        document.getElementById('adminPanel')?.classList.add('hidden');
-        const btn = document.getElementById('adminToggleBtn');
-        if (btn) setTimeout(() => btn.classList.add('hidden'), 2500);
-    }
-
-    showAdminPanel() {
-        document.getElementById('adminPanel')?.classList.remove('hidden');
-        document.getElementById('adminToggleBtn')?.classList.remove('hidden');
-        this.updateUI();
-    }
-}
-
-// ============================================================
-// API SERVICE
+// API SERVICE (auth + app data — uses apiRequest internally)
 // ============================================================
 class APIService {
     constructor() {
-        this.baseURL = '';
         this.token = localStorage.getItem('flamematch_token');
-        this.apiKey = null;
     }
-    setApiKey(key) { this.apiKey = key; }
-    getApiKey() { return this.apiKey; }
-    setBaseURL(url) { this.baseURL = url ? url.replace(/\/+$/, '') : ''; }
-    getBaseURL() { return this.baseURL; }
-
-    async request(endpoint, options = {}) {
-        if (!this.baseURL) throw new Error('Backend not configured. Tap the shield icon to set it up.');
-        const headers = { 'Content-Type': 'application/json', ...options.headers };
-        if (this.apiKey) headers['X-API-Key'] = this.apiKey;
-        if (this.token) headers['Authorization'] = `Bearer ${this.token}`;
-
-        let response;
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 20000);
-            response = await fetch(`${this.baseURL}${endpoint}`, { ...options, headers, signal: controller.signal });
-            clearTimeout(timeoutId);
-        } catch (networkError) {
-            if (networkError.name === 'AbortError') throw new Error('Request timeout — backend may be slow or unreachable.');
-            throw new Error('Cannot reach backend. Check URL and server status.');
-        }
-
-        let data;
-        try { data = await response.json(); } catch (e) { data = {}; }
-        if (!response.ok) {
-            if (response.status === 401) {
-                localStorage.removeItem('flamematch_token');
-                this.token = null;
-            }
-            throw new Error(data.message || data.error || `Request failed (${response.status})`);
-        }
-        return data;
+    setToken(t) {
+        this.token = t;
+        if (t) localStorage.setItem('flamematch_token', t);
+        else localStorage.removeItem('flamematch_token');
     }
-
     async login(email, password) {
-        const response = await this.request('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
-        if (response.token) { this.token = response.token; localStorage.setItem('flamematch_token', response.token); }
-        return response;
+        const res = await apiRequest('/api/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({ email, password })
+        });
+        if (res.token) this.setToken(res.token);
+        return res;
     }
     async register(userData) {
-        const response = await this.request('/api/auth/register', { method: 'POST', body: JSON.stringify(userData) });
-        if (response.token) { this.token = response.token; localStorage.setItem('flamematch_token', response.token); }
-        return response;
+        const res = await apiRequest('/api/auth/register', {
+            method: 'POST',
+            body: JSON.stringify(userData)
+        });
+        if (res.token) this.setToken(res.token);
+        return res;
     }
-    async getCurrentUser() { return this.request('/api/auth/me'); }
+    async getCurrentUser() {
+        return apiRequest('/api/auth/me');
+    }
     async logout() {
-        try { await this.request('/api/auth/logout', { method: 'POST' }); } catch (e) {}
-        localStorage.removeItem('flamematch_token');
-        this.token = null;
+        try { await apiRequest('/api/auth/logout', { method: 'POST' }); } catch (e) {}
+        this.setToken(null);
     }
     async likeProfile(profileId) {
-        return this.request('/api/matches/like', { method: 'POST', body: JSON.stringify({ profileId }) });
+        return apiRequest('/api/matches/like', {
+            method: 'POST',
+            body: JSON.stringify({ profileId })
+        });
     }
 }
 
@@ -1193,58 +807,38 @@ class PremiumPackage {
 }
 
 // ============================================================
-// SERVERLESS-HARDENED PAYMENT CLIENT
+// PAYMENT CLIENT — talks ONLY to Render backend
 // ============================================================
 class ServerlessPaymentClient {
-    constructor(api, adminManager) {
+    constructor(api) {
         this.api = api;
-        this.adminManager = adminManager;
         this.MAX_RETRIES = 3;
-        this.INIT_TIMEOUT = 25000;
-        this.VERIFY_TIMEOUT = 30000;
+        this.INIT_TIMEOUT = 45000;   // long — Render free tier cold start
+        this.VERIFY_TIMEOUT = 45000;
         this.STATE_KEY = 'flamematch_payment_state';
     }
 
-    generateRequestId() {
-        if (window.crypto?.randomUUID) return window.crypto.randomUUID();
-        return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+    generateReference(planId) {
+        // Unique-ish reference — server will validate with Paystack
+        const rand = (window.crypto?.randomUUID && window.crypto.randomUUID()) ||
+                     `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+        return `FM-${planId}-${rand}`;
     }
 
-    async fetchWithTimeout(url, options, timeout) {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), timeout);
-        try {
-            return await fetch(url, { ...options, signal: controller.signal });
-        } finally {
-            clearTimeout(timeoutId);
-        }
-    }
+    saveState(s) { try { sessionStorage.setItem(this.STATE_KEY, JSON.stringify(s)); } catch {} }
+    getState() { try { const s = sessionStorage.getItem(this.STATE_KEY); return s ? JSON.parse(s) : null; } catch { return null; } }
+    clearState() { try { sessionStorage.removeItem(this.STATE_KEY); } catch {} }
 
-    saveState(state) {
-        try { sessionStorage.setItem(this.STATE_KEY, JSON.stringify(state)); } catch (e) {}
-    }
-    getState() {
-        try {
-            const s = sessionStorage.getItem(this.STATE_KEY);
-            return s ? JSON.parse(s) : null;
-        } catch { return null; }
-    }
-    clearState() {
-        try { sessionStorage.removeItem(this.STATE_KEY); } catch (e) {}
-    }
-
-    async initializePayment(packageId, userEmail, userToken) {
+    async initializePayment(packageId, userEmail) {
         const pkg = PremiumPackage.getPackage(packageId);
         if (!pkg) throw new Error('Invalid package');
+        if (!userEmail) throw new Error('Email required');
 
-        const backendUrl = this.adminManager.getBackendUrl();
-        if (!backendUrl) throw new Error('Backend not configured');
-
-        const idempotencyKey = this.generateRequestId();
+        // Reference generated on client (backend validates uniqueness with Paystack)
+        const reference = this.generateReference(packageId);
         const state = {
-            packageId, email: userEmail, idempotencyKey,
-            timestamp: Date.now(), status: 'initializing',
-            reference: null, attempts: 0
+            packageId, email: userEmail, reference,
+            timestamp: Date.now(), status: 'initializing', attempts: 0
         };
 
         let lastError;
@@ -1253,52 +847,35 @@ class ServerlessPaymentClient {
                 state.attempts = attempt;
                 this.saveState(state);
 
-                const response = await this.fetchWithTimeout(
-                    `${backendUrl}/api/paystack/initialize`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-API-Key': this.adminManager.getApiKey() || '',
-                            'Authorization': `Bearer ${userToken}`,
-                            'X-Client-Version': '1.1.0',
-                            'X-Request-ID': idempotencyKey
-                        },
-                        body: JSON.stringify({
-                            planId: packageId,
-                            email: userEmail,
-                            callbackUrl: window.location.origin + window.location.pathname,
-                            idempotencyKey
-                        })
-                    },
-                    this.INIT_TIMEOUT
-                );
+                // POST /api/paystack/initialize — with retry for cold starts
+                const data = await apiRequest('/api/paystack/initialize', {
+                    method: 'POST',
+                    timeoutMs: this.INIT_TIMEOUT,
+                    body: JSON.stringify({
+                        email: userEmail,
+                        amount: pkg.price,           // KES — server cross-checks against plan
+                        planId: packageId,           // server uses this to derive authoritative amount
+                        reference,
+                        callbackUrl: window.location.origin + window.location.pathname
+                    })
+                });
 
-                if (!response.ok) {
-                    const error = await response.json().catch(() => ({}));
-                    if (response.status >= 400 && response.status < 500) {
-                        throw new Error(error.message || `Backend error: ${response.status}`);
-                    }
-                    throw new Error(error.message || `Server error: ${response.status}`);
+                // Backend may return `authorizationUrl` or `authorization_url`
+                const authUrl = data.authorizationUrl || data.authorization_url || data.data?.authorization_url;
+                if (!data.success || !authUrl) {
+                    throw new Error(data.message || 'Could not start payment');
                 }
 
-                const data = await response.json();
-                if (!data.success || !data.authorizationUrl) {
-                    throw new Error(data.message || 'No payment URL returned');
-                }
-
-                state.reference = data.reference;
-                state.authorizationUrl = data.authorizationUrl;
                 state.status = 'initialized';
+                state.authorizationUrl = authUrl;
                 this.saveState(state);
 
-                return data;
-
+                return { ...data, authorizationUrl: authUrl, reference };
             } catch (error) {
                 lastError = error;
-                console.warn(`Payment init attempt ${attempt}/${this.MAX_RETRIES}:`, error.message);
+                console.warn(`Init attempt ${attempt}/${this.MAX_RETRIES}:`, error.message);
 
-                const isClientError = /Backend error: 4/.test(error.message);
+                const isClientError = /40\d|Invalid|required|Unauthorized/i.test(error.message);
                 if (isClientError) throw error;
 
                 if (attempt < this.MAX_RETRIES) {
@@ -1310,62 +887,38 @@ class ServerlessPaymentClient {
         throw new Error(`Payment initialization failed after ${this.MAX_RETRIES} attempts: ${lastError.message}`);
     }
 
-    async verifyPayment(reference, userToken) {
-        const backendUrl = this.adminManager.getBackendUrl();
-        if (!backendUrl) throw new Error('Backend not configured');
-
+    async verifyPayment(reference) {
         let lastError;
         for (let attempt = 1; attempt <= this.MAX_RETRIES; attempt++) {
             try {
-                const response = await this.fetchWithTimeout(
-                    `${backendUrl}/api/paystack/verify`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${userToken}`,
-                            'X-Request-ID': `${reference}-v${attempt}`,
-                            'X-Verify-Attempt': attempt.toString()
-                        },
-                        body: JSON.stringify({ reference })
-                    },
-                    this.VERIFY_TIMEOUT
-                );
+                // GET /api/paystack/verify/:reference
+                const data = await apiRequest(`/api/paystack/verify/${encodeURIComponent(reference)}`, {
+                    method: 'GET',
+                    timeoutMs: this.VERIFY_TIMEOUT
+                });
 
-                if (!response.ok) {
-                    const error = await response.json().catch(() => ({}));
-                    if (response.status >= 400 && response.status < 500) {
-                        throw new Error(error.message || `Server error: ${response.status}`);
-                    }
-                    throw new Error(error.message || `Server error: ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                if (data.success && data.status === 'success') {
+                const ok = data.success && (data.status === 'success' || data.data?.status === 'success');
+                if (ok) {
                     this.clearState();
                     return data;
                 }
 
-                if (data.status === 'pending') {
-                    throw new Error('PENDING');
+                // Explicit failure from server — don't retry
+                if (data.status && data.status !== 'pending') {
+                    return data;
                 }
 
-                return data;
-
+                // Pending — retry
+                throw new Error('PENDING');
             } catch (error) {
                 lastError = error;
-                console.warn(`Payment verify attempt ${attempt}/${this.MAX_RETRIES}:`, error.message);
+                console.warn(`Verify attempt ${attempt}/${this.MAX_RETRIES}:`, error.message);
 
-                const isRetryable = error.message === 'PENDING' ||
-                                    error.name === 'AbortError' ||
-                                    /Server error: 5/.test(error.message) ||
-                                    /fetch/i.test(error.message);
-
-                if (isRetryable && attempt < this.MAX_RETRIES) {
-                    const delay = Math.pow(2, attempt) * 1000;
-                    await new Promise(r => setTimeout(r, delay));
-                } else if (!isRetryable) {
+                const retryable = error.message === 'PENDING' ||
+                                  /cold start|timeout|fetch|network|5\d\d/i.test(error.message);
+                if (retryable && attempt < this.MAX_RETRIES) {
+                    await new Promise(r => setTimeout(r, Math.pow(2, attempt) * 1000));
+                } else if (!retryable) {
                     throw error;
                 }
             }
@@ -1373,25 +926,22 @@ class ServerlessPaymentClient {
         throw new Error(`Payment verification failed: ${lastError.message}`);
     }
 
-    async startPayment(packageId, user, token, onProgress) {
+    async startPayment(packageId, user, onProgress) {
         onProgress('⏳ Initializing payment...');
-        const data = await this.initializePayment(packageId, user.email, token);
+        const data = await this.initializePayment(packageId, user.email);
         onProgress('🔒 Redirecting to Paystack...');
         await new Promise(r => setTimeout(r, 600));
         window.location.href = data.authorizationUrl;
     }
 
-    async checkPendingPayment(userToken) {
+    async checkPendingPayment() {
         const state = this.getState();
         if (!state || !state.reference) return null;
-
         if (Date.now() - state.timestamp > 30 * 60 * 1000) {
-            console.warn('Payment state stale, clearing');
             this.clearState();
             return null;
         }
-
-        return await this.verifyPayment(state.reference, userToken);
+        return await this.verifyPayment(state.reference);
     }
 }
 
@@ -1454,17 +1004,13 @@ class UIEngine {
 // INSTANTIATE
 // ============================================================
 const api = new APIService();
-const adminManager = new AdminKeyManager();
 const connectionMonitor = new ConnectionMonitor();
-let paymentClient = null;
-
-if (adminManager.isApiConfigured()) api.setApiKey(adminManager.getApiKey());
-if (adminManager.isBackendConfigured()) api.setBaseURL(adminManager.getBackendUrl());
+let paymentClient = new ServerlessPaymentClient(api);
 
 window.api = api;
-window.adminManager = adminManager;
 window.connectionMonitor = connectionMonitor;
 window.uiEngineInstance = new UIEngine();
+window.API_BASE_URL = API_BASE_URL;
 
 // ============================================================
 // STATE
@@ -1502,10 +1048,7 @@ function showLoadingToast(msg) {
     if (_loadingToastEl) _loadingToastEl.remove();
     _loadingToastEl = document.createElement('div');
     _loadingToastEl.className = 'payment-overlay';
-    _loadingToastEl.innerHTML = `
-        <div class="spinner-lg"></div>
-        <p>${escapeHtml(msg)}</p>
-    `;
+    _loadingToastEl.innerHTML = `<div class="spinner-lg"></div><p>${escapeHtml(msg)}</p>`;
     document.body.appendChild(_loadingToastEl);
 }
 function hideLoadingToast() {
@@ -1667,14 +1210,14 @@ function superLike(profile) {
 }
 
 // ============================================================
-// PAYSTACK PAYMENT FLOW
+// PAYSTACK PAYMENT FLOW — backend-verified
 // ============================================================
 async function startPaystackPayment(packageId) {
     const pkg = PremiumPackage.getPackage(packageId);
     if (!pkg) return;
 
-    if (!adminManager.getBackendUrl()) {
-        showToast('⚠️ Backend not configured. Tap the shield icon.', '#ef4444');
+    if (!API_BASE_URL || API_BASE_URL.includes('REPLACE_WITH_MY_RENDER_URL')) {
+        showToast('⚠️ Backend URL not configured. Update API_BASE_URL.', '#ef4444');
         return;
     }
     if (!currentSessionUser?.email) {
@@ -1686,18 +1229,12 @@ async function startPaystackPayment(packageId) {
         return;
     }
 
-    if (!paymentClient) paymentClient = new ServerlessPaymentClient(api, adminManager);
-
     try {
         showLoadingToast('⏳ Setting up secure payment...');
         await paymentClient.startPayment(
             packageId,
             currentSessionUser,
-            api.token,
-            (msg) => {
-                hideLoadingToast();
-                showLoadingToast(msg);
-            }
+            (msg) => { hideLoadingToast(); showLoadingToast(msg); }
         );
     } catch (error) {
         hideLoadingToast();
@@ -1708,19 +1245,18 @@ async function startPaystackPayment(packageId) {
 
 async function verifyPendingPaymentIfAny() {
     if (!api.token) return;
-    if (!adminManager.getBackendUrl()) return;
-
-    if (!paymentClient) paymentClient = new ServerlessPaymentClient(api, adminManager);
+    if (!API_BASE_URL || API_BASE_URL.includes('REPLACE_WITH_MY_RENDER_URL')) return;
 
     try {
-        const result = await paymentClient.checkPendingPayment(api.token);
+        const result = await paymentClient.checkPendingPayment();
         if (!result) return;
 
-        if (result.success && result.status === 'success') {
+        const status = result.status || result.data?.status;
+        if (result.success && status === 'success') {
             showToast('🎉 Premium Activated Successfully!', '#00B841');
             await syncUserFromAPI();
             renderCurrentTab();
-        } else if (result.message?.includes('already active')) {
+        } else if (result.message?.toLowerCase().includes('already')) {
             showToast('✅ Premium already active', '#00B841');
             await syncUserFromAPI();
             renderCurrentTab();
@@ -1729,6 +1265,7 @@ async function verifyPendingPaymentIfAny() {
         }
     } catch (error) {
         console.warn('Pending payment check:', error.message);
+        // Silent — user can retry from shop
     }
 }
 
@@ -2030,8 +1567,7 @@ function renderProfileTab() {
 function renderPremiumShop() {
     const container = document.getElementById("appContent");
     const membership = getMembershipLevel();
-    const backendOk = !!api.getBaseURL();
-    const ready = backendOk;
+    const ready = API_BASE_URL && !API_BASE_URL.includes('REPLACE_WITH_MY_RENDER_URL');
 
     let html = `
         <div style="margin-bottom:20px;">
@@ -2046,7 +1582,7 @@ function renderPremiumShop() {
             ${!ready ? `
                 <div class="verify-email-banner" style="margin-top:8px;">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <div>⚠️ Backend not configured. Tap the shield icon to set up.</div>
+                    <div>⚠️ Backend URL not configured. Update <code>API_BASE_URL</code> in the code.</div>
                 </div>` : ''}
         </div>`;
 
@@ -2139,7 +1675,7 @@ function renderCurrentTab() {
 function showAuthScreen() {
     if (cameraEngineInstance) { cameraEngineInstance.stopStream(); cameraEngineInstance = null; clearLiveInterval(); }
     const root = document.getElementById("root");
-    const backendOk = !!api.getBaseURL();
+    const backendOk = API_BASE_URL && !API_BASE_URL.includes('REPLACE_WITH_MY_RENDER_URL');
 
     root.innerHTML = `
         <div class="auth-container">
@@ -2148,9 +1684,8 @@ function showAuthScreen() {
                 <div class="config-warning">
                     <i class="fas fa-exclamation-triangle"></i>
                     <div style="flex:1;">
-                        <strong>Backend not configured.</strong><br>
-                        Tap the shield icon (bottom-right) to open the guided setup.
-                        <button id="openAdminBtn"><i class="fas fa-magic"></i> Open Setup</button>
+                        <strong>Backend URL not set.</strong><br>
+                        Open the code and replace <code>REPLACE_WITH_MY_RENDER_URL</code> in <code>API_BASE_URL</code>.
                     </div>
                 </div>
             ` : ''}
@@ -2176,9 +1711,6 @@ function showAuthScreen() {
     const submitBtn = document.getElementById("authSubmitBtn");
     const toggle = document.getElementById("toggleAuthMode");
     const errorDiv = document.getElementById("authError");
-    const openAdminBtn = document.getElementById("openAdminBtn");
-
-    openAdminBtn?.addEventListener('click', () => adminManager.showAdminPanel());
 
     toggle.onclick = () => {
         isLogin = !isLogin;
@@ -2192,8 +1724,8 @@ function showAuthScreen() {
         errorDiv.innerText = '';
         errorDiv.style.color = '#ff8989';
 
-        if (!api.getBaseURL()) {
-            errorDiv.innerText = 'Backend not configured. Tap shield icon.';
+        if (!backendOk) {
+            errorDiv.innerText = 'Backend URL not configured. See code comment.';
             errorDiv.style.color = '#fbbf24';
             return;
         }
@@ -2299,12 +1831,13 @@ async function initMainApp() {
 // ============================================================
 (async function bootstrap() {
     connectionMonitor.init();
-    try { adminManager.initAdminUI(); } catch (e) { console.error('Admin UI error:', e); }
 
-    if (api.getBaseURL()) await connectionMonitor.checkHealth();
+    if (API_BASE_URL && !API_BASE_URL.includes('REPLACE_WITH_MY_RENDER_URL')) {
+        await connectionMonitor.checkHealth();
+    }
 
     const storedSession = localStorage.getItem('flamematch_session_pro');
-    if (storedSession && api.getBaseURL()) {
+    if (storedSession && api.token) {
         try {
             currentSessionUser = JSON.parse(storedSession);
             const user = await syncUserFromAPI();
