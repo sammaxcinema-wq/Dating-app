@@ -30,13 +30,14 @@
             min-height: 100vh; min-height: 100dvh; padding: 20px;
         }
 
+        /* ---------- Friendly Admin Panel ---------- */
         .admin-panel {
             position: fixed; bottom: 80px; right: 20px; z-index: 9998;
             background: rgba(10, 10, 18, 0.98); backdrop-filter: blur(20px);
             border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 20px;
-            padding: 16px 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-            max-width: 380px; width: calc(100% - 40px);
-            max-height: 80vh; overflow-y: auto;
+            padding: 18px 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            max-width: 400px; width: calc(100% - 40px);
+            max-height: 85vh; overflow-y: auto;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .admin-panel.hidden { transform: translateY(calc(100% + 30px)); opacity: 0; pointer-events: none; }
@@ -51,36 +52,162 @@
         .admin-toggle-btn:active { transform: scale(0.95); }
         .admin-toggle-btn.hidden { display: none; }
         .admin-toggle-btn i { font-size: 16px; }
-        .admin-panel h4 { color: white; font-size: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-        .admin-panel h4 i { color: #667eea; }
-        .admin-panel .status-badge { font-size: 10px; padding: 2px 10px; border-radius: 60px; margin-left: auto; }
+
+        .admin-header {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            gap: 10px; margin-bottom: 14px;
+        }
+        .admin-icon-badge {
+            width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+            background: var(--admin-gradient);
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 18px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .admin-header h4 { color: white; font-size: 15px; margin: 0; }
+        .admin-subtitle { color: var(--text-secondary); font-size: 11px; margin-top: 2px; }
+        .admin-panel .status-badge { font-size: 10px; padding: 4px 10px; border-radius: 60px; white-space: nowrap; }
         .admin-panel .status-badge.configured { background: #00B841; color: white; }
         .admin-panel .status-badge.not-configured { background: #ef4444; color: white; }
-        .admin-input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
-        .admin-input-group label { color: var(--text-secondary); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        .admin-input-group input {
+
+        .admin-progress {
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 16px; padding: 0 8px;
+        }
+        .step-dot {
+            width: 30px; height: 30px; border-radius: 50%;
+            background: #1e1c2c; color: #6f6b8a;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700;
+            border: 2px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        .step-dot.active {
+            background: var(--admin-gradient); color: white;
+            border-color: transparent;
+            box-shadow: 0 0 12px rgba(102, 126, 234, 0.5);
+        }
+        .step-dot.done {
+            background: #00B841; color: white;
+            border-color: transparent;
+        }
+        .step-line {
+            flex: 1; height: 2px; background: rgba(255,255,255,0.08);
+            max-width: 50px; margin: 0 4px;
+        }
+
+        .admin-guide-card {
+            background: rgba(102, 126, 234, 0.08);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 14px; padding: 12px 14px;
+            margin-bottom: 12px;
+        }
+        .guide-title {
+            color: white; font-size: 13px; font-weight: 700;
+            display: flex; align-items: center; gap: 8px;
+            margin-bottom: 6px;
+        }
+        .guide-title i { color: #667eea; }
+        .guide-desc {
+            color: var(--text-secondary); font-size: 12px; line-height: 1.55;
+        }
+        .guide-desc code {
+            background: rgba(255,255,255,0.08); padding: 1px 6px;
+            border-radius: 4px; font-size: 11px; color: #fbbf24;
+        }
+        .guide-help { margin-top: 10px; }
+        .guide-help summary {
+            color: #667eea; font-size: 12px; font-weight: 600;
+            cursor: pointer; list-style: none; display: flex;
+            align-items: center; gap: 6px; padding: 6px 0;
+            user-select: none;
+        }
+        .guide-help summary::-webkit-details-marker { display: none; }
+        .guide-help ol {
+            color: var(--text-secondary); font-size: 11.5px;
+            margin: 6px 0 6px 18px; line-height: 1.65;
+        }
+        .guide-help ol li { padding: 2px 0; }
+        .guide-help ol a {
+            color: #ec4899; text-decoration: none;
+            border-bottom: 1px dashed rgba(236,72,153,0.4);
+        }
+        .guide-note { color: #fbbf24; font-size: 11px; margin-top: 6px; line-height: 1.5; }
+
+        .admin-input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        .admin-input-group label {
+            color: var(--text-secondary); font-size: 11px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .input-with-paste { display: flex; gap: 6px; align-items: stretch; }
+        .input-with-paste input {
+            flex: 1; min-width: 0;
             background: #1e1c2c; border: 1px solid rgba(236, 72, 153, 0.3);
-            border-radius: 12px; padding: 10px 14px; color: white; font-size: 13px;
-            outline: none; font-family: 'Courier New', monospace; transition: all 0.3s ease;
+            border-radius: 12px; padding: 10px 14px;
+            color: white; font-size: 13px;
+            outline: none; font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
         }
-        .admin-input-group input:focus { border-color: #667eea; box-shadow: 0 0 20px rgba(102, 126, 234, 0.2); }
-        .admin-input-group input::placeholder { color: #4a4a5a; font-family: var(--font-sans); }
-        .admin-actions { display: flex; gap: 8px; margin-top: 4px; }
-        .admin-actions button {
-            flex: 1; padding: 10px 16px; border: none; border-radius: 12px;
-            font-weight: 700; font-size: 13px; cursor: pointer;
-            transition: all 0.2s ease; font-family: var(--font-sans);
+        .input-with-paste input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
         }
-        .admin-actions button:active { transform: scale(0.95); }
-        .admin-save-btn { background: var(--admin-gradient); color: white; }
-        .admin-reset-btn { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
-        .admin-status-msg { font-size: 11px; padding: 6px 10px; border-radius: 8px; margin-top: 6px; text-align: center; }
+        .paste-btn {
+            background: rgba(102, 126, 234, 0.15);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            color: #667eea; border-radius: 12px;
+            padding: 0 14px; cursor: pointer;
+            transition: all 0.2s ease; font-size: 14px;
+            flex-shrink: 0;
+        }
+        .paste-btn:hover { background: rgba(102, 126, 234, 0.25); }
+        .paste-btn:active { transform: scale(0.95); }
+
+        .field-hint { color: #6f6b8a; font-size: 10.5px; padding: 0 4px; }
+        .field-hint code {
+            background: rgba(255,255,255,0.06);
+            padding: 1px 5px; border-radius: 4px;
+            color: #a5b4fc;
+        }
+
+        .admin-status-msg {
+            font-size: 11.5px; padding: 8px 12px; border-radius: 10px;
+            margin-top: 4px; margin-bottom: 10px; text-align: center;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
         .admin-status-msg.success { background: rgba(0, 184, 65, 0.15); color: #00B841; }
         .admin-status-msg.error { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
         .admin-status-msg.info { background: rgba(102, 126, 234, 0.15); color: #667eea; }
-        .admin-security-hint { font-size: 10px; color: #4a4a5a; display: flex; align-items: center; gap: 4px; margin-top: 6px; }
+
+        .admin-actions { display: flex; gap: 8px; margin-top: 4px; }
+        .admin-actions button {
+            padding: 11px 16px; border: none; border-radius: 12px;
+            font-weight: 700; font-size: 13px; cursor: pointer;
+            transition: all 0.2s ease; font-family: var(--font-sans);
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .admin-actions button:active { transform: scale(0.95); }
+        .admin-save-btn { background: var(--admin-gradient); color: white; flex: 1; }
+        .admin-save-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .admin-back-btn {
+            background: rgba(255,255,255,0.06); color: white;
+            border: 1px solid rgba(255,255,255,0.1);
+            flex: 0 0 auto;
+        }
+        .admin-reset-btn {
+            background: rgba(239, 68, 68, 0.15); color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            flex: 0 0 auto;
+        }
+        .admin-security-hint {
+            font-size: 10px; color: #4a4a5a;
+            display: flex; align-items: center; justify-content: center;
+            gap: 4px; margin-top: 10px;
+        }
         .admin-security-hint i { color: #fbbf24; font-size: 12px; }
 
+        /* ---------- Connection banner ---------- */
         .conn-status {
             position: fixed; top: 0; left: 0; right: 0;
             padding: 6px; text-align: center; font-size: 11px;
@@ -93,6 +220,7 @@
         .conn-status.online { background: linear-gradient(135deg, #00B841, #008F3A); color: white; }
         .conn-status.offline { background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; }
 
+        /* ---------- Main app ---------- */
         .dating-app {
             max-width: var(--app-max-width); width: 100%;
             height: min(90vh, var(--app-max-height)); min-height: var(--app-min-height);
@@ -444,10 +572,11 @@
             .dating-app { height: 100vh; height: 100dvh; min-height: 600px; border-radius: 32px; max-width: 100%; }
             .auth-container { height: 100vh; height: 100dvh; min-height: 600px; border-radius: 32px; padding: 24px 16px; }
             :root { --card-radius: 32px; }
-            .admin-panel { bottom: 70px; right: 10px; padding: 12px 16px; max-width: calc(100% - 20px); border-radius: 16px; }
+            .admin-panel { bottom: 70px; right: 10px; padding: 16px; max-width: calc(100% - 20px); border-radius: 18px; }
             .admin-toggle-btn { bottom: 10px; right: 10px; padding: 10px 14px; font-size: 12px; }
             .admin-toggle-btn span { display: none; }
-            .admin-actions { flex-direction: column; }
+            .admin-actions { flex-wrap: wrap; }
+            .admin-save-btn { flex: 1 1 100%; order: -1; }
         }
         @media (prefers-reduced-motion: reduce) {
             * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -459,9 +588,7 @@
 
 <script>
 // ============================================================
-// FLAMEMATCH PRO — Client
-// Serverless-hardened Paystack flow via Vercel backend.
-// Secret key never touches this file.
+// FLAMEMATCH PRO — Client with guided admin setup
 // ============================================================
 
 // ============================================================
@@ -522,7 +649,7 @@ class ConnectionMonitor {
 }
 
 // ============================================================
-// ADMIN KEY MANAGER
+// ADMIN KEY MANAGER — Friendly guided setup
 // ============================================================
 class AdminKeyManager {
     constructor() {
@@ -531,6 +658,7 @@ class AdminKeyManager {
         this.backendUrl = null;
         this.paystackPublicKey = null;
         this.isConfigured = false;
+        this.currentStep = 1;
         this.loadConfig();
     }
 
@@ -568,6 +696,7 @@ class AdminKeyManager {
         this.backendUrl = null;
         this.paystackPublicKey = null;
         this.isConfigured = false;
+        this.currentStep = 1;
         return true;
     }
 
@@ -581,35 +710,132 @@ class AdminKeyManager {
 
     initAdminUI() {
         if (document.getElementById('adminPanel')) return;
+
         const panelHTML = `
             <div id="adminPanel" class="admin-panel hidden">
-                <h4>
-                    <i class="fas fa-shield-alt"></i> Admin Control
+                <div class="admin-header">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <div class="admin-icon-badge"><i class="fas fa-magic"></i></div>
+                        <div>
+                            <h4>Quick Setup</h4>
+                            <p class="admin-subtitle">Takes 2 minutes · 3 steps</p>
+                        </div>
+                    </div>
                     <span id="adminStatusBadge" class="status-badge not-configured">Not Setup</span>
-                </h4>
-                <div class="admin-input-group">
+                </div>
+
+                <div class="admin-progress">
+                    <div class="step-dot active" data-step="1">1</div>
+                    <div class="step-line"></div>
+                    <div class="step-dot" data-step="2">2</div>
+                    <div class="step-line"></div>
+                    <div class="step-dot" data-step="3">3</div>
+                </div>
+
+                <!-- STEP 1 -->
+                <div class="admin-guide-card" id="step1Guide">
+                    <div class="guide-title">
+                        <i class="fas fa-globe"></i> Step 1 — Backend URL
+                    </div>
+                    <p class="guide-desc">
+                        This is the URL of your <strong>Vercel backend</strong> project (the one with the <code>/api/</code> folder). It looks like <code>https://your-name.vercel.app</code>.
+                    </p>
+                    <details class="guide-help">
+                        <summary><i class="fas fa-question-circle"></i> Where do I find this?</summary>
+                        <ol>
+                            <li>Go to <a href="https://vercel.com/dashboard" target="_blank" rel="noopener">vercel.com/dashboard</a></li>
+                            <li>Click your <strong>backend</strong> project</li>
+                            <li>Copy the URL shown at the top</li>
+                            <li>Paste it in the field below</li>
+                        </ol>
+                        <p class="guide-note">💡 No backend yet? Deploy it first on Vercel, then come back.</p>
+                    </details>
+                </div>
+
+                <div class="admin-input-group" id="step1Group">
                     <label>🌐 Backend API URL</label>
-                    <input type="url" id="adminBackendInput" placeholder="https://flamematch-backend.vercel.app" autocomplete="off">
+                    <div class="input-with-paste">
+                        <input type="url" id="adminBackendInput" placeholder="https://your-backend.vercel.app" autocomplete="off" inputmode="url">
+                        <button class="paste-btn" data-target="adminBackendInput" title="Paste from clipboard"><i class="fas fa-paste"></i></button>
+                    </div>
+                    <div class="field-hint">Must start with <code>https://</code></div>
                 </div>
-                <div class="admin-input-group">
-                    <label>🔵 Paystack Public Key (from your backend .env)</label>
-                    <input type="text" id="adminPaystackInput" placeholder="pk_test_... or pk_live_..." autocomplete="off">
+
+                <!-- STEP 2 -->
+                <div class="admin-guide-card" id="step2Guide" style="display:none;">
+                    <div class="guide-title">
+                        <i class="fas fa-credit-card"></i> Step 2 — Paystack Public Key
+                    </div>
+                    <p class="guide-desc">
+                        The <strong>public</strong> key from your Paystack account. Safe for the browser — starts with <code>pk_</code>.
+                    </p>
+                    <details class="guide-help">
+                        <summary><i class="fas fa-question-circle"></i> Where do I get this?</summary>
+                        <ol>
+                            <li>Log in to <a href="https://dashboard.paystack.com" target="_blank" rel="noopener">dashboard.paystack.com</a></li>
+                            <li>Go to <strong>Settings → API Keys & Webhooks</strong></li>
+                            <li>Copy the <strong>Public Key</strong> (starts with <code>pk_test_</code> or <code>pk_live_</code>)</li>
+                            <li>Paste it below</li>
+                        </ol>
+                        <p class="guide-note">🔒 Never paste your <strong>secret key</strong> here — that stays on Vercel only.</p>
+                    </details>
                 </div>
-                <div class="admin-input-group">
-                    <label>🔑 Admin API Key (matches backend ADMIN_API_KEY)</label>
-                    <input type="password" id="adminApiKeyInput" placeholder="Enter Admin API Key" autocomplete="off">
+
+                <div class="admin-input-group" id="step2Group" style="display:none;">
+                    <label>🔵 Paystack Public Key</label>
+                    <div class="input-with-paste">
+                        <input type="text" id="adminPaystackInput" placeholder="pk_test_... or pk_live_..." autocomplete="off" spellcheck="false">
+                        <button class="paste-btn" data-target="adminPaystackInput" title="Paste from clipboard"><i class="fas fa-paste"></i></button>
+                    </div>
+                    <div class="field-hint">Must start with <code>pk_</code></div>
                 </div>
-                <div id="adminStatusMsg" class="admin-status-msg error">⚠️ Configure all 3 fields</div>
+
+                <!-- STEP 3 -->
+                <div class="admin-guide-card" id="step3Guide" style="display:none;">
+                    <div class="guide-title">
+                        <i class="fas fa-key"></i> Step 3 — Admin API Key
+                    </div>
+                    <p class="guide-desc">
+                        The <strong>shared secret</strong> you set as <code>ADMIN_API_KEY</code> on Vercel. Locks down registration and payment endpoints.
+                    </p>
+                    <details class="guide-help">
+                        <summary><i class="fas fa-question-circle"></i> Where do I find this?</summary>
+                        <ol>
+                            <li>Go to <a href="https://vercel.com/dashboard" target="_blank" rel="noopener">vercel.com/dashboard</a></li>
+                            <li>Click your <strong>backend</strong> project</li>
+                            <li>Go to <strong>Settings → Environment Variables</strong></li>
+                            <li>Find <code>ADMIN_API_KEY</code> → click the eye icon → copy it</li>
+                            <li>Paste it below</li>
+                        </ol>
+                        <p class="guide-note">⚠️ If you haven't set this on Vercel yet, do that first (any 32+ char random string).</p>
+                    </details>
+                </div>
+
+                <div class="admin-input-group" id="step3Group" style="display:none;">
+                    <label>🔑 Admin API Key</label>
+                    <div class="input-with-paste">
+                        <input type="password" id="adminApiKeyInput" placeholder="Paste your ADMIN_API_KEY here" autocomplete="off" spellcheck="false">
+                        <button class="paste-btn" data-target="adminApiKeyInput" title="Paste from clipboard"><i class="fas fa-paste"></i></button>
+                    </div>
+                    <div class="field-hint">Same value you set on Vercel as <code>ADMIN_API_KEY</code></div>
+                </div>
+
+                <div id="adminStatusMsg" class="admin-status-msg info">
+                    <i class="fas fa-info-circle"></i> Fill all 3 steps, then tap Save
+                </div>
+
                 <div class="admin-actions">
-                    <button class="admin-save-btn" id="adminSaveBtn"><i class="fas fa-save"></i> Save</button>
-                    <button class="admin-reset-btn" id="adminResetBtn"><i class="fas fa-trash"></i> Reset</button>
+                    <button class="admin-back-btn" id="adminBackBtn" style="display:none;"><i class="fas fa-arrow-left"></i> Back</button>
+                    <button class="admin-save-btn" id="adminSaveBtn"><i class="fas fa-check"></i> Save & Finish</button>
+                    <button class="admin-reset-btn" id="adminResetBtn" title="Reset setup"><i class="fas fa-trash"></i></button>
                 </div>
+
                 <div class="admin-security-hint">
-                    <i class="fas fa-lock"></i> Secret key stays on Vercel · Never entered here
+                    <i class="fas fa-lock"></i> Stored locally · Secret key stays on Vercel
                 </div>
             </div>
             <button id="adminToggleBtn" class="admin-toggle-btn">
-                <i class="fas fa-shield-alt"></i> <span>Admin</span>
+                <i class="fas fa-shield-alt"></i> <span>Setup</span>
             </button>
         `;
         document.body.insertAdjacentHTML('beforeend', panelHTML);
@@ -623,6 +849,7 @@ class AdminKeyManager {
         const toggleBtn = document.getElementById('adminToggleBtn');
         const saveBtn = document.getElementById('adminSaveBtn');
         const resetBtn = document.getElementById('adminResetBtn');
+        const backBtn = document.getElementById('adminBackBtn');
         const apiKeyInput = document.getElementById('adminApiKeyInput');
         const backendInput = document.getElementById('adminBackendInput');
         const paystackInput = document.getElementById('adminPaystackInput');
@@ -633,63 +860,107 @@ class AdminKeyManager {
             else panel.classList.add('hidden');
         });
 
+        // Paste buttons
+        document.querySelectorAll('.paste-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                try {
+                    const text = await navigator.clipboard.readText();
+                    const target = document.getElementById(btn.dataset.target);
+                    if (target) {
+                        target.value = text.trim();
+                        target.dispatchEvent(new Event('input', { bubbles: true }));
+                        this.validateLive();
+                    }
+                } catch (err) {
+                    this.showStatus('⚠️ Clipboard blocked — paste manually', 'error');
+                }
+            });
+        });
+
+        // Live validation
+        [backendInput, paystackInput, apiKeyInput].forEach(inp => {
+            inp?.addEventListener('input', () => this.validateLive());
+        });
+
+        // Auto-advance steps on valid input
+        backendInput?.addEventListener('blur', () => {
+            if (backendInput.value.startsWith('http') && this.currentStep === 1) this.goToStep(2);
+        });
+        paystackInput?.addEventListener('blur', () => {
+            if (paystackInput.value.startsWith('pk_') && this.currentStep === 2) this.goToStep(3);
+        });
+
+        // Back button
+        backBtn?.addEventListener('click', () => {
+            if (this.currentStep > 1) this.goToStep(this.currentStep - 1);
+        });
+
+        // Save
         saveBtn?.addEventListener('click', async () => {
-            const apiKey = apiKeyInput.value.trim();
             const backendUrl = backendInput.value.trim();
             const paystackKey = paystackInput.value.trim();
+            const apiKey = apiKeyInput.value.trim();
 
-            if (!apiKey) { this.showStatus('⚠️ Enter Admin API key', 'error'); return; }
-            if (apiKey.length < 8) { this.showStatus('⚠️ Admin key too short', 'error'); return; }
-            if (!backendUrl) { this.showStatus('⚠️ Enter backend URL', 'error'); return; }
-            if (!backendUrl.startsWith('http://') && !backendUrl.startsWith('https://')) {
-                this.showStatus('⚠️ URL must start with http(s)://', 'error'); return;
-            }
-            if (!paystackKey) { this.showStatus('⚠️ Enter Paystack public key', 'error'); return; }
-            if (!paystackKey.startsWith('pk_')) {
-                this.showStatus('⚠️ Paystack public key must start with pk_', 'error'); return;
-            }
+            if (!backendUrl) { this.goToStep(1); this.showStatus('⚠️ Enter your backend URL first', 'error'); backendInput.focus(); return; }
+            if (!backendUrl.startsWith('http')) { this.goToStep(1); this.showStatus('⚠️ URL must start with http(s)://', 'error'); backendInput.focus(); return; }
+            if (!paystackKey) { this.goToStep(2); this.showStatus('⚠️ Enter your Paystack public key', 'error'); paystackInput.focus(); return; }
+            if (!paystackKey.startsWith('pk_')) { this.goToStep(2); this.showStatus('⚠️ Paystack key must start with pk_', 'error'); paystackInput.focus(); return; }
+            if (!apiKey) { this.goToStep(3); this.showStatus('⚠️ Enter your Admin API Key', 'error'); apiKeyInput.focus(); return; }
+            if (apiKey.length < 16) { this.goToStep(3); this.showStatus('⚠️ Admin Key should be at least 16 chars', 'error'); apiKeyInput.focus(); return; }
 
-            this.showStatus('⏳ Testing connection...', 'info');
+            this.showStatus('<i class="fas fa-spinner fa-spin"></i> Testing connection...', 'info');
             try {
                 const cleanUrl = backendUrl.replace(/\/+$/, '');
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 8000);
                 const res = await fetch(`${cleanUrl}/api/health`, { signal: controller.signal });
                 clearTimeout(timeoutId);
-                if (!res.ok) { this.showStatus(`⚠️ Backend returned ${res.status}`, 'error'); return; }
+                if (!res.ok) {
+                    this.showStatus(`⚠️ Backend returned ${res.status}. Check your URL.`, 'error');
+                    return;
+                }
+                const health = await res.json().catch(() => ({}));
+                if (health.configured === false) {
+                    this.showStatus('⚠️ Backend reachable, but PAYSTACK_SECRET_KEY is missing on Vercel', 'error');
+                    return;
+                }
             } catch (e) {
                 this.showStatus(`⚠️ Cannot reach backend — ${e.message}`, 'error');
                 return;
             }
 
             if (this.saveConfig(apiKey, backendUrl, paystackKey)) {
-                this.showStatus('✅ Saved! Auto-hiding...', 'success');
-                apiKeyInput.value = '';
-                paystackInput.value = '';
+                this.showStatus('<i class="fas fa-check-circle"></i> All set! You\'re ready to go.', 'success');
                 if (window.api) {
                     window.api.setApiKey(this.apiKey);
                     window.api.setBaseURL(this.backendUrl);
                 }
                 window.connectionMonitor?.checkHealth();
-                setTimeout(() => this.hideAdminPanel(), 1500);
-                if (!currentSessionUser) setTimeout(() => showAuthScreen(), 1800);
+                setTimeout(() => this.hideAdminPanel(), 2000);
+                if (!currentSessionUser) setTimeout(() => showAuthScreen(), 2200);
+            } else {
+                this.showStatus('⚠️ Could not save — try again', 'error');
             }
         });
 
+        // Reset
         resetBtn?.addEventListener('click', () => {
-            if (confirm('⚠️ Reset all configuration?')) {
+            if (confirm('Reset all setup? You can re-enter it anytime.')) {
                 this.resetConfig();
                 if (window.api) {
                     window.api.setApiKey(null);
                     window.api.setBaseURL(null);
                 }
+                backendInput.value = '';
+                paystackInput.value = '';
+                apiKeyInput.value = '';
                 this.updateUI();
-                this.showStatus('🔄 Reset done', 'info');
-                this.showAdminPanel();
+                this.goToStep(1);
+                this.showStatus('🔄 Reset done. Start with Step 1.', 'info');
             }
         });
 
-        paystackInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') apiKeyInput?.focus(); });
         apiKeyInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveBtn?.click(); });
 
         document.addEventListener('click', (e) => {
@@ -700,40 +971,95 @@ class AdminKeyManager {
         });
     }
 
+    goToStep(step) {
+        this.currentStep = Math.max(1, Math.min(3, step));
+
+        document.querySelectorAll('.step-dot').forEach(d => {
+            const n = parseInt(d.dataset.step);
+            d.classList.toggle('active', n === this.currentStep);
+            d.classList.toggle('done', n < this.currentStep);
+        });
+
+        document.getElementById('step1Group').style.display = this.currentStep === 1 ? 'block' : 'none';
+        document.getElementById('step2Group').style.display = this.currentStep === 2 ? 'block' : 'none';
+        document.getElementById('step3Group').style.display = this.currentStep === 3 ? 'block' : 'none';
+
+        document.getElementById('step1Guide').style.display = this.currentStep === 1 ? 'block' : 'none';
+        document.getElementById('step2Guide').style.display = this.currentStep === 2 ? 'block' : 'none';
+        document.getElementById('step3Guide').style.display = this.currentStep === 3 ? 'block' : 'none';
+
+        document.getElementById('adminBackBtn').style.display = this.currentStep > 1 ? 'flex' : 'none';
+
+        setTimeout(() => {
+            if (this.currentStep === 1) document.getElementById('adminBackendInput')?.focus();
+            if (this.currentStep === 2) document.getElementById('adminPaystackInput')?.focus();
+            if (this.currentStep === 3) document.getElementById('adminApiKeyInput')?.focus();
+        }, 100);
+    }
+
+    validateLive() {
+        const backendUrl = document.getElementById('adminBackendInput')?.value.trim() || '';
+        const pk = document.getElementById('adminPaystackInput')?.value.trim() || '';
+        const ak = document.getElementById('adminApiKeyInput')?.value.trim() || '';
+
+        const step1Ok = backendUrl.startsWith('http');
+        const step2Ok = pk.startsWith('pk_') && pk.length > 10;
+        const step3Ok = ak.length >= 16;
+
+        const dots = document.querySelectorAll('.step-dot');
+        if (dots[0]) { dots[0].classList.toggle('done', step1Ok); }
+        if (dots[1]) { dots[1].classList.toggle('done', step2Ok); }
+        if (dots[2]) { dots[2].classList.toggle('done', step3Ok); }
+
+        const saveBtn = document.getElementById('adminSaveBtn');
+        if (saveBtn) saveBtn.disabled = !(step1Ok && step2Ok && step3Ok);
+    }
+
     showStatus(msg, type) {
         const el = document.getElementById('adminStatusMsg');
-        if (el) { el.textContent = msg; el.className = `admin-status-msg ${type}`; }
+        if (el) { el.innerHTML = msg; el.className = `admin-status-msg ${type}`; }
     }
 
     updateUI() {
         const statusBadge = document.getElementById('adminStatusBadge');
-        const apiKeyInput = document.getElementById('adminApiKeyInput');
         const backendInput = document.getElementById('adminBackendInput');
         const paystackInput = document.getElementById('adminPaystackInput');
+        const apiKeyInput = document.getElementById('adminApiKeyInput');
 
         const apiOk = this.isApiConfigured();
         const backendOk = this.isBackendConfigured();
         const paystackOk = this.isPaystackConfigured();
         const allOk = apiOk && backendOk && paystackOk;
+        const someOk = apiOk || backendOk || paystackOk;
 
         if (statusBadge) {
             if (allOk) {
-                statusBadge.textContent = '✅ Configured';
+                statusBadge.innerHTML = '<i class="fas fa-check-circle"></i> Ready';
                 statusBadge.className = 'status-badge configured';
-            } else if (apiOk || backendOk || paystackOk) {
-                statusBadge.textContent = '⚙️ Partial';
+                statusBadge.style.background = '';
+                statusBadge.style.color = '';
+            } else if (someOk) {
+                statusBadge.innerHTML = '<i class="fas fa-tools"></i> In progress';
                 statusBadge.className = 'status-badge';
                 statusBadge.style.background = '#FBBF24';
                 statusBadge.style.color = '#000';
             } else {
-                statusBadge.textContent = '⚠️ Not Setup';
+                statusBadge.innerHTML = '<i class="fas fa-circle"></i> Not Setup';
                 statusBadge.className = 'status-badge not-configured';
+                statusBadge.style.background = '';
+                statusBadge.style.color = '';
             }
         }
 
-        if (apiKeyInput) apiKeyInput.placeholder = apiOk ? '•••••••••••• (configured)' : 'Enter Admin API Key';
         if (backendInput) backendInput.value = this.backendUrl || '';
         if (paystackInput) paystackInput.value = this.paystackPublicKey || '';
+        if (apiKeyInput) apiKeyInput.value = this.apiKey || '';
+
+        if (backendOk && paystackOk && !apiOk) this.goToStep(3);
+        else if (backendOk && !paystackOk) this.goToStep(2);
+        else this.goToStep(1);
+
+        this.validateLive();
 
         const toggleBtn = document.getElementById('adminToggleBtn');
         if (toggleBtn && allOk) {
@@ -753,6 +1079,7 @@ class AdminKeyManager {
     showAdminPanel() {
         document.getElementById('adminPanel')?.classList.remove('hidden');
         document.getElementById('adminToggleBtn')?.classList.remove('hidden');
+        this.updateUI();
     }
 }
 
@@ -867,7 +1194,6 @@ class PremiumPackage {
 
 // ============================================================
 // SERVERLESS-HARDENED PAYMENT CLIENT
-// Handles cold-start retries, idempotency, and state persistence
 // ============================================================
 class ServerlessPaymentClient {
     constructor(api, adminManager) {
@@ -907,9 +1233,6 @@ class ServerlessPaymentClient {
         try { sessionStorage.removeItem(this.STATE_KEY); } catch (e) {}
     }
 
-    /**
-     * Initialize payment with exponential backoff for serverless cold starts.
-     */
     async initializePayment(packageId, userEmail, userToken) {
         const pkg = PremiumPackage.getPackage(packageId);
         if (!pkg) throw new Error('Invalid package');
@@ -919,13 +1242,9 @@ class ServerlessPaymentClient {
 
         const idempotencyKey = this.generateRequestId();
         const state = {
-            packageId,
-            email: userEmail,
-            idempotencyKey,
-            timestamp: Date.now(),
-            status: 'initializing',
-            reference: null,
-            attempts: 0
+            packageId, email: userEmail, idempotencyKey,
+            timestamp: Date.now(), status: 'initializing',
+            reference: null, attempts: 0
         };
 
         let lastError;
@@ -957,11 +1276,9 @@ class ServerlessPaymentClient {
 
                 if (!response.ok) {
                     const error = await response.json().catch(() => ({}));
-                    // 4xx errors → don't retry
                     if (response.status >= 400 && response.status < 500) {
                         throw new Error(error.message || `Backend error: ${response.status}`);
                     }
-                    // 5xx → retry
                     throw new Error(error.message || `Server error: ${response.status}`);
                 }
 
@@ -993,9 +1310,6 @@ class ServerlessPaymentClient {
         throw new Error(`Payment initialization failed after ${this.MAX_RETRIES} attempts: ${lastError.message}`);
     }
 
-    /**
-     * Verify payment with retry and extended timeout.
-     */
     async verifyPayment(reference, userToken) {
         const backendUrl = this.adminManager.getBackendUrl();
         if (!backendUrl) throw new Error('Backend not configured');
@@ -1020,7 +1334,6 @@ class ServerlessPaymentClient {
 
                 if (!response.ok) {
                     const error = await response.json().catch(() => ({}));
-                    // 4xx → don't retry
                     if (response.status >= 400 && response.status < 500) {
                         throw new Error(error.message || `Server error: ${response.status}`);
                     }
@@ -1038,7 +1351,6 @@ class ServerlessPaymentClient {
                     throw new Error('PENDING');
                 }
 
-                // Failed or unknown → return as-is (don't retry)
                 return data;
 
             } catch (error) {
@@ -1061,9 +1373,6 @@ class ServerlessPaymentClient {
         throw new Error(`Payment verification failed: ${lastError.message}`);
     }
 
-    /**
-     * Start full payment flow — returns nothing (redirects the browser).
-     */
     async startPayment(packageId, user, token, onProgress) {
         onProgress('⏳ Initializing payment...');
         const data = await this.initializePayment(packageId, user.email, token);
@@ -1072,14 +1381,10 @@ class ServerlessPaymentClient {
         window.location.href = data.authorizationUrl;
     }
 
-    /**
-     * Called on app boot to check for a returning user from Paystack.
-     */
     async checkPendingPayment(userToken) {
         const state = this.getState();
         if (!state || !state.reference) return null;
 
-        // Stale after 30 minutes
         if (Date.now() - state.timestamp > 30 * 60 * 1000) {
             console.warn('Payment state stale, clearing');
             this.clearState();
@@ -1362,7 +1667,7 @@ function superLike(profile) {
 }
 
 // ============================================================
-// PAYSTACK PAYMENT FLOW — uses ServerlessPaymentClient
+// PAYSTACK PAYMENT FLOW
 // ============================================================
 async function startPaystackPayment(packageId) {
     const pkg = PremiumPackage.getPackage(packageId);
@@ -1394,7 +1699,6 @@ async function startPaystackPayment(packageId) {
                 showLoadingToast(msg);
             }
         );
-        // If we get here, redirect happened — this code may still run on slow browsers
     } catch (error) {
         hideLoadingToast();
         showToast(`⚠️ ${error.message}`, '#ef4444');
@@ -1402,9 +1706,6 @@ async function startPaystackPayment(packageId) {
     }
 }
 
-// ============================================================
-// VERIFY PENDING PAYMENT (called on boot)
-// ============================================================
 async function verifyPendingPaymentIfAny() {
     if (!api.token) return;
     if (!adminManager.getBackendUrl()) return;
@@ -1428,7 +1729,6 @@ async function verifyPendingPaymentIfAny() {
         }
     } catch (error) {
         console.warn('Pending payment check:', error.message);
-        // Silent fail — user can retry from shop
     }
 }
 
@@ -1849,13 +2149,8 @@ function showAuthScreen() {
                     <i class="fas fa-exclamation-triangle"></i>
                     <div style="flex:1;">
                         <strong>Backend not configured.</strong><br>
-                        Tap the shield icon (bottom-right) and enter:
-                        <ul style="margin:6px 0 0 16px;font-size:11px;">
-                            <li>Backend API URL (Vercel)</li>
-                            <li>Paystack Public Key (pk_...)</li>
-                            <li>Admin API Key</li>
-                        </ul>
-                        <button id="openAdminBtn"><i class="fas fa-shield-alt"></i> Open Admin Panel</button>
+                        Tap the shield icon (bottom-right) to open the guided setup.
+                        <button id="openAdminBtn"><i class="fas fa-magic"></i> Open Setup</button>
                     </div>
                 </div>
             ` : ''}
@@ -1996,7 +2291,6 @@ async function initMainApp() {
     });
     renderCurrentTab();
 
-    // 🔥 Check for pending Paystack payment return
     verifyPendingPaymentIfAny();
 }
 
