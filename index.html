@@ -422,7 +422,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Paystack processing overlay */
         .payment-overlay {
             position: fixed; inset: 0; z-index: 100000;
             background: rgba(3, 3, 8, 0.85); backdrop-filter: blur(12px);
@@ -461,7 +460,7 @@
 <script>
 // ============================================================
 // FLAMEMATCH PRO — Client
-// Secure Paystack flow via Vercel backend.
+// Serverless-hardened Paystack flow via Vercel backend.
 // Secret key never touches this file.
 // ============================================================
 
@@ -505,7 +504,8 @@ class ConnectionMonitor {
             if (response.ok) {
                 const data = await response.json();
                 const mode = data.paystackMode || 'ready';
-                this.show('online', `Backend online · Paystack: ${mode}`);
+                const cfg = data.configured === false ? '⚠️ key missing' : '';
+                this.show('online', `Backend online · Paystack: ${mode} ${cfg}`.trim());
                 setTimeout(() => this.hide(), 3500);
                 return true;
             } else {
@@ -779,7 +779,7 @@ class APIService {
         let response;
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000);
+            const timeoutId = setTimeout(() => controller.abort(), 20000);
             response = await fetch(`${this.baseURL}${endpoint}`, { ...options, headers, signal: controller.signal });
             clearTimeout(timeoutId);
         } catch (networkError) {
@@ -854,10 +854,8 @@ class CameraEngine {
 }
 
 // ============================================================
-// PREMIUM PACKAGES
+// PREMIUM PACKAGES (display only — real prices on backend)
 // ============================================================
-// NOTE: Display only. Real prices live on the backend (lib/plans.js).
-// The backend will reject any amount mismatch.
 class PremiumPackage {
     static packages = [
         { id: 'silver',   name: 'Silver',   price: 299, currency: 'KES', features: ['10 Extra SuperLikes', 'Profile Boost (2hrs)', 'See Who Liked You', 'No Ads'], color: '#94A3B8' },
@@ -865,6 +863,231 @@ class PremiumPackage {
         { id: 'platinum', name: 'Platinum', price: 999, currency: 'KES', features: ['Unlimited SuperLikes', 'Profile Boost (24hrs)', 'See Who Liked You', 'No Ads', 'Advanced Filters', 'Read Receipts', 'Priority Support', 'Exclusive Events'], color: '#A855F7' }
     ];
     static getPackage(id) { return this.packages.find(p => p.id === id); }
+}
+
+// ============================================================
+// SERVERLESS-HARDENED PAYMENT CLIENT
+// Handles cold-start retries, idempotency, and state persistence
+// ============================================================
+class ServerlessPaymentClient {
+    constructor(api, adminManager) {
+        this.api = api;
+        this.adminManager = adminManager;
+        this.MAX_RETRIES = 3;
+        this.INIT_TIMEOUT = 25000;
+        this.VERIFY_TIMEOUT = 30000;
+        this.STATE_KEY = 'flamematch_payment_state';
+    }
+
+    generateRequestId() {
+        if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+        return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+    }
+
+    async fetchWithTimeout(url, options, timeout) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        try {
+            return await fetch(url, { ...options, signal: controller.signal });
+        } finally {
+            clearTimeout(timeoutId);
+        }
+    }
+
+    saveState(state) {
+        try { sessionStorage.setItem(this.STATE_KEY, JSON.stringify(state)); } catch (e) {}
+    }
+    getState() {
+        try {
+            const s = sessionStorage.getItem(this.STATE_KEY);
+            return s ? JSON.parse(s) : null;
+        } catch { return null; }
+    }
+    clearState() {
+        try { sessionStorage.removeItem(this.STATE_KEY); } catch (e) {}
+    }
+
+    /**
+     * Initialize payment with exponential backoff for serverless cold starts.
+     */
+    async initializePayment(packageId, userEmail, userToken) {
+        const pkg = PremiumPackage.getPackage(packageId);
+        if (!pkg) throw new Error('Invalid package');
+
+        const backendUrl = this.adminManager.getBackendUrl();
+        if (!backendUrl) throw new Error('Backend not configured');
+
+        const idempotencyKey = this.generateRequestId();
+        const state = {
+            packageId,
+            email: userEmail,
+            idempotencyKey,
+            timestamp: Date.now(),
+            status: 'initializing',
+            reference: null,
+            attempts: 0
+        };
+
+        let lastError;
+        for (let attempt = 1; attempt <= this.MAX_RETRIES; attempt++) {
+            try {
+                state.attempts = attempt;
+                this.saveState(state);
+
+                const response = await this.fetchWithTimeout(
+                    `${backendUrl}/api/paystack/initialize`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-API-Key': this.adminManager.getApiKey() || '',
+                            'Authorization': `Bearer ${userToken}`,
+                            'X-Client-Version': '1.1.0',
+                            'X-Request-ID': idempotencyKey
+                        },
+                        body: JSON.stringify({
+                            planId: packageId,
+                            email: userEmail,
+                            callbackUrl: window.location.origin + window.location.pathname,
+                            idempotencyKey
+                        })
+                    },
+                    this.INIT_TIMEOUT
+                );
+
+                if (!response.ok) {
+                    const error = await response.json().catch(() => ({}));
+                    // 4xx errors → don't retry
+                    if (response.status >= 400 && response.status < 500) {
+                        throw new Error(error.message || `Backend error: ${response.status}`);
+                    }
+                    // 5xx → retry
+                    throw new Error(error.message || `Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                if (!data.success || !data.authorizationUrl) {
+                    throw new Error(data.message || 'No payment URL returned');
+                }
+
+                state.reference = data.reference;
+                state.authorizationUrl = data.authorizationUrl;
+                state.status = 'initialized';
+                this.saveState(state);
+
+                return data;
+
+            } catch (error) {
+                lastError = error;
+                console.warn(`Payment init attempt ${attempt}/${this.MAX_RETRIES}:`, error.message);
+
+                const isClientError = /Backend error: 4/.test(error.message);
+                if (isClientError) throw error;
+
+                if (attempt < this.MAX_RETRIES) {
+                    const delay = Math.pow(2, attempt - 1) * 1000;
+                    await new Promise(r => setTimeout(r, delay));
+                }
+            }
+        }
+        throw new Error(`Payment initialization failed after ${this.MAX_RETRIES} attempts: ${lastError.message}`);
+    }
+
+    /**
+     * Verify payment with retry and extended timeout.
+     */
+    async verifyPayment(reference, userToken) {
+        const backendUrl = this.adminManager.getBackendUrl();
+        if (!backendUrl) throw new Error('Backend not configured');
+
+        let lastError;
+        for (let attempt = 1; attempt <= this.MAX_RETRIES; attempt++) {
+            try {
+                const response = await this.fetchWithTimeout(
+                    `${backendUrl}/api/paystack/verify`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${userToken}`,
+                            'X-Request-ID': `${reference}-v${attempt}`,
+                            'X-Verify-Attempt': attempt.toString()
+                        },
+                        body: JSON.stringify({ reference })
+                    },
+                    this.VERIFY_TIMEOUT
+                );
+
+                if (!response.ok) {
+                    const error = await response.json().catch(() => ({}));
+                    // 4xx → don't retry
+                    if (response.status >= 400 && response.status < 500) {
+                        throw new Error(error.message || `Server error: ${response.status}`);
+                    }
+                    throw new Error(error.message || `Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.success && data.status === 'success') {
+                    this.clearState();
+                    return data;
+                }
+
+                if (data.status === 'pending') {
+                    throw new Error('PENDING');
+                }
+
+                // Failed or unknown → return as-is (don't retry)
+                return data;
+
+            } catch (error) {
+                lastError = error;
+                console.warn(`Payment verify attempt ${attempt}/${this.MAX_RETRIES}:`, error.message);
+
+                const isRetryable = error.message === 'PENDING' ||
+                                    error.name === 'AbortError' ||
+                                    /Server error: 5/.test(error.message) ||
+                                    /fetch/i.test(error.message);
+
+                if (isRetryable && attempt < this.MAX_RETRIES) {
+                    const delay = Math.pow(2, attempt) * 1000;
+                    await new Promise(r => setTimeout(r, delay));
+                } else if (!isRetryable) {
+                    throw error;
+                }
+            }
+        }
+        throw new Error(`Payment verification failed: ${lastError.message}`);
+    }
+
+    /**
+     * Start full payment flow — returns nothing (redirects the browser).
+     */
+    async startPayment(packageId, user, token, onProgress) {
+        onProgress('⏳ Initializing payment...');
+        const data = await this.initializePayment(packageId, user.email, token);
+        onProgress('🔒 Redirecting to Paystack...');
+        await new Promise(r => setTimeout(r, 600));
+        window.location.href = data.authorizationUrl;
+    }
+
+    /**
+     * Called on app boot to check for a returning user from Paystack.
+     */
+    async checkPendingPayment(userToken) {
+        const state = this.getState();
+        if (!state || !state.reference) return null;
+
+        // Stale after 30 minutes
+        if (Date.now() - state.timestamp > 30 * 60 * 1000) {
+            console.warn('Payment state stale, clearing');
+            this.clearState();
+            return null;
+        }
+
+        return await this.verifyPayment(state.reference, userToken);
+    }
 }
 
 // ============================================================
@@ -928,6 +1151,7 @@ class UIEngine {
 const api = new APIService();
 const adminManager = new AdminKeyManager();
 const connectionMonitor = new ConnectionMonitor();
+let paymentClient = null;
 
 if (adminManager.isApiConfigured()) api.setApiKey(adminManager.getApiKey());
 if (adminManager.isBackendConfigured()) api.setBaseURL(adminManager.getBackendUrl());
@@ -968,9 +1192,6 @@ function showToast(msg, bg) {
 function escapeHtml(str) { return str ? str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m)) : ''; }
 function attachModernCardStyles() { window.uiEngineInstance?.observeCards(); }
 
-// ============================================================
-// LOADING TOAST
-// ============================================================
 let _loadingToastEl = null;
 function showLoadingToast(msg) {
     if (_loadingToastEl) _loadingToastEl.remove();
@@ -1038,8 +1259,7 @@ function saveUserData(userId) {
 function isPremiumUser() {
     const user = currentSessionUser;
     if (!user) return false;
-    if (['platinum', 'gold', 'silver', 'yearly_gold'].includes(user.membership)) {
-        // Check expiry
+    if (['platinum', 'gold', 'silver'].includes(user.membership)) {
         if (user.membershipExpiry && new Date(user.membershipExpiry) < new Date()) return false;
         return true;
     }
@@ -1142,7 +1362,7 @@ function superLike(profile) {
 }
 
 // ============================================================
-// PAYSTACK PAYMENT FLOW — talks to Vercel backend
+// PAYSTACK PAYMENT FLOW — uses ServerlessPaymentClient
 // ============================================================
 async function startPaystackPayment(packageId) {
     const pkg = PremiumPackage.getPackage(packageId);
@@ -1161,40 +1381,24 @@ async function startPaystackPayment(packageId) {
         return;
     }
 
-    showLoadingToast('⏳ Creating secure payment...');
+    if (!paymentClient) paymentClient = new ServerlessPaymentClient(api, adminManager);
 
     try {
-        const res = await fetch(`${adminManager.getBackendUrl()}/api/paystack/initialize`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': adminManager.getApiKey() || '',
-                'Authorization': `Bearer ${api.token}`
-            },
-            body: JSON.stringify({
-                planId: packageId,
-                email: currentSessionUser.email,
-                callbackUrl: window.location.origin + window.location.pathname
-            })
-        });
-
-        const data = await res.json();
+        showLoadingToast('⏳ Setting up secure payment...');
+        await paymentClient.startPayment(
+            packageId,
+            currentSessionUser,
+            api.token,
+            (msg) => {
+                hideLoadingToast();
+                showLoadingToast(msg);
+            }
+        );
+        // If we get here, redirect happened — this code may still run on slow browsers
+    } catch (error) {
         hideLoadingToast();
-
-        if (!res.ok || !data.success || !data.authorizationUrl) {
-            showToast(`⚠️ ${data.message || 'Could not initialize payment'}`, '#ef4444');
-            return;
-        }
-
-        // Persist pending reference so we can verify when user returns
-        sessionStorage.setItem('flamematch_pending_ref', data.reference);
-        sessionStorage.setItem('flamematch_pending_plan', packageId);
-
-        showToast('🔒 Redirecting to secure Paystack checkout...', '#0BA4DB');
-        setTimeout(() => { window.location.href = data.authorizationUrl; }, 800);
-    } catch (err) {
-        hideLoadingToast();
-        showToast(err.message || 'Payment initialization failed', '#ef4444');
+        showToast(`⚠️ ${error.message}`, '#ef4444');
+        console.error('Payment error:', error);
     }
 }
 
@@ -1202,39 +1406,29 @@ async function startPaystackPayment(packageId) {
 // VERIFY PENDING PAYMENT (called on boot)
 // ============================================================
 async function verifyPendingPaymentIfAny() {
-    const reference = sessionStorage.getItem('flamematch_pending_ref');
-    if (!reference) return;
+    if (!api.token) return;
+    if (!adminManager.getBackendUrl()) return;
+
+    if (!paymentClient) paymentClient = new ServerlessPaymentClient(api, adminManager);
 
     try {
-        showLoadingToast('🔍 Verifying payment...');
+        const result = await paymentClient.checkPendingPayment(api.token);
+        if (!result) return;
 
-        const res = await fetch(`${adminManager.getBackendUrl()}/api/paystack/verify`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${api.token || ''}`
-            },
-            body: JSON.stringify({ reference })
-        });
-
-        const data = await res.json();
-        hideLoadingToast();
-
-        sessionStorage.removeItem('flamematch_pending_ref');
-        sessionStorage.removeItem('flamematch_pending_plan');
-
-        if (res.ok && data.success && data.status === 'success') {
+        if (result.success && result.status === 'success') {
             showToast('🎉 Premium Activated Successfully!', '#00B841');
             await syncUserFromAPI();
             renderCurrentTab();
+        } else if (result.message?.includes('already active')) {
+            showToast('✅ Premium already active', '#00B841');
+            await syncUserFromAPI();
+            renderCurrentTab();
         } else {
-            showToast(`❌ ${data.message || 'Payment not verified'}`, '#ef4444');
+            showToast(`❌ ${result.message || 'Payment not verified'}`, '#ef4444');
         }
-    } catch (err) {
-        hideLoadingToast();
-        sessionStorage.removeItem('flamematch_pending_ref');
-        sessionStorage.removeItem('flamematch_pending_plan');
-        showToast('⚠️ Verification failed. Contact support if charged.', '#ef4444');
+    } catch (error) {
+        console.warn('Pending payment check:', error.message);
+        // Silent fail — user can retry from shop
     }
 }
 
@@ -1802,7 +1996,7 @@ async function initMainApp() {
     });
     renderCurrentTab();
 
-    // 🔥 Verify any pending Paystack payment on return from checkout
+    // 🔥 Check for pending Paystack payment return
     verifyPendingPaymentIfAny();
 }
 
