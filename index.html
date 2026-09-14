@@ -31,7 +31,6 @@
             min-height: 100vh; min-height: 100dvh; padding: 20px;
         }
 
-        /* ===== ADMIN PANEL ===== */
         .admin-panel {
             position: fixed; bottom: 80px; right: 20px; z-index: 9998;
             background: rgba(10, 10, 18, 0.98); backdrop-filter: blur(20px);
@@ -83,7 +82,6 @@
         .admin-security-hint { font-size: 10px; color: #4a4a5a; display: flex; align-items: center; gap: 4px; margin-top: 6px; }
         .admin-security-hint i { color: #fbbf24; font-size: 12px; }
 
-        /* ===== CONNECTION STATUS ===== */
         .conn-status {
             position: fixed; top: 0; left: 0; right: 0;
             padding: 6px; text-align: center; font-size: 11px;
@@ -96,7 +94,6 @@
         .conn-status.online { background: linear-gradient(135deg, #00B841, #008F3A); color: white; }
         .conn-status.offline { background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; }
 
-        /* ===== APP ===== */
         .dating-app {
             max-width: var(--app-max-width); width: 100%;
             height: min(90vh, var(--app-max-height)); min-height: var(--app-min-height);
@@ -446,6 +443,7 @@
 
 <script>
 // ============================================================
+// FLAMEMATCH PRO — Full client for Vercel Node.js backend
 // No secrets hardcoded. All config entered at runtime via Admin.
 // ============================================================
 
@@ -572,7 +570,7 @@ class AdminKeyManager {
                 </h4>
                 <div class="admin-input-group">
                     <label>🌐 Backend API URL</label>
-                    <input type="url" id="adminBackendInput" placeholder="https://your-backend.vercel.app" autocomplete="off">
+                    <input type="url" id="adminBackendInput" placeholder="https://flamematch-backend.vercel.app" autocomplete="off">
                 </div>
                 <div class="admin-input-group">
                     <label>🔵 Paystack Public Key</label>
@@ -801,18 +799,11 @@ class APIService {
     async likeProfile(profileId) {
         return this.request('/api/matches/like', { method: 'POST', body: JSON.stringify({ profileId }) });
     }
-
     async initPaystackPayment(planId) {
-        return this.request('/api/paystack/init', {
-            method: 'POST',
-            body: JSON.stringify({ planId })
-        });
+        return this.request('/api/paystack/init', { method: 'POST', body: JSON.stringify({ planId }) });
     }
     async verifyPaystackPayment(reference) {
-        return this.request('/api/paystack/verify', {
-            method: 'POST',
-            body: JSON.stringify({ reference })
-        });
+        return this.request('/api/paystack/verify', { method: 'POST', body: JSON.stringify({ reference }) });
     }
 }
 
@@ -916,12 +907,14 @@ class PaystackPaymentEngine {
         const pkg = PremiumPackage.getPackage(packageId);
         if (!pkg) throw new Error('Invalid package');
 
+        // Step 1: Ask backend to create transaction & get reference
         const initRes = await this.api.initPaystackPayment(packageId);
         if (!initRes.success || !initRes.reference) {
             throw new Error(initRes.error || 'Could not initialize payment');
         }
         const reference = initRes.reference;
 
+        // Step 2: Open Paystack popup
         return new Promise((resolve, reject) => {
             const handler = PaystackPop.setup({
                 key: publicKey,
@@ -936,6 +929,7 @@ class PaystackPaymentEngine {
                     ]
                 },
                 callback: async (response) => {
+                    // Step 3: Verify on backend
                     try {
                         const verifyRes = await this.api.verifyPaystackPayment(response.reference);
                         if (verifyRes.success && verifyRes.status === 'success') {
@@ -1304,7 +1298,7 @@ function processIncomingFile(file, partnerId) {
 }
 
 // ============================================================
-// RENDER
+// RENDER FUNCTIONS
 // ============================================================
 function renderDiscoverTab() {
     const container = document.getElementById("appContent");
@@ -1541,7 +1535,7 @@ function renderPremiumShop() {
             </div>
             <p style="color:var(--text-secondary);font-size:12px;margin-top:6px;">
                 <i class="fas fa-shield-alt" style="color:#0BA4DB;"></i>
-                Secure payments via <strong style="color:#0BA4DB;">Paystack</strong> — cards, M-Pesa, bank transfer & USSD
+                Secure payments via <strong style="color:#0BA4DB;">Paystack</strong>
             </p>
             ${!ready ? `
                 <div class="verify-email-banner" style="margin-top:8px;">
