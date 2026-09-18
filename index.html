@@ -20,7 +20,6 @@
             --app-min-height: 700px;
             --app-max-height: 900px;
             --gold: #FBBF24;
-            --admin-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         body {
@@ -30,197 +29,6 @@
             min-height: 100vh; min-height: 100dvh; padding: 20px;
         }
 
-        /* ---------- Friendly Admin Panel ---------- */
-        .admin-panel {
-            position: fixed; bottom: 80px; right: 20px; z-index: 9998;
-            background: rgba(10, 10, 18, 0.98); backdrop-filter: blur(20px);
-            border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 20px;
-            padding: 18px 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-            max-width: 400px; width: calc(100% - 40px);
-            max-height: 85vh; overflow-y: auto;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .admin-panel.hidden { transform: translateY(calc(100% + 30px)); opacity: 0; pointer-events: none; }
-        .admin-toggle-btn {
-            position: fixed; bottom: 20px; right: 20px; z-index: 9999;
-            background: var(--admin-gradient); border: none; padding: 12px 18px;
-            border-radius: 60px; color: white; font-weight: 700; font-size: 13px;
-            cursor: pointer; box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
-            transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;
-            font-family: var(--font-sans);
-        }
-        .admin-toggle-btn:active { transform: scale(0.95); }
-        .admin-toggle-btn.hidden { display: none; }
-        .admin-toggle-btn i { font-size: 16px; }
-
-        .admin-header {
-            display: flex; align-items: flex-start; justify-content: space-between;
-            gap: 10px; margin-bottom: 14px;
-        }
-        .admin-icon-badge {
-            width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
-            background: var(--admin-gradient);
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 18px;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        .admin-header h4 { color: white; font-size: 15px; margin: 0; }
-        .admin-subtitle { color: var(--text-secondary); font-size: 11px; margin-top: 2px; }
-        .admin-panel .status-badge { font-size: 10px; padding: 4px 10px; border-radius: 60px; white-space: nowrap; }
-        .admin-panel .status-badge.configured { background: #00B841; color: white; }
-        .admin-panel .status-badge.not-configured { background: #ef4444; color: white; }
-
-        .admin-progress {
-            display: flex; align-items: center; justify-content: center;
-            margin-bottom: 16px; padding: 0 8px;
-        }
-        .step-dot {
-            width: 30px; height: 30px; border-radius: 50%;
-            background: #1e1c2c; color: #6f6b8a;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 12px; font-weight: 700;
-            border: 2px solid rgba(255,255,255,0.1);
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-        }
-        .step-dot.active {
-            background: var(--admin-gradient); color: white;
-            border-color: transparent;
-            box-shadow: 0 0 12px rgba(102, 126, 234, 0.5);
-        }
-        .step-dot.done {
-            background: #00B841; color: white;
-            border-color: transparent;
-        }
-        .step-line {
-            flex: 1; height: 2px; background: rgba(255,255,255,0.08);
-            max-width: 50px; margin: 0 4px;
-        }
-
-        .admin-guide-card {
-            background: rgba(102, 126, 234, 0.08);
-            border: 1px solid rgba(102, 126, 234, 0.2);
-            border-radius: 14px; padding: 12px 14px;
-            margin-bottom: 12px;
-        }
-        .guide-title {
-            color: white; font-size: 13px; font-weight: 700;
-            display: flex; align-items: center; gap: 8px;
-            margin-bottom: 6px;
-        }
-        .guide-title i { color: #667eea; }
-        .guide-desc {
-            color: var(--text-secondary); font-size: 12px; line-height: 1.55;
-        }
-        .guide-desc code {
-            background: rgba(255,255,255,0.08); padding: 1px 6px;
-            border-radius: 4px; font-size: 11px; color: #fbbf24;
-        }
-        .guide-help { margin-top: 10px; }
-        .guide-help summary {
-            color: #667eea; font-size: 12px; font-weight: 600;
-            cursor: pointer; list-style: none; display: flex;
-            align-items: center; gap: 6px; padding: 6px 0;
-            user-select: none;
-        }
-        .guide-help summary::-webkit-details-marker { display: none; }
-        .guide-help ol {
-            color: var(--text-secondary); font-size: 11.5px;
-            margin: 6px 0 6px 18px; line-height: 1.65;
-        }
-        .guide-help ol li { padding: 2px 0; }
-        .guide-help ol a {
-            color: #ec4899; text-decoration: none;
-            border-bottom: 1px dashed rgba(236,72,153,0.4);
-        }
-        .guide-note { color: #fbbf24; font-size: 11px; margin-top: 6px; line-height: 1.5; }
-
-        .admin-input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-        .admin-input-group label {
-            color: var(--text-secondary); font-size: 11px; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        .input-with-paste { display: flex; gap: 6px; align-items: stretch; }
-        .input-with-paste input {
-            flex: 1; min-width: 0;
-            background: #1e1c2c; border: 1px solid rgba(236, 72, 153, 0.3);
-            border-radius: 12px; padding: 10px 14px;
-            color: white; font-size: 13px;
-            outline: none; font-family: 'Courier New', monospace;
-            transition: all 0.3s ease;
-        }
-        .input-with-paste input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
-        }
-        .paste-btn {
-            background: rgba(102, 126, 234, 0.15);
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            color: #667eea; border-radius: 12px;
-            padding: 0 14px; cursor: pointer;
-            transition: all 0.2s ease; font-size: 14px;
-            flex-shrink: 0;
-        }
-        .paste-btn:hover { background: rgba(102, 126, 234, 0.25); }
-        .paste-btn:active { transform: scale(0.95); }
-
-        .field-hint { color: #6f6b8a; font-size: 10.5px; padding: 0 4px; }
-        .field-hint code {
-            background: rgba(255,255,255,0.06);
-            padding: 1px 5px; border-radius: 4px;
-            color: #a5b4fc;
-        }
-
-        .admin-status-msg {
-            font-size: 11.5px; padding: 8px 12px; border-radius: 10px;
-            margin-top: 4px; margin-bottom: 10px; text-align: center;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-        }
-        .admin-status-msg.success { background: rgba(0, 184, 65, 0.15); color: #00B841; }
-        .admin-status-msg.error { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
-        .admin-status-msg.info { background: rgba(102, 126, 234, 0.15); color: #667eea; }
-
-        .admin-actions { display: flex; gap: 8px; margin-top: 4px; }
-        .admin-actions button {
-            padding: 11px 16px; border: none; border-radius: 12px;
-            font-weight: 700; font-size: 13px; cursor: pointer;
-            transition: all 0.2s ease; font-family: var(--font-sans);
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-        }
-        .admin-actions button:active { transform: scale(0.95); }
-        .admin-save-btn { background: var(--admin-gradient); color: white; flex: 1; }
-        .admin-save-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .admin-back-btn {
-            background: rgba(255,255,255,0.06); color: white;
-            border: 1px solid rgba(255,255,255,0.1);
-            flex: 0 0 auto;
-        }
-        .admin-reset-btn {
-            background: rgba(239, 68, 68, 0.15); color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            flex: 0 0 auto;
-        }
-        .admin-security-hint {
-            font-size: 10px; color: #4a4a5a;
-            display: flex; align-items: center; justify-content: center;
-            gap: 4px; margin-top: 10px;
-        }
-        .admin-security-hint i { color: #fbbf24; font-size: 12px; }
-
-        /* ---------- Connection banner ---------- */
-        .conn-status {
-            position: fixed; top: 0; left: 0; right: 0;
-            padding: 6px; text-align: center; font-size: 11px;
-            font-weight: 700; z-index: 99998;
-            transition: all 0.3s ease;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-        }
-        .conn-status.hidden { transform: translateY(-100%); }
-        .conn-status.checking { background: linear-gradient(135deg, #FBBF24, #F59E0B); color: #000; }
-        .conn-status.online { background: linear-gradient(135deg, #00B841, #008F3A); color: white; }
-        .conn-status.offline { background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; }
-
-        /* ---------- Main app ---------- */
         .dating-app {
             max-width: var(--app-max-width); width: 100%;
             height: min(90vh, var(--app-max-height)); min-height: var(--app-min-height);
@@ -263,21 +71,6 @@
         .auth-error { color: #ff8989; font-size: 13px; text-align: center; margin-top: 8px; }
         .auth-switch { text-align: center; margin-top: 24px; color: #b9b1e6; font-size: clamp(13px, 1.2vw, 15px); }
         .auth-switch span { color: #ec4899; cursor: pointer; font-weight: bold; }
-
-        .config-warning {
-            background: rgba(251, 191, 36, 0.15);
-            border: 1px solid rgba(251, 191, 36, 0.4);
-            border-radius: 16px; padding: 14px; margin-bottom: 16px;
-            display: flex; align-items: flex-start; gap: 10px;
-            font-size: 12px; color: var(--gold); line-height: 1.5;
-        }
-        .config-warning i { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-        .config-warning button {
-            background: var(--admin-gradient); border: none; color: white;
-            padding: 8px 14px; border-radius: 60px; font-weight: 700;
-            font-size: 12px; cursor: pointer; margin-top: 8px;
-            font-family: var(--font-sans);
-        }
 
         .main-header {
             padding: clamp(8px, 1.5vw, 14px) clamp(16px, 2vw, 24px);
@@ -469,28 +262,6 @@
             background: var(--panel-bg); border: 1px solid var(--panel-border);
             border-radius: var(--card-radius); padding: 20px; margin-bottom: 16px;
         }
-        .membership-card.pro {
-            border-color: #FBBF24; background: rgba(251, 191, 36, 0.1);
-            box-shadow: 0 0 30px rgba(251, 191, 36, 0.1);
-        }
-        .membership-card .price { font-size: 28px; font-weight: 800; color: white; }
-        .membership-card .price span { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
-        .membership-card ul { list-style: none; margin: 16px 0; }
-        .membership-card ul li {
-            color: var(--text-secondary); padding: 6px 0;
-            display: flex; align-items: center; gap: 10px;
-        }
-        .membership-card ul li i { color: var(--gold); width: 20px; }
-        .paystack-pay-btn {
-            background: linear-gradient(135deg, #0BA4DB, #0570a8);
-            border: none; padding: 14px 24px; border-radius: 60px; color: white;
-            font-weight: 700; font-size: 16px; cursor: pointer; width: 100%;
-            transition: transform 0.2s ease; display: flex;
-            align-items: center; justify-content: center; gap: 12px;
-            font-family: var(--font-sans);
-        }
-        .paystack-pay-btn:active { transform: scale(0.97); }
-        .paystack-pay-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .boost-indicator {
             background: rgba(251, 191, 36, 0.15);
             border: 1px solid rgba(251, 191, 36, 0.3);
@@ -550,33 +321,11 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .payment-overlay {
-            position: fixed; inset: 0; z-index: 100000;
-            background: rgba(3, 3, 8, 0.85); backdrop-filter: blur(12px);
-            display: flex; align-items: center; justify-content: center;
-            flex-direction: column; gap: 16px; padding: 24px;
-        }
-        .payment-overlay .spinner-lg {
-            width: 60px; height: 60px; border-radius: 50%;
-            border: 4px solid rgba(236, 72, 153, 0.2);
-            border-top-color: #ec4899;
-            animation: spin 1s linear infinite;
-        }
-        .payment-overlay p {
-            color: white; font-size: 15px; font-weight: 600;
-            text-align: center; max-width: 320px;
-        }
-
         @media (max-width: 480px) {
             body { padding: 10px; }
             .dating-app { height: 100vh; height: 100dvh; min-height: 600px; border-radius: 32px; max-width: 100%; }
             .auth-container { height: 100vh; height: 100dvh; min-height: 600px; border-radius: 32px; padding: 24px 16px; }
             :root { --card-radius: 32px; }
-            .admin-panel { bottom: 70px; right: 10px; padding: 16px; max-width: calc(100% - 20px); border-radius: 18px; }
-            .admin-toggle-btn { bottom: 10px; right: 10px; padding: 10px 14px; font-size: 12px; }
-            .admin-toggle-btn span { display: none; }
-            .admin-actions { flex-wrap: wrap; }
-            .admin-save-btn { flex: 1 1 100%; order: -1; }
         }
         @media (prefers-reduced-motion: reduce) {
             * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -588,178 +337,9 @@
 
 <script>
 // ============================================================
-// FLAMEMATCH PRO — Frontend connected to Render backend
+// FLAMEMATCH PRO — Frontend-Only Edition
+// No backend. No payments. No API calls. Everything local.
 // ============================================================
-
-// ============================================================
-// ⚙️ CENTRAL CONFIG — CHANGE THIS ONE LINE FOR PRODUCTION
-// ============================================================
-// Replace with your actual Render backend URL (HTTPS, no trailing slash)
-const API_BASE_URL = "https://REPLACE_WITH_MY_RENDER_URL.onrender.com";
-// ============================================================
-
-// ============================================================
-// 🔒 SECURITY — Never add Paystack secret key here.
-//     Secret key lives ONLY in Render environment variables.
-// ============================================================
-
-// ============================================================
-// CENTRAL API HELPER — all backend calls go through this
-// ============================================================
-async function apiRequest(endpoint, options = {}) {
-    const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : '/' + endpoint}`;
-    const timeoutMs = options.timeoutMs || 30000; // 30s — handles Render cold starts
-
-    const headers = {
-        'Content-Type': 'application/json',
-        ...(options.headers || {})
-    };
-
-    // Attach auth token if present
-    const token = localStorage.getItem('flamematch_token');
-    if (token && !headers['Authorization']) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-    let response;
-    try {
-        response = await fetch(url, {
-            ...options,
-            headers,
-            signal: controller.signal
-        });
-    } catch (err) {
-        clearTimeout(timeoutId);
-        if (err.name === 'AbortError') {
-            throw new Error('Server is waking up (cold start). Please try again in a moment.');
-        }
-        throw new Error('Cannot reach server. Check your connection and try again.');
-    }
-    clearTimeout(timeoutId);
-
-    // Parse response safely — backend should return JSON, but protect against HTML/empty
-    const contentType = response.headers.get('content-type') || '';
-    let data = null;
-    let rawText = '';
-    try {
-        rawText = await response.text();
-        if (contentType.includes('application/json') && rawText) {
-            data = JSON.parse(rawText);
-        } else {
-            // Non-JSON response — likely a 404 HTML page from a wrong URL
-            if (rawText.includes('<!DOCTYPE') || rawText.includes('<html')) {
-                throw new Error('Backend URL is incorrect or backend is not deployed. Check API_BASE_URL.');
-            }
-            try { data = rawText ? JSON.parse(rawText) : null; } catch { data = null; }
-        }
-    } catch (parseErr) {
-        if (parseErr.message.includes('Backend URL is incorrect')) throw parseErr;
-        data = null;
-    }
-
-    if (!response.ok) {
-        const msg = data?.message || data?.error || `Request failed (${response.status})`;
-        // 401 — clear stale session
-        if (response.status === 401) {
-            localStorage.removeItem('flamematch_token');
-        }
-        throw new Error(msg);
-    }
-
-    return data || { success: true };
-}
-
-// ============================================================
-// CONNECTION MONITOR
-// ============================================================
-class ConnectionMonitor {
-    constructor() { this.status = 'unknown'; this.bar = null; }
-    init() {
-        if (document.getElementById('connStatus')) return;
-        const bar = document.createElement('div');
-        bar.id = 'connStatus';
-        bar.className = 'conn-status hidden';
-        bar.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> <span>Checking backend...</span>';
-        document.body.appendChild(bar);
-        this.bar = bar;
-    }
-    show(status, message) {
-        if (!this.bar) return;
-        this.status = status;
-        this.bar.className = `conn-status ${status}`;
-        const icon = status === 'checking' ? 'fa-circle-notch fa-spin'
-                   : status === 'online' ? 'fa-check-circle'
-                   : 'fa-exclamation-triangle';
-        this.bar.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
-    }
-    hide() { if (this.bar) this.bar.className = 'conn-status hidden'; }
-    async checkHealth() {
-        if (!API_BASE_URL || API_BASE_URL.includes('REPLACE_WITH_MY_RENDER_URL')) {
-            this.show('offline', 'Backend URL not configured — see API_BASE_URL');
-            setTimeout(() => this.hide(), 6000);
-            return false;
-        }
-        this.show('checking', 'Connecting to backend...');
-        try {
-            const data = await apiRequest('/api/health', { timeoutMs: 20000 });
-            const mode = data.paystackMode || 'ready';
-            const cfg = data.paystackConfigured === false ? '⚠️ Paystack not set' : '';
-            this.show('online', `Backend online · Paystack: ${mode} ${cfg}`.trim());
-            setTimeout(() => this.hide(), 3500);
-            return true;
-        } catch (e) {
-            this.show('offline', e.message);
-            setTimeout(() => this.hide(), 7000);
-            return false;
-        }
-    }
-}
-
-// ============================================================
-// API SERVICE (auth + app data — uses apiRequest internally)
-// ============================================================
-class APIService {
-    constructor() {
-        this.token = localStorage.getItem('flamematch_token');
-    }
-    setToken(t) {
-        this.token = t;
-        if (t) localStorage.setItem('flamematch_token', t);
-        else localStorage.removeItem('flamematch_token');
-    }
-    async login(email, password) {
-        const res = await apiRequest('/api/auth/login', {
-            method: 'POST',
-            body: JSON.stringify({ email, password })
-        });
-        if (res.token) this.setToken(res.token);
-        return res;
-    }
-    async register(userData) {
-        const res = await apiRequest('/api/auth/register', {
-            method: 'POST',
-            body: JSON.stringify(userData)
-        });
-        if (res.token) this.setToken(res.token);
-        return res;
-    }
-    async getCurrentUser() {
-        return apiRequest('/api/auth/me');
-    }
-    async logout() {
-        try { await apiRequest('/api/auth/logout', { method: 'POST' }); } catch (e) {}
-        this.setToken(null);
-    }
-    async likeProfile(profileId) {
-        return apiRequest('/api/matches/like', {
-            method: 'POST',
-            body: JSON.stringify({ profileId })
-        });
-    }
-}
 
 // ============================================================
 // CAMERA ENGINE
@@ -795,7 +375,7 @@ class CameraEngine {
 }
 
 // ============================================================
-// PREMIUM PACKAGES (display only — real prices on backend)
+// PREMIUM PACKAGES (display only — no purchase possible)
 // ============================================================
 class PremiumPackage {
     static packages = [
@@ -804,145 +384,6 @@ class PremiumPackage {
         { id: 'platinum', name: 'Platinum', price: 999, currency: 'KES', features: ['Unlimited SuperLikes', 'Profile Boost (24hrs)', 'See Who Liked You', 'No Ads', 'Advanced Filters', 'Read Receipts', 'Priority Support', 'Exclusive Events'], color: '#A855F7' }
     ];
     static getPackage(id) { return this.packages.find(p => p.id === id); }
-}
-
-// ============================================================
-// PAYMENT CLIENT — talks ONLY to Render backend
-// ============================================================
-class ServerlessPaymentClient {
-    constructor(api) {
-        this.api = api;
-        this.MAX_RETRIES = 3;
-        this.INIT_TIMEOUT = 45000;   // long — Render free tier cold start
-        this.VERIFY_TIMEOUT = 45000;
-        this.STATE_KEY = 'flamematch_payment_state';
-    }
-
-    generateReference(planId) {
-        // Unique-ish reference — server will validate with Paystack
-        const rand = (window.crypto?.randomUUID && window.crypto.randomUUID()) ||
-                     `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
-        return `FM-${planId}-${rand}`;
-    }
-
-    saveState(s) { try { sessionStorage.setItem(this.STATE_KEY, JSON.stringify(s)); } catch {} }
-    getState() { try { const s = sessionStorage.getItem(this.STATE_KEY); return s ? JSON.parse(s) : null; } catch { return null; } }
-    clearState() { try { sessionStorage.removeItem(this.STATE_KEY); } catch {} }
-
-    async initializePayment(packageId, userEmail) {
-        const pkg = PremiumPackage.getPackage(packageId);
-        if (!pkg) throw new Error('Invalid package');
-        if (!userEmail) throw new Error('Email required');
-
-        // Reference generated on client (backend validates uniqueness with Paystack)
-        const reference = this.generateReference(packageId);
-        const state = {
-            packageId, email: userEmail, reference,
-            timestamp: Date.now(), status: 'initializing', attempts: 0
-        };
-
-        let lastError;
-        for (let attempt = 1; attempt <= this.MAX_RETRIES; attempt++) {
-            try {
-                state.attempts = attempt;
-                this.saveState(state);
-
-                // POST /api/paystack/initialize — with retry for cold starts
-                const data = await apiRequest('/api/paystack/initialize', {
-                    method: 'POST',
-                    timeoutMs: this.INIT_TIMEOUT,
-                    body: JSON.stringify({
-                        email: userEmail,
-                        amount: pkg.price,           // KES — server cross-checks against plan
-                        planId: packageId,           // server uses this to derive authoritative amount
-                        reference,
-                        callbackUrl: window.location.origin + window.location.pathname
-                    })
-                });
-
-                // Backend may return `authorizationUrl` or `authorization_url`
-                const authUrl = data.authorizationUrl || data.authorization_url || data.data?.authorization_url;
-                if (!data.success || !authUrl) {
-                    throw new Error(data.message || 'Could not start payment');
-                }
-
-                state.status = 'initialized';
-                state.authorizationUrl = authUrl;
-                this.saveState(state);
-
-                return { ...data, authorizationUrl: authUrl, reference };
-            } catch (error) {
-                lastError = error;
-                console.warn(`Init attempt ${attempt}/${this.MAX_RETRIES}:`, error.message);
-
-                const isClientError = /40\d|Invalid|required|Unauthorized/i.test(error.message);
-                if (isClientError) throw error;
-
-                if (attempt < this.MAX_RETRIES) {
-                    const delay = Math.pow(2, attempt - 1) * 1000;
-                    await new Promise(r => setTimeout(r, delay));
-                }
-            }
-        }
-        throw new Error(`Payment initialization failed after ${this.MAX_RETRIES} attempts: ${lastError.message}`);
-    }
-
-    async verifyPayment(reference) {
-        let lastError;
-        for (let attempt = 1; attempt <= this.MAX_RETRIES; attempt++) {
-            try {
-                // GET /api/paystack/verify/:reference
-                const data = await apiRequest(`/api/paystack/verify/${encodeURIComponent(reference)}`, {
-                    method: 'GET',
-                    timeoutMs: this.VERIFY_TIMEOUT
-                });
-
-                const ok = data.success && (data.status === 'success' || data.data?.status === 'success');
-                if (ok) {
-                    this.clearState();
-                    return data;
-                }
-
-                // Explicit failure from server — don't retry
-                if (data.status && data.status !== 'pending') {
-                    return data;
-                }
-
-                // Pending — retry
-                throw new Error('PENDING');
-            } catch (error) {
-                lastError = error;
-                console.warn(`Verify attempt ${attempt}/${this.MAX_RETRIES}:`, error.message);
-
-                const retryable = error.message === 'PENDING' ||
-                                  /cold start|timeout|fetch|network|5\d\d/i.test(error.message);
-                if (retryable && attempt < this.MAX_RETRIES) {
-                    await new Promise(r => setTimeout(r, Math.pow(2, attempt) * 1000));
-                } else if (!retryable) {
-                    throw error;
-                }
-            }
-        }
-        throw new Error(`Payment verification failed: ${lastError.message}`);
-    }
-
-    async startPayment(packageId, user, onProgress) {
-        onProgress('⏳ Initializing payment...');
-        const data = await this.initializePayment(packageId, user.email);
-        onProgress('🔒 Redirecting to Paystack...');
-        await new Promise(r => setTimeout(r, 600));
-        window.location.href = data.authorizationUrl;
-    }
-
-    async checkPendingPayment() {
-        const state = this.getState();
-        if (!state || !state.reference) return null;
-        if (Date.now() - state.timestamp > 30 * 60 * 1000) {
-            this.clearState();
-            return null;
-        }
-        return await this.verifyPayment(state.reference);
-    }
 }
 
 // ============================================================
@@ -1000,17 +441,7 @@ class UIEngine {
     observeCards() { document.querySelectorAll('.modern-card').forEach(c => this.observer?.observe(c)); }
 }
 
-// ============================================================
-// INSTANTIATE
-// ============================================================
-const api = new APIService();
-const connectionMonitor = new ConnectionMonitor();
-let paymentClient = new ServerlessPaymentClient(api);
-
-window.api = api;
-window.connectionMonitor = connectionMonitor;
 window.uiEngineInstance = new UIEngine();
-window.API_BASE_URL = API_BASE_URL;
 
 // ============================================================
 // STATE
@@ -1043,36 +474,11 @@ function showToast(msg, bg) {
 function escapeHtml(str) { return str ? str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m)) : ''; }
 function attachModernCardStyles() { window.uiEngineInstance?.observeCards(); }
 
-let _loadingToastEl = null;
-function showLoadingToast(msg) {
-    if (_loadingToastEl) _loadingToastEl.remove();
-    _loadingToastEl = document.createElement('div');
-    _loadingToastEl.className = 'payment-overlay';
-    _loadingToastEl.innerHTML = `<div class="spinner-lg"></div><p>${escapeHtml(msg)}</p>`;
-    document.body.appendChild(_loadingToastEl);
-}
-function hideLoadingToast() {
-    if (_loadingToastEl) { _loadingToastEl.remove(); _loadingToastEl = null; }
-}
-
 // ============================================================
-// USER DATA
+// LOCAL USER DATA
 // ============================================================
-async function syncUserFromAPI() {
-    try {
-        const response = await api.getCurrentUser();
-        if (response.success && response.user) {
-            currentSessionUser = response.user;
-            appData.userCoins = response.user.coins || 450;
-            localStorage.setItem('flamematch_session_pro', JSON.stringify(response.user));
-            return response.user;
-        }
-    } catch (error) { console.error('Sync failed:', error); }
-    return null;
-}
-
 function loadUserData(userId) {
-    const stored = localStorage.getItem(`flamematch_data_pro_${userId}`);
+    const stored = localStorage.getItem(`flamematch_data_local_${userId}`);
     if (stored) {
         const data = JSON.parse(stored);
         appData.discoverProfiles = data.discoverProfiles || [];
@@ -1092,7 +498,7 @@ function loadUserData(userId) {
     }
 }
 function saveUserData(userId) {
-    localStorage.setItem(`flamematch_data_pro_${userId}`, JSON.stringify({
+    localStorage.setItem(`flamematch_data_local_${userId}`, JSON.stringify({
         discoverProfiles: appData.discoverProfiles,
         matchesList: appData.matchesList,
         userCoins: appData.userCoins,
@@ -1102,33 +508,16 @@ function saveUserData(userId) {
 }
 
 // ============================================================
-// PREMIUM LOGIC
+// PREMIUM LOGIC (no purchase — always free-tier user)
 // ============================================================
-function isPremiumUser() {
-    const user = currentSessionUser;
-    if (!user) return false;
-    if (['platinum', 'gold', 'silver'].includes(user.membership)) {
-        if (user.membershipExpiry && new Date(user.membershipExpiry) < new Date()) return false;
-        return true;
-    }
-    return false;
-}
-function getMembershipLevel() { return currentSessionUser?.membership || 'free'; }
+function isPremiumUser() { return false; }
+function getMembershipLevel() { return 'free'; }
 function canSuperLike() {
     const user = currentSessionUser;
     if (!user) return false;
-    if (user.membership === 'platinum') return true;
-    if (user.membership === 'gold' && (user.superLikesUsed || 0) < 25) return true;
-    if (user.membership === 'silver' && (user.superLikesUsed || 0) < 10) return true;
-    if (user.membership === 'free' && (user.superLikesUsed || 0) < 3) return true;
-    return false;
+    return (user.superLikesUsed || 0) < 3;
 }
-function isBoostActive() {
-    const user = currentSessionUser;
-    if (!user || !user.boostActive) return false;
-    if (user.boostExpiry && new Date(user.boostExpiry) < new Date()) return false;
-    return true;
-}
+function isBoostActive() { return false; }
 function getDailySwipes() {
     const user = currentSessionUser;
     if (!user) return 0;
@@ -1140,7 +529,7 @@ function getDailySwipes() {
     }
     return user.dailySwipes || 0;
 }
-function canSwipe() { return isPremiumUser() || getDailySwipes() < 15; }
+function canSwipe() { return getDailySwipes() < 15; }
 
 // ============================================================
 // CORE APP
@@ -1154,48 +543,45 @@ function consumeDiscoverHead() {
     renderCurrentTab();
 }
 
-async function likeProfile(profile) {
-    if (!canSwipe()) { showToast("⏳ Daily swipes used. Upgrade!", "#ef4444"); return; }
-    try {
-        const response = await api.likeProfile(profile.id);
-        if (response.success) {
-            if (currentSessionUser) {
-                currentSessionUser.dailySwipes = (currentSessionUser.dailySwipes || 0) + 1;
-                localStorage.setItem('flamematch_session_pro', JSON.stringify(currentSessionUser));
-            }
-            if (response.matched) {
-                appData.matchesList.unshift({
-                    id: response.match?.userId || profile.id,
-                    name: response.match?.name || profile.name,
-                    age: response.match?.age || profile.age,
-                    photoURL: response.match?.photoURL || profile.photoURL,
-                    matchPercentage: response.match?.matchPercentage || 85,
-                    lastMessage: "You matched! Say hello!",
-                    chatMessages: [{ sender: 'them', text: 'You matched! Say hello!', time: 'now' }],
-                    verified: profile.verified, isOnline: profile.isOnline
-                });
-                showToast(`💖 Match with ${profile.name}!`, "#ec4899");
-            } else {
-                showToast(`❤️ Liked ${profile.name}`, "#be185d");
-            }
-            consumeDiscoverHead();
-        }
-    } catch (error) { showToast(error.message || 'Failed to like', "#ef4444"); }
-}
-function passProfile(profile) {
-    if (!canSwipe()) { showToast("⏳ Daily swipes used. Upgrade!", "#ef4444"); return; }
+function likeProfile(profile) {
+    if (!canSwipe()) { showToast("⏳ Daily swipes used. Come back tomorrow!", "#ef4444"); return; }
     if (currentSessionUser) {
         currentSessionUser.dailySwipes = (currentSessionUser.dailySwipes || 0) + 1;
-        localStorage.setItem('flamematch_session_pro', JSON.stringify(currentSessionUser));
+        localStorage.setItem('flamematch_session_local', JSON.stringify(currentSessionUser));
+    }
+    // 60% chance of a match
+    const matched = Math.random() < 0.6;
+    if (matched) {
+        appData.matchesList.unshift({
+            id: profile.id,
+            name: profile.name,
+            age: profile.age,
+            photoURL: profile.photoURL,
+            matchPercentage: Math.min(profile.matchPercentage + 5, 99),
+            lastMessage: "You matched! Say hello!",
+            chatMessages: [{ sender: 'them', text: 'You matched! Say hello!', time: 'now' }],
+            verified: profile.verified, isOnline: profile.isOnline
+        });
+        showToast(`💖 Match with ${profile.name}!`, "#ec4899");
+    } else {
+        showToast(`❤️ Liked ${profile.name}`, "#be185d");
+    }
+    consumeDiscoverHead();
+}
+function passProfile(profile) {
+    if (!canSwipe()) { showToast("⏳ Daily swipes used. Come back tomorrow!", "#ef4444"); return; }
+    if (currentSessionUser) {
+        currentSessionUser.dailySwipes = (currentSessionUser.dailySwipes || 0) + 1;
+        localStorage.setItem('flamematch_session_local', JSON.stringify(currentSessionUser));
     }
     showToast(`👋 Passed on ${profile.name}`, "#475569");
     consumeDiscoverHead();
 }
 function superLike(profile) {
-    if (!canSuperLike()) { showToast("💎 No SuperLikes left. Upgrade!", "#ff4d4d"); return; }
+    if (!canSuperLike()) { showToast("💎 No SuperLikes left", "#ff4d4d"); return; }
     if (currentSessionUser) {
         currentSessionUser.superLikesUsed = (currentSessionUser.superLikesUsed || 0) + 1;
-        localStorage.setItem('flamematch_session_pro', JSON.stringify(currentSessionUser));
+        localStorage.setItem('flamematch_session_local', JSON.stringify(currentSessionUser));
     }
     appData.matchesList.unshift({
         id: profile.id, name: profile.name, age: profile.age, occupation: profile.occupation,
@@ -1209,83 +595,7 @@ function superLike(profile) {
     consumeDiscoverHead();
 }
 
-// ============================================================
-// PAYSTACK PAYMENT FLOW — backend-verified
-// ============================================================
-async function startPaystackPayment(packageId) {
-    const pkg = PremiumPackage.getPackage(packageId);
-    if (!pkg) return;
-
-    if (!API_BASE_URL || API_BASE_URL.includes('REPLACE_WITH_MY_RENDER_URL')) {
-        showToast('⚠️ Backend URL not configured. Update API_BASE_URL.', '#ef4444');
-        return;
-    }
-    if (!currentSessionUser?.email) {
-        showToast('⚠️ Please log in first', '#ef4444');
-        return;
-    }
-    if (!api.token) {
-        showToast('⚠️ Session expired. Log in again.', '#ef4444');
-        return;
-    }
-
-    try {
-        showLoadingToast('⏳ Setting up secure payment...');
-        await paymentClient.startPayment(
-            packageId,
-            currentSessionUser,
-            (msg) => { hideLoadingToast(); showLoadingToast(msg); }
-        );
-    } catch (error) {
-        hideLoadingToast();
-        showToast(`⚠️ ${error.message}`, '#ef4444');
-        console.error('Payment error:', error);
-    }
-}
-
-async function verifyPendingPaymentIfAny() {
-    if (!api.token) return;
-    if (!API_BASE_URL || API_BASE_URL.includes('REPLACE_WITH_MY_RENDER_URL')) return;
-
-    try {
-        const result = await paymentClient.checkPendingPayment();
-        if (!result) return;
-
-        const status = result.status || result.data?.status;
-        if (result.success && status === 'success') {
-            showToast('🎉 Premium Activated Successfully!', '#00B841');
-            await syncUserFromAPI();
-            renderCurrentTab();
-        } else if (result.message?.toLowerCase().includes('already')) {
-            showToast('✅ Premium already active', '#00B841');
-            await syncUserFromAPI();
-            renderCurrentTab();
-        } else {
-            showToast(`❌ ${result.message || 'Payment not verified'}`, '#ef4444');
-        }
-    } catch (error) {
-        console.warn('Pending payment check:', error.message);
-        // Silent — user can retry from shop
-    }
-}
-
-function applyBoost() {
-    if (isPremiumUser()) {
-        const hours = currentSessionUser?.membership === 'platinum' ? 24 : currentSessionUser?.membership === 'gold' ? 6 : 2;
-        if (currentSessionUser) {
-            currentSessionUser.boostActive = true;
-            currentSessionUser.boostExpiry = new Date(Date.now() + hours * 3600000).toISOString();
-            localStorage.setItem('flamematch_session_pro', JSON.stringify(currentSessionUser));
-        }
-        showToast(`🚀 Profile boosted for ${hours} hours!`, "#FBBF24");
-        renderCurrentTab();
-    } else {
-        showToast("💎 Upgrade to boost", "#ef4444");
-    }
-}
-
 function initializeVideoCall(partnerId) {
-    if (!isPremiumUser()) { showToast("💎 Video calls require Premium", "#ef4444"); return; }
     const container = document.getElementById("root");
     const callOverlay = document.createElement("div");
     callOverlay.className = "video-call-overlay";
@@ -1343,16 +653,15 @@ function processIncomingFile(file, partnerId) {
 function renderDiscoverTab() {
     const container = document.getElementById("appContent");
     if (appData.discoverProfiles.length === 0) {
-        container.innerHTML = `<div class="modern-card" style="text-align:center;padding:40px;"><p>Syncing...</p></div>`;
+        container.innerHTML = `<div class="modern-card" style="text-align:center;padding:40px;"><p>Loading profiles...</p></div>`;
         return;
     }
     const profile = appData.discoverProfiles[0];
-    const swipesRemaining = isPremiumUser() ? '∞' : (15 - getDailySwipes());
+    const swipesRemaining = 15 - getDailySwipes();
     container.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
             <span style="color:var(--text-secondary);font-size:13px;">👆 ${swipesRemaining} swipes left</span>
-            ${isBoostActive() ? '<span class="boost-indicator">🚀 Boosted</span>' : ''}
-            ${isPremiumUser() ? `<span class="premium-badge">${getMembershipLevel().toUpperCase()}</span>` : ''}
+            <span class="premium-badge">FREE</span>
         </div>
         <div class="modern-card" id="draggableCard">
             <div class="profile-img">
@@ -1449,30 +758,27 @@ function renderChatScreen(partnerId) {
                         ${partner.matchPercentage}% match
                     </div>
                 </div>
-                ${isPremiumUser() ? '<i class="fas fa-video" id="initCallBtn" style="color:#ec4899;font-size:clamp(18px,2vw,24px);cursor:pointer;margin-right:12px;flex-shrink:0;"></i>' : ''}
+                <i class="fas fa-video" id="initCallBtn" style="color:#ec4899;font-size:clamp(18px,2vw,24px);cursor:pointer;margin-right:12px;flex-shrink:0;"></i>
                 <i class="fas fa-arrow-left" id="backToMatchesBtn" style="color:#6f6b8a;font-size:clamp(18px,2vw,24px);cursor:pointer;flex-shrink:0;"></i>
             </div>
             <div class="messages-box" id="chatMessagesBox" style="flex:1;">${messagesHtml}</div>
             <div class="chat-input-area">
-                ${isPremiumUser() ? `
-                    <label style="color:#ec4899;cursor:pointer;font-size:clamp(16px,1.5vw,20px);padding:0 4px;flex-shrink:0;">
-                        <i class="fas fa-paperclip"></i>
-                        <input type="file" id="chatMediaInput" accept="image/*,video/*" style="display:none;">
-                    </label>` : ''}
-                <input id="chatMessageInput" placeholder="${isPremiumUser() ? 'Message...' : '💎 Upgrade to chat'}" style="flex:1;background:transparent;border:none;color:white;padding:clamp(8px,1vw,14px);outline:none;font-size:clamp(14px,1.2vw,16px);min-width:0;" ${!isPremiumUser() ? 'disabled' : ''}>
-                <button id="sendChatBtn" style="background:#ec4899;border:none;width:clamp(36px,4.5vw,46px);height:clamp(36px,4.5vw,46px);border-radius:50%;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:clamp(16px,1.5vw,20px);flex-shrink:0;" ${!isPremiumUser() ? 'disabled style="opacity:0.5;"' : ''}>
+                <label style="color:#ec4899;cursor:pointer;font-size:clamp(16px,1.5vw,20px);padding:0 4px;flex-shrink:0;">
+                    <i class="fas fa-paperclip"></i>
+                    <input type="file" id="chatMediaInput" accept="image/*,video/*" style="display:none;">
+                </label>
+                <input id="chatMessageInput" placeholder="Message..." style="flex:1;background:transparent;border:none;color:white;padding:clamp(8px,1vw,14px);outline:none;font-size:clamp(14px,1.2vw,16px);min-width:0;">
+                <button id="sendChatBtn" style="background:#ec4899;border:none;width:clamp(36px,4.5vw,46px);height:clamp(36px,4.5vw,46px);border-radius:50%;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:clamp(16px,1.5vw,20px);flex-shrink:0;">
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </div>
         </div>`;
 
     document.getElementById("backToMatchesBtn").onclick = () => { currentChatPartner = null; activeTab = "matches"; renderCurrentTab(); };
-    if (isPremiumUser()) {
-        document.getElementById("initCallBtn").onclick = () => initializeVideoCall(partnerId);
-        document.getElementById("chatMediaInput").onchange = (e) => {
-            if (e.target.files.length > 0) processIncomingFile(e.target.files[0], partnerId);
-        };
-    }
+    document.getElementById("initCallBtn").onclick = () => initializeVideoCall(partnerId);
+    document.getElementById("chatMediaInput").onchange = (e) => {
+        if (e.target.files.length > 0) processIncomingFile(e.target.files[0], partnerId);
+    };
     const dispatchText = () => {
         const inp = document.getElementById("chatMessageInput");
         if (!inp.value.trim()) return;
@@ -1521,28 +827,15 @@ function renderProfileTab() {
     const user = currentSessionUser;
     const container = document.getElementById("appContent");
     const avatarURL = appData.customUserPhotoURL || user?.photoURL || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80";
-    const membership = getMembershipLevel();
     container.innerHTML = `
         <div class="modern-card my-profile-card">
-            ${user && !user.emailVerified ? `
-                <div class="verify-email-banner">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <div style="flex:1;">Your email is not verified.</div>
-                </div>
-            ` : ''}
             <div class="user-profile-photo"><img src="${avatarURL}" id="profileAvatar" loading="lazy"></div>
             <h2 style="color:white;margin-top:clamp(6px,0.8vw,12px);font-size:clamp(20px,2.5vw,28px);">${user?.name || 'User'}, ${user?.age || 25}</h2>
             <p style="color:#cbc3f0;font-size:clamp(13px,1.2vw,15px);margin-bottom:4px;">📍 ${user?.country || 'Kenya'}</p>
             <p style="color:#a855f7;font-size:12px;margin-bottom:8px;">${user?.email || ''}</p>
             <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-                <span class="premium-badge" style="font-size:12px;">${membership.toUpperCase()}</span>
-                ${isBoostActive() ? '<span class="boost-indicator">🚀 Boosted</span>' : ''}
-                ${user?.verified ? '<span class="profile-verification"><i class="fas fa-check-circle"></i> Verified</span>' : ''}
+                <span class="premium-badge" style="font-size:12px;">FREE</span>
             </div>
-            ${user?.membershipExpiry ? `
-                <p style="color:var(--text-secondary);font-size:12px;margin-bottom:12px;">
-                    Premium expires: ${new Date(user.membershipExpiry).toLocaleDateString()}
-                </p>` : ''}
             <div style="margin-bottom:clamp(12px,1.5vw,20px);">
                 <label class="upload-label"><i class="fas fa-camera"></i> Change Avatar <input type="file" id="profilePhotoFile" accept="image/*" style="display:none;"></label>
             </div>
@@ -1556,8 +849,8 @@ function renderProfileTab() {
             renderProfileTab();
         }
     };
-    document.getElementById("logoutBtn").onclick = async () => {
-        await api.logout();
+    document.getElementById("logoutBtn").onclick = () => {
+        localStorage.removeItem('flamematch_session_local');
         currentSessionUser = null;
         showAuthScreen();
     };
@@ -1566,53 +859,38 @@ function renderProfileTab() {
 
 function renderPremiumShop() {
     const container = document.getElementById("appContent");
-    const membership = getMembershipLevel();
-    const ready = API_BASE_URL && !API_BASE_URL.includes('REPLACE_WITH_MY_RENDER_URL');
-
     let html = `
         <div style="margin-bottom:20px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-                <h3 style="color:white;">💎 Premium Plans</h3>
-                <span class="boost-indicator">${isBoostActive() ? '🚀 Active' : '📈 Available'}</span>
-            </div>
+            <h3 style="color:white;">💎 Premium Plans</h3>
             <p style="color:var(--text-secondary);font-size:12px;margin-top:6px;">
-                <i class="fas fa-shield-alt" style="color:#0BA4DB;"></i>
-                Secure payments via <strong style="color:#0BA4DB;">Paystack</strong> · Verified server-side
+                <i class="fas fa-info-circle" style="color:#FBBF24;"></i>
+                <strong style="color:#FBBF24;">Demo mode</strong> — payments are not enabled in this build.
             </p>
-            ${!ready ? `
-                <div class="verify-email-banner" style="margin-top:8px;">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <div>⚠️ Backend URL not configured. Update <code>API_BASE_URL</code> in the code.</div>
-                </div>` : ''}
         </div>`;
 
     PremiumPackage.packages.forEach(pkg => {
-        const isActive = membership === pkg.id;
         html += `
-            <div class="membership-card ${isActive ? 'pro' : ''}" style="border-color: ${isActive ? pkg.color : 'var(--panel-border)'};">
+            <div class="membership-card" style="border-color:${pkg.color};opacity:0.85;">
                 <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <div>
-                        <span style="color:white;font-weight:700;font-size:20px;">${pkg.name}</span>
-                        ${isActive ? '<span style="background:#00B841;color:white;padding:2px 10px;border-radius:60px;font-size:11px;font-weight:700;margin-left:8px;">ACTIVE</span>' : ''}
-                    </div>
-                    <div class="price">${pkg.currency} ${pkg.price} <span>/mo</span></div>
+                    <span style="color:white;font-weight:700;font-size:20px;">${pkg.name}</span>
+                    <div style="font-size:24px;font-weight:800;color:white;">${pkg.currency} ${pkg.price} <span style="font-size:12px;color:var(--text-secondary);">/mo</span></div>
                 </div>
-                <ul>${pkg.features.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('')}</ul>
-                ${!isActive ? `
-                    <button class="paystack-pay-btn" onclick="startPaystackPayment('${pkg.id}')" ${!ready ? 'disabled' : ''}>
-                        <i class="fas fa-credit-card"></i> Pay ${pkg.currency} ${pkg.price}
-                    </button>` : `<button style="background:#2e2a3e;border:1px solid #00B841;padding:14px;border-radius:60px;color:#00B841;font-weight:700;cursor:pointer;width:100%;">✅ Active Plan</button>`}
+                <ul style="list-style:none;margin:16px 0;">
+                    ${pkg.features.map(f => `<li style="color:var(--text-secondary);padding:6px 0;display:flex;align-items:center;gap:10px;"><i class="fas fa-check-circle" style="color:var(--gold);width:20px;"></i> ${f}</li>`).join('')}
+                </ul>
+                <button disabled style="background:#2e2a3e;border:1px solid #4a4a5a;padding:14px;border-radius:60px;color:#6f6b8a;font-weight:700;width:100%;cursor:not-allowed;font-size:15px;">
+                    <i class="fas fa-lock"></i> Coming soon
+                </button>
             </div>`;
     });
 
     html += `
-        <div class="membership-card" style="border-color:rgba(251,191,36,0.3);">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-                <span style="color:white;font-weight:700;font-size:18px;">🚀 Profile Boost</span>
-                ${isBoostActive() ? '<span style="background:#FBBF24;color:#000;padding:2px 10px;border-radius:60px;font-size:11px;font-weight:700;">ACTIVE</span>' : ''}
-            </div>
+        <div class="membership-card" style="border-color:rgba(251,191,36,0.3);opacity:0.85;">
+            <span style="color:white;font-weight:700;font-size:18px;">🚀 Profile Boost</span>
             <p style="color:var(--text-secondary);margin:8px 0;">10x more visibility</p>
-            ${!isBoostActive() ? `<button class="paystack-pay-btn" onclick="applyBoost()" style="background:linear-gradient(135deg,#FBBF24,#F59E0B);color:#000;"><i class="fas fa-rocket"></i> Activate</button>` : `<button style="background:#2e2a3e;border:1px solid #FBBF24;padding:14px;border-radius:60px;color:#FBBF24;font-weight:700;cursor:pointer;width:100%;">⏳ Active</button>`}
+            <button disabled style="background:#2e2a3e;border:1px solid #4a4a5a;padding:14px;border-radius:60px;color:#6f6b8a;font-weight:700;width:100%;cursor:not-allowed;font-size:15px;">
+                <i class="fas fa-lock"></i> Coming soon
+            </button>
         </div>`;
     container.innerHTML = html;
     attachModernCardStyles();
@@ -1670,25 +948,15 @@ function renderCurrentTab() {
 }
 
 // ============================================================
-// AUTH SCREEN
+// AUTH SCREEN (local mock — no backend)
 // ============================================================
 function showAuthScreen() {
     if (cameraEngineInstance) { cameraEngineInstance.stopStream(); cameraEngineInstance = null; clearLiveInterval(); }
     const root = document.getElementById("root");
-    const backendOk = API_BASE_URL && !API_BASE_URL.includes('REPLACE_WITH_MY_RENDER_URL');
 
     root.innerHTML = `
         <div class="auth-container">
             <div class="auth-logo"><h1>FlameMatch</h1><p>Find your permanent flame 🔥</p></div>
-            ${!backendOk ? `
-                <div class="config-warning">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <div style="flex:1;">
-                        <strong>Backend URL not set.</strong><br>
-                        Open the code and replace <code>REPLACE_WITH_MY_RENDER_URL</code> in <code>API_BASE_URL</code>.
-                    </div>
-                </div>
-            ` : ''}
             <div id="authForm">
                 <input type="email" id="authEmail" class="auth-input" placeholder="Email">
                 <input type="password" id="authPassword" class="auth-input" placeholder="Password">
@@ -1718,32 +986,40 @@ function showAuthScreen() {
         submitBtn.innerText = isLogin ? "Login Session" : "Create Account";
     };
 
-    submitBtn.onclick = async () => {
+    submitBtn.onclick = () => {
         const email = document.getElementById("authEmail").value.trim();
         const password = document.getElementById("authPassword").value.trim();
         errorDiv.innerText = '';
-        errorDiv.style.color = '#ff8989';
 
-        if (!backendOk) {
-            errorDiv.innerText = 'Backend URL not configured. See code comment.';
-            errorDiv.style.color = '#fbbf24';
-            return;
-        }
         if (!email || !password) { errorDiv.innerText = 'Enter email and password'; return; }
+        if (!isLogin && password.length < 4) { errorDiv.innerText = 'Password too short'; return; }
 
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span class="loading-spinner"></span>';
 
-        try {
+        setTimeout(() => {
+            let user;
             if (isLogin) {
-                const response = await api.login(email, password);
-                if (response.success) {
-                    currentSessionUser = response.user;
-                    localStorage.setItem('flamematch_session_pro', JSON.stringify(response.user));
-                    loadUserData(response.user.id);
-                    initMainApp();
-                } else {
-                    errorDiv.innerText = response.message || 'Login failed';
+                // Try to restore or create a local user
+                const stored = localStorage.getItem('flamematch_users_local');
+                const users = stored ? JSON.parse(stored) : {};
+                user = users[email.toLowerCase()];
+                if (!user) {
+                    // Auto-create on login for demo
+                    user = {
+                        id: 'u_' + Date.now(),
+                        email: email.toLowerCase(),
+                        name: email.split('@')[0],
+                        age: 25,
+                        country: 'Kenya',
+                        coins: 450,
+                        superLikesUsed: 0,
+                        dailySwipes: 0,
+                        lastSwipeReset: new Date().toISOString(),
+                        createdAt: new Date().toISOString()
+                    };
+                    users[email.toLowerCase()] = user;
+                    localStorage.setItem('flamematch_users_local', JSON.stringify(users));
                 }
             } else {
                 const name = document.getElementById("authName").value.trim();
@@ -1755,44 +1031,44 @@ function showAuthScreen() {
                     submitBtn.innerText = "Create Account";
                     return;
                 }
-                const response = await api.register({ email, password, name, age, country });
-                if (response.success) {
-                    currentSessionUser = response.user;
-                    localStorage.setItem('flamematch_session_pro', JSON.stringify(response.user));
-                    loadUserData(response.user.id);
-                    initMainApp();
-                } else {
-                    errorDiv.innerText = response.message || 'Registration failed';
-                }
+                user = {
+                    id: 'u_' + Date.now(),
+                    email: email.toLowerCase(),
+                    name, age: Number(age), country,
+                    coins: 450,
+                    superLikesUsed: 0,
+                    dailySwipes: 0,
+                    lastSwipeReset: new Date().toISOString(),
+                    createdAt: new Date().toISOString()
+                };
+                const stored = localStorage.getItem('flamematch_users_local');
+                const users = stored ? JSON.parse(stored) : {};
+                users[email.toLowerCase()] = user;
+                localStorage.setItem('flamematch_users_local', JSON.stringify(users));
             }
-        } catch (error) {
-            errorDiv.innerText = error.message || 'Authentication failed';
-        } finally {
+
+            currentSessionUser = user;
+            localStorage.setItem('flamematch_session_local', JSON.stringify(user));
+            loadUserData(user.id);
+            initMainApp();
+
             submitBtn.disabled = false;
             submitBtn.innerText = isLogin ? "Login Session" : "Create Account";
-        }
+        }, 400);
     };
 }
 
 // ============================================================
 // INIT MAIN APP
 // ============================================================
-async function initMainApp() {
-    try {
-        const user = await syncUserFromAPI();
-        if (user) {
-            currentSessionUser = user;
-            localStorage.setItem('flamematch_session_pro', JSON.stringify(user));
-        }
-    } catch (error) { console.error('Sync failed:', error); }
-
+function initMainApp() {
     const root = document.getElementById("root");
     root.innerHTML = `
         <div class="dating-app" id="datingAppContainer">
             <div class="main-header">
                 <div class="logo-area"><h1>FlameMatch❤️‍🔥</h1></div>
                 <div style="display:flex;align-items:center;gap:8px;">
-                    <span class="premium-badge" style="font-size:9px;background:${isPremiumUser() ? '#FBBF24' : '#4a4a5a'};">${getMembershipLevel().toUpperCase()}</span>
+                    <span class="premium-badge" style="font-size:9px;background:#4a4a5a;">FREE</span>
                     <div class="coin-badge"><i class="fas fa-gem"></i> <span id="coinAmount">${appData.userCoins || 0}</span></div>
                 </div>
             </div>
@@ -1822,38 +1098,23 @@ async function initMainApp() {
         };
     });
     renderCurrentTab();
-
-    verifyPendingPaymentIfAny();
 }
 
 // ============================================================
 // BOOTSTRAP
 // ============================================================
-(async function bootstrap() {
-    connectionMonitor.init();
-
-    if (API_BASE_URL && !API_BASE_URL.includes('REPLACE_WITH_MY_RENDER_URL')) {
-        await connectionMonitor.checkHealth();
-    }
-
-    const storedSession = localStorage.getItem('flamematch_session_pro');
-    if (storedSession && api.token) {
+(function bootstrap() {
+    const storedSession = localStorage.getItem('flamematch_session_local');
+    if (storedSession) {
         try {
             currentSessionUser = JSON.parse(storedSession);
-            const user = await syncUserFromAPI();
-            if (user) {
-                currentSessionUser = user;
-                loadUserData(user.id);
-                initMainApp();
-                return;
-            }
-        } catch (error) { console.error('Session restore error:', error); }
+            loadUserData(currentSessionUser.id);
+            initMainApp();
+            return;
+        } catch (e) { console.error('Session restore failed:', e); }
     }
     showAuthScreen();
 })();
-
-window.startPaystackPayment = startPaystackPayment;
-window.applyBoost = applyBoost;
 </script>
 </body>
 </html>
