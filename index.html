@@ -272,12 +272,6 @@
             border-radius: 60px; font-size: 10px; font-weight: 700;
             display: inline-flex; align-items: center; gap: 4px;
         }
-        .verify-email-banner {
-            background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.3);
-            border-radius: 12px; padding: 12px; margin-bottom: 12px;
-            display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--gold);
-        }
-        .verify-email-banner i { font-size: 18px; }
         .swipe-hint {
             text-align: center; font-size: clamp(10px, 1vw, 12px);
             margin-top: clamp(10px, 1.2vw, 16px); color: #aa99e6; opacity: 0.8;
@@ -321,6 +315,162 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* ---------- NEAR ME FEATURE STYLES ---------- */
+        .near-me-bar {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(236, 72, 153, 0.15));
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 20px;
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            display: flex; align-items: center; gap: 12px;
+            transition: all 0.3s ease;
+        }
+        .near-me-bar.active {
+            border-color: #00B841;
+            background: linear-gradient(135deg, rgba(0, 184, 65, 0.12), rgba(236, 72, 153, 0.08));
+        }
+        .near-me-icon {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: var(--admin-gradient, linear-gradient(135deg, #667eea, #764ba2));
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 18px; flex-shrink: 0;
+        }
+        .near-me-bar.active .near-me-icon {
+            background: linear-gradient(135deg, #00B841, #008F3A);
+        }
+        .near-me-text { flex: 1; min-width: 0; }
+        .near-me-title {
+            color: white; font-size: 13px; font-weight: 700;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .near-me-status {
+            color: var(--text-secondary); font-size: 11px;
+            margin-top: 2px;
+        }
+        .near-me-toggle {
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.4);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 60px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: var(--font-sans);
+            flex-shrink: 0;
+        }
+        .near-me-toggle:active { transform: scale(0.95); }
+        .near-me-bar.active .near-me-toggle {
+            background: rgba(0, 184, 65, 0.2);
+            border-color: rgba(0, 184, 65, 0.4);
+            color: #00B841;
+        }
+        .near-me-toggle:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .radius-slider-container {
+            background: rgba(25, 24, 38, 0.7);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            display: none;
+        }
+        .radius-slider-container.visible { display: block; }
+        .radius-slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .radius-slider-label span:last-child {
+            color: #ec4899;
+            font-weight: 700;
+        }
+        .radius-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #1e1c2c;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .radius-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ec4899, #be185d);
+            cursor: pointer;
+            box-shadow: 0 0 12px rgba(236, 72, 153, 0.6);
+        }
+        .radius-slider::-moz-range-thumb {
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ec4899, #be185d);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 12px rgba(236, 72, 153, 0.6);
+        }
+
+        .distance-badge {
+            position: absolute;
+            bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px);
+            z-index: 3;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(12px);
+            padding: 6px 14px;
+            border-radius: 60px;
+            font-weight: 700;
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            font-size: clamp(11px, 1vw, 13px);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sort-toggle {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            background: rgba(25, 24, 38, 0.7);
+            border: 1px solid var(--panel-border);
+            border-radius: 60px;
+            padding: 4px;
+        }
+        .sort-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 60px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: var(--font-sans);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .sort-btn.active {
+            background: linear-gradient(135deg, #ec4899, #be185d);
+            color: white;
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+        }
+        .sort-btn:active { transform: scale(0.97); }
+
         @media (max-width: 480px) {
             body { padding: 10px; }
             .dating-app { height: 100vh; height: 100dvh; min-height: 600px; border-radius: 32px; max-width: 100%; }
@@ -337,9 +487,45 @@
 
 <script>
 // ============================================================
-// FLAMEMATCH PRO — Frontend-Only Edition
-// No backend. No payments. No API calls. Everything local.
+// FLAMEMATCH PRO — Frontend-Only with "People Near Me"
+// No backend. No payments. Everything local + geolocation.
 // ============================================================
+
+// ============================================================
+// 📍 GEO UTILITIES
+// ============================================================
+class GeoUtils {
+    // Haversine distance in km
+    static distance(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const toRad = (d) => d * Math.PI / 180;
+        const dLat = toRad(lat2 - lat1);
+        const dLon = toRad(lon2 - lon1);
+        const a = Math.sin(dLat/2) ** 2 +
+                  Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                  Math.sin(dLon/2) ** 2;
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    // Generate a random offset around a base coordinate (in km)
+    static randomOffset(lat, lon, maxKm) {
+        const r = maxKm / 111; // 1 deg latitude ≈ 111 km
+        const u = Math.random();
+        const v = Math.random();
+        const w = r * Math.sqrt(u);
+        const t = 2 * Math.PI * v;
+        const newLat = lat + w * Math.cos(t);
+        const newLon = lon + w * Math.sin(t) / Math.cos(lat * Math.PI / 180);
+        return { lat: newLat, lon: newLon };
+    }
+
+    // Pretty-print a distance
+    static format(km) {
+        if (km < 1) return `${Math.round(km * 1000)} m`;
+        if (km < 10) return `${km.toFixed(1)} km`;
+        return `${Math.round(km)} km`;
+    }
+}
 
 // ============================================================
 // CAMERA ENGINE
@@ -375,7 +561,7 @@ class CameraEngine {
 }
 
 // ============================================================
-// PREMIUM PACKAGES (display only — no purchase possible)
+// PREMIUM PACKAGES (display only)
 // ============================================================
 class PremiumPackage {
     static packages = [
@@ -406,11 +592,20 @@ class ProfileFactory {
         "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=600&q=80",
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&q=80"
     ];
-    static generateNext() {
+    // Assign nearby coordinates if user is located, otherwise place around a default city
+    static generateNext(userCoords = null, maxRadiusKm = 50) {
         const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
         const id = `p_gen_${Date.now()}_${Math.floor(Math.random()*1000)}`;
         const interests = ['Travel', 'Food', 'Music', 'Sports', 'Art', 'Tech', 'Fashion', 'Fitness', 'Books', 'Movies'];
         const shuffled = interests.sort(() => Math.random() - 0.5);
+
+        // Default coords (Nairobi, Kenya) if user location unavailable
+        const base = userCoords || { lat: -1.2864, lon: 36.8172 };
+        // Bias toward closer distances: random^2 gives more weight to small values
+        const distanceBias = Math.random() ** 2;
+        const offset = GeoUtils.randomOffset(base.lat, base.lon, distanceBias * maxRadiusKm);
+        const distance = GeoUtils.distance(base.lat, base.lon, offset.lat, offset.lon);
+
         return {
             id, name: pick(this.names), age: Math.floor(Math.random() * 15) + 21,
             occupation: pick(this.occupations), matchPercentage: Math.floor(Math.random() * 25) + 75,
@@ -418,7 +613,10 @@ class ProfileFactory {
             interests: shuffled.slice(0, 3 + Math.floor(Math.random() * 3)),
             lifestyle: ['Active', 'Social', 'Homebody', 'Adventurous', 'Balanced'][Math.floor(Math.random() * 5)],
             education: ['high_school', 'bachelor', 'master', 'phd'][Math.floor(Math.random() * 4)],
-            verified: Math.random() > 0.4, isOnline: Math.random() > 0.3
+            verified: Math.random() > 0.4, isOnline: Math.random() > 0.3,
+            _lat: offset.lat,
+            _lon: offset.lon,
+            distance: distance
         };
     }
 }
@@ -453,6 +651,12 @@ let currentChatPartner = null;
 let cameraEngineInstance = null;
 let globalLiveViewerInterval = null;
 
+// 📍 Near Me state
+let userLocation = null;              // { lat, lon } once granted
+let nearMeEnabled = false;            // true after user grants permission
+let radiusKm = 25;                    // default filter radius
+let sortMode = "distance";            // 'distance' | 'match'
+
 function clearLiveInterval() { if (globalLiveViewerInterval) { clearInterval(globalLiveViewerInterval); globalLiveViewerInterval = null; } }
 function updateCoinUI() { const el = document.getElementById("coinAmount"); if (el) el.innerText = appData.userCoins || 0; }
 
@@ -475,6 +679,86 @@ function escapeHtml(str) { return str ? str.replace(/[&<>]/g, m => ({ '&': '&amp
 function attachModernCardStyles() { window.uiEngineInstance?.observeCards(); }
 
 // ============================================================
+// LOCATION / NEAR-ME
+// ============================================================
+function requestUserLocation() {
+    return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+            reject(new Error('Geolocation not supported on this device.'));
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+            (err) => reject(new Error(err.message || 'Location permission denied')),
+            { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+        );
+    });
+}
+
+async function enableNearMe() {
+    if (nearMeEnabled) {
+        // Turn off
+        nearMeEnabled = false;
+        userLocation = null;
+        sortMode = "match";
+        showToast("📍 Near Me disabled", "#475569");
+        // Regenerate profiles without location
+        regenerateAllProfiles();
+        renderCurrentTab();
+        return;
+    }
+
+    try {
+        showToast("📍 Requesting location...", "#667eea");
+        const coords = await requestUserLocation();
+        userLocation = coords;
+        nearMeEnabled = true;
+
+        // Sort current profiles by distance
+        recomputeDistances();
+        sortMode = "distance";
+
+        // Add some new nearby profiles if we don't have many
+        while (appData.discoverProfiles.length < 8) {
+            appData.discoverProfiles.push(ProfileFactory.generateNext(userLocation, radiusKm * 2));
+        }
+
+        showToast("✅ Near Me enabled — showing closest people first", "#00B841");
+        renderCurrentTab();
+    } catch (err) {
+        showToast(`❌ ${err.message}`, "#ef4444");
+    }
+}
+
+function recomputeDistances() {
+    if (!userLocation) return;
+    appData.discoverProfiles.forEach(p => {
+        if (p._lat && p._lon) {
+            p.distance = GeoUtils.distance(userLocation.lat, userLocation.lon, p._lat, p._lon);
+        }
+    });
+}
+
+function regenerateAllProfiles() {
+    appData.discoverProfiles = [];
+    while (appData.discoverProfiles.length < 8) {
+        appData.discoverProfiles.push(ProfileFactory.generateNext(userLocation, radiusKm * 2));
+    }
+    if (currentSessionUser) saveUserData(currentSessionUser.id);
+}
+
+function getFilteredSortedProfiles() {
+    let list = [...appData.discoverProfiles];
+    if (nearMeEnabled && userLocation) {
+        list = list.filter(p => (p.distance ?? 0) <= radiusKm);
+        list.sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0));
+    } else if (sortMode === "match") {
+        list.sort((a, b) => b.matchPercentage - a.matchPercentage);
+    }
+    return list;
+}
+
+// ============================================================
 // LOCAL USER DATA
 // ============================================================
 function loadUserData(userId) {
@@ -493,8 +777,8 @@ function loadUserData(userId) {
         appData.currentUserBio = "";
         appData.customUserPhotoURL = null;
     }
-    while (appData.discoverProfiles.length < 5) {
-        appData.discoverProfiles.push(ProfileFactory.generateNext());
+    while (appData.discoverProfiles.length < 8) {
+        appData.discoverProfiles.push(ProfileFactory.generateNext(userLocation, radiusKm * 2));
     }
 }
 function saveUserData(userId) {
@@ -508,7 +792,7 @@ function saveUserData(userId) {
 }
 
 // ============================================================
-// PREMIUM LOGIC (no purchase — always free-tier user)
+// PREMIUM LOGIC (no purchase)
 // ============================================================
 function isPremiumUser() { return false; }
 function getMembershipLevel() { return 'free'; }
@@ -535,9 +819,14 @@ function canSwipe() { return getDailySwipes() < 15; }
 // CORE APP
 // ============================================================
 function consumeDiscoverHead() {
-    appData.discoverProfiles.shift();
-    while (appData.discoverProfiles.length < 5) {
-        appData.discoverProfiles.push(ProfileFactory.generateNext());
+    const list = getFilteredSortedProfiles();
+    if (list.length === 0) return;
+    const top = list[0];
+    // Remove the top profile from the master array
+    const idx = appData.discoverProfiles.findIndex(p => p.id === top.id);
+    if (idx >= 0) appData.discoverProfiles.splice(idx, 1);
+    while (appData.discoverProfiles.length < 8) {
+        appData.discoverProfiles.push(ProfileFactory.generateNext(userLocation, radiusKm * 2));
     }
     if (currentSessionUser) saveUserData(currentSessionUser.id);
     renderCurrentTab();
@@ -549,7 +838,6 @@ function likeProfile(profile) {
         currentSessionUser.dailySwipes = (currentSessionUser.dailySwipes || 0) + 1;
         localStorage.setItem('flamematch_session_local', JSON.stringify(currentSessionUser));
     }
-    // 60% chance of a match
     const matched = Math.random() < 0.6;
     if (matched) {
         appData.matchesList.unshift({
@@ -560,7 +848,8 @@ function likeProfile(profile) {
             matchPercentage: Math.min(profile.matchPercentage + 5, 99),
             lastMessage: "You matched! Say hello!",
             chatMessages: [{ sender: 'them', text: 'You matched! Say hello!', time: 'now' }],
-            verified: profile.verified, isOnline: profile.isOnline
+            verified: profile.verified, isOnline: profile.isOnline,
+            distance: profile.distance
         });
         showToast(`💖 Match with ${profile.name}!`, "#ec4899");
     } else {
@@ -589,7 +878,9 @@ function superLike(profile) {
         photoURL: profile.photoURL,
         lastMessage: "⭐ SuperMatch! You caught their attention!",
         chatMessages: [{ sender: 'them', text: '⭐ SuperMatch activated!', time: 'now' }],
-        interests: profile.interests || [], verified: profile.verified || false, isOnline: profile.isOnline || false
+        interests: profile.interests || [], verified: profile.verified || false,
+        isOnline: profile.isOnline || false,
+        distance: profile.distance
     });
     showToast(`⭐ SuperMatch with ${profile.name}!`, "#fbbf24");
     consumeDiscoverHead();
@@ -650,15 +941,108 @@ function processIncomingFile(file, partnerId) {
 // ============================================================
 // RENDER FUNCTIONS
 // ============================================================
+function renderNearMeBar() {
+    const statusText = nearMeEnabled && userLocation
+        ? `Showing within ${radiusKm} km · sorted by distance`
+        : 'Discover people closest to you';
+
+    return `
+        <div class="near-me-bar ${nearMeEnabled ? 'active' : ''}">
+            <div class="near-me-icon"><i class="fas fa-location-dot"></i></div>
+            <div class="near-me-text">
+                <div class="near-me-title">
+                    <i class="fas fa-compass" style="color:#667eea;"></i> People Near Me
+                </div>
+                <div class="near-me-status">${statusText}</div>
+            </div>
+            <button class="near-me-toggle" id="nearMeToggleBtn">
+                ${nearMeEnabled ? '<i class="fas fa-check"></i> On' : '<i class="fas fa-crosshairs"></i> Enable'}
+            </button>
+        </div>
+        <div class="radius-slider-container ${nearMeEnabled ? 'visible' : ''}">
+            <div class="radius-slider-label">
+                <span><i class="fas fa-circle-notch"></i> Max distance</span>
+                <span id="radiusValue">${radiusKm} km</span>
+            </div>
+            <input type="range" class="radius-slider" id="radiusSlider"
+                   min="1" max="100" step="1" value="${radiusKm}">
+        </div>
+        <div class="sort-toggle">
+            <button class="sort-btn ${sortMode === 'distance' && nearMeEnabled ? 'active' : ''}"
+                    id="sortDistanceBtn" ${!nearMeEnabled ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''}>
+                <i class="fas fa-route"></i> Distance
+            </button>
+            <button class="sort-btn ${sortMode === 'match' ? 'active' : ''}" id="sortMatchBtn">
+                <i class="fas fa-heart"></i> Match %
+            </button>
+        </div>
+    `;
+}
+
+function attachNearMeEvents() {
+    const toggleBtn = document.getElementById("nearMeToggleBtn");
+    toggleBtn?.addEventListener("click", enableNearMe);
+
+    const slider = document.getElementById("radiusSlider");
+    slider?.addEventListener("input", (e) => {
+        radiusKm = Number(e.target.value);
+        const valEl = document.getElementById("radiusValue");
+        if (valEl) valEl.textContent = `${radiusKm} km`;
+        recomputeDistances();
+        renderCurrentTab();
+    });
+
+    const sortDist = document.getElementById("sortDistanceBtn");
+    sortDist?.addEventListener("click", () => {
+        if (!nearMeEnabled) return;
+        sortMode = "distance";
+        renderCurrentTab();
+    });
+    const sortMatch = document.getElementById("sortMatchBtn");
+    sortMatch?.addEventListener("click", () => {
+        sortMode = "match";
+        renderCurrentTab();
+    });
+}
+
 function renderDiscoverTab() {
     const container = document.getElementById("appContent");
-    if (appData.discoverProfiles.length === 0) {
-        container.innerHTML = `<div class="modern-card" style="text-align:center;padding:40px;"><p>Loading profiles...</p></div>`;
+    const list = getFilteredSortedProfiles();
+
+    // Header + Near Me bar
+    let headerHtml = renderNearMeBar();
+
+    // If no profiles in range
+    if (list.length === 0) {
+        container.innerHTML = headerHtml + `
+            <div class="modern-card" style="text-align:center;padding:48px 24px;">
+                <i class="fas fa-map-marked-alt" style="font-size:52px;color:#667eea;margin-bottom:14px;"></i>
+                <h3 style="color:white;margin-bottom:8px;">No one within ${radiusKm} km</h3>
+                <p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">
+                    Try expanding your radius to meet more people.
+                </p>
+                <button id="expandRadiusBtn" style="background:linear-gradient(135deg,#ec4899,#be185d);border:none;padding:12px 24px;border-radius:60px;color:white;font-weight:700;cursor:pointer;font-size:14px;">
+                    <i class="fas fa-expand"></i> Expand to 100 km
+                </button>
+            </div>`;
+        attachNearMeEvents();
+        document.getElementById("expandRadiusBtn")?.addEventListener("click", () => {
+            radiusKm = 100;
+            recomputeDistances();
+            renderCurrentTab();
+        });
+        attachModernCardStyles();
         return;
     }
-    const profile = appData.discoverProfiles[0];
+
+    const profile = list[0];
     const swipesRemaining = 15 - getDailySwipes();
-    container.innerHTML = `
+
+    const distanceBadge = (nearMeEnabled && profile.distance != null)
+        ? `<div class="distance-badge"><i class="fas fa-location-dot"></i> ${GeoUtils.format(profile.distance)}</div>`
+        : '';
+
+    container.innerHTML = headerHtml + `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
             <span style="color:var(--text-secondary);font-size:13px;">👆 ${swipesRemaining} swipes left</span>
             <span class="premium-badge">FREE</span>
@@ -667,7 +1051,8 @@ function renderDiscoverTab() {
             <div class="profile-img">
                 <div class="match-percent-badge"><i class="fas fa-chart-line"></i> ${profile.matchPercentage}%</div>
                 ${profile.verified ? '<div style="position:absolute;top:12px;left:12px;z-index:3;"><span class="profile-verification"><i class="fas fa-check-circle"></i> Verified</span></div>' : ''}
-                ${profile.isOnline ? '<div style="position:absolute;bottom:12px;left:12px;z-index:3;"><span style="background:#22c55e;padding:4px 12px;border-radius:60px;font-size:10px;font-weight:700;color:white;">● Online</span></div>' : ''}
+                ${profile.isOnline ? '<div style="position:absolute;top:52px;left:12px;z-index:3;"><span style="background:#22c55e;padding:4px 12px;border-radius:60px;font-size:10px;font-weight:700;color:white;">● Online</span></div>' : ''}
+                ${distanceBadge}
                 <img src="${profile.photoURL}" draggable="false">
             </div>
             <div class="profile-info">
@@ -685,6 +1070,8 @@ function renderDiscoverTab() {
             </div>
         </div>
         <div class="swipe-hint"><i class="fas fa-arrows-alt-h"></i> Drag or use controls</div>`;
+
+    attachNearMeEvents();
     attachSwipeEvents(document.getElementById("draggableCard"), profile);
     document.getElementById("passBtn").onclick = () => passProfile(profile);
     document.getElementById("likeBtn").onclick = () => likeProfile(profile);
@@ -702,6 +1089,9 @@ function renderMatchesTab() {
     }
     let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><h3>Matches (${appData.matchesList.length})</h3></div>`;
     appData.matchesList.forEach(m => {
+        const distTag = (m.distance != null)
+            ? ` · <i class="fas fa-location-dot" style="color:#22c55e;font-size:10px;"></i> ${GeoUtils.format(m.distance)}`
+            : '';
         html += `
         <div class="modern-card match-item">
             <div class="match-avatar" style="position:relative;">
@@ -714,7 +1104,7 @@ function renderMatchesTab() {
                     <span class="match-percentage">${m.matchPercentage}%</span>
                     ${m.verified ? '<span class="profile-verification" style="font-size:8px;"><i class="fas fa-check-circle"></i></span>' : ''}
                 </div>
-                <div style="color:#b9b1e6;font-size:clamp(12px,1vw,14px);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${(m.lastMessage || 'New match!').substring(0,40)}</div>
+                <div style="color:#b9b1e6;font-size:clamp(12px,1vw,14px);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${(m.lastMessage || 'New match!').substring(0,40)}${distTag}</div>
             </div>
             <button class="chat-btn" data-chatid="${m.id}"><i class="fas fa-comments"></i></button>
         </div>`;
@@ -744,6 +1134,9 @@ function renderChatScreen(partnerId) {
                 ${mediaMarkup}
             </div>`;
     });
+    const distLine = (partner.distance != null)
+        ? ` · <i class="fas fa-location-dot" style="color:#22c55e;"></i> ${GeoUtils.format(partner.distance)}`
+        : '';
     container.innerHTML = `
         <div class="modern-card" style="padding:clamp(14px,2vw,24px);height:100%;display:flex;flex-direction:column;">
             <div class="chat-header-match">
@@ -755,7 +1148,7 @@ function renderChatScreen(partnerId) {
                     <strong style="color:white;font-size:clamp(15px,1.3vw,18px);">${partner.name}</strong>
                     <div style="font-size:clamp(10px,0.9vw,12px);color:#a855f7;">
                         ${partner.verified ? '<i class="fas fa-check-circle" style="color:#1e8b3c;"></i> Verified · ' : ''}
-                        ${partner.matchPercentage}% match
+                        ${partner.matchPercentage}% match${distLine}
                     </div>
                 </div>
                 <i class="fas fa-video" id="initCallBtn" style="color:#ec4899;font-size:clamp(18px,2vw,24px);cursor:pointer;margin-right:12px;flex-shrink:0;"></i>
@@ -835,6 +1228,7 @@ function renderProfileTab() {
             <p style="color:#a855f7;font-size:12px;margin-bottom:8px;">${user?.email || ''}</p>
             <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
                 <span class="premium-badge" style="font-size:12px;">FREE</span>
+                ${nearMeEnabled ? '<span class="boost-indicator">📍 Near Me On</span>' : ''}
             </div>
             <div style="margin-bottom:clamp(12px,1.5vw,20px);">
                 <label class="upload-label"><i class="fas fa-camera"></i> Change Avatar <input type="file" id="profilePhotoFile" accept="image/*" style="display:none;"></label>
@@ -852,6 +1246,8 @@ function renderProfileTab() {
     document.getElementById("logoutBtn").onclick = () => {
         localStorage.removeItem('flamematch_session_local');
         currentSessionUser = null;
+        nearMeEnabled = false;
+        userLocation = null;
         showAuthScreen();
     };
     attachModernCardStyles();
@@ -948,7 +1344,7 @@ function renderCurrentTab() {
 }
 
 // ============================================================
-// AUTH SCREEN (local mock — no backend)
+// AUTH SCREEN (local mock)
 // ============================================================
 function showAuthScreen() {
     if (cameraEngineInstance) { cameraEngineInstance.stopStream(); cameraEngineInstance = null; clearLiveInterval(); }
@@ -1000,12 +1396,10 @@ function showAuthScreen() {
         setTimeout(() => {
             let user;
             if (isLogin) {
-                // Try to restore or create a local user
                 const stored = localStorage.getItem('flamematch_users_local');
                 const users = stored ? JSON.parse(stored) : {};
                 user = users[email.toLowerCase()];
                 if (!user) {
-                    // Auto-create on login for demo
                     user = {
                         id: 'u_' + Date.now(),
                         email: email.toLowerCase(),
