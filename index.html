@@ -247,6 +247,10 @@
             background: var(--panel-bg); border: 1px solid var(--panel-border);
             border-radius: var(--card-radius); padding: 20px; margin-bottom: 16px;
         }
+        .membership-card.pro {
+            border-color: #FBBF24; background: rgba(251, 191, 36, 0.1);
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.1);
+        }
         .boost-indicator {
             background: rgba(251, 191, 36, 0.15);
             border: 1px solid rgba(251, 191, 36, 0.3);
@@ -300,13 +304,29 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ---------- NEAR ME FEATURE ---------- */
+        /* Payment overlay */
+        .payment-overlay {
+            position: fixed; inset: 0; z-index: 100000;
+            background: rgba(3, 3, 8, 0.85); backdrop-filter: blur(12px);
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column; gap: 16px; padding: 24px;
+        }
+        .payment-overlay .spinner-lg {
+            width: 60px; height: 60px; border-radius: 50%;
+            border: 4px solid rgba(236, 72, 153, 0.2);
+            border-top-color: #ec4899;
+            animation: spin 1s linear infinite;
+        }
+        .payment-overlay p {
+            color: white; font-size: 15px; font-weight: 600;
+            text-align: center; max-width: 320px;
+        }
+
+        /* ---------- NEAR ME ---------- */
         .near-me-bar {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(236, 72, 153, 0.15));
             border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: 20px;
-            padding: 12px 16px;
-            margin-bottom: 14px;
+            border-radius: 20px; padding: 12px 16px; margin-bottom: 14px;
             display: flex; align-items: center; gap: 12px;
             transition: all 0.3s ease;
         }
@@ -320,30 +340,16 @@
             display: flex; align-items: center; justify-content: center;
             color: white; font-size: 18px; flex-shrink: 0;
         }
-        .near-me-bar.active .near-me-icon {
-            background: linear-gradient(135deg, #00B841, #008F3A);
-        }
+        .near-me-bar.active .near-me-icon { background: linear-gradient(135deg, #00B841, #008F3A); }
         .near-me-text { flex: 1; min-width: 0; }
-        .near-me-title {
-            color: white; font-size: 13px; font-weight: 700;
-            display: flex; align-items: center; gap: 6px;
-        }
-        .near-me-status {
-            color: var(--text-secondary); font-size: 11px;
-            margin-top: 2px;
-        }
+        .near-me-title { color: white; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+        .near-me-status { color: var(--text-secondary); font-size: 11px; margin-top: 2px; }
         .near-me-toggle {
             background: rgba(102, 126, 234, 0.2);
             border: 1px solid rgba(102, 126, 234, 0.4);
-            color: white;
-            padding: 8px 14px;
-            border-radius: 60px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: var(--font-sans);
-            flex-shrink: 0;
+            color: white; padding: 8px 14px; border-radius: 60px;
+            font-size: 12px; font-weight: 700; cursor: pointer;
+            transition: all 0.2s ease; font-family: var(--font-sans); flex-shrink: 0;
         }
         .near-me-toggle:active { transform: scale(0.95); }
         .near-me-bar.active .near-me-toggle {
@@ -354,20 +360,12 @@
         .radius-slider-container {
             background: rgba(25, 24, 38, 0.7);
             border: 1px solid var(--panel-border);
-            border-radius: 16px;
-            padding: 12px 16px;
-            margin-bottom: 14px;
-            display: none;
+            border-radius: 16px; padding: 12px 16px; margin-bottom: 14px; display: none;
         }
         .radius-slider-container.visible { display: block; }
         .radius-slider-label {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--text-secondary);
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: center;
+            color: var(--text-secondary); font-size: 12px; font-weight: 600; margin-bottom: 8px;
         }
         .radius-slider-label span:last-child { color: #ec4899; font-weight: 700; }
         .radius-slider {
@@ -378,31 +376,19 @@
             -webkit-appearance: none; appearance: none;
             width: 20px; height: 20px; border-radius: 50%;
             background: linear-gradient(135deg, #ec4899, #be185d);
-            cursor: pointer;
-            box-shadow: 0 0 12px rgba(236, 72, 153, 0.6);
+            cursor: pointer; box-shadow: 0 0 12px rgba(236, 72, 153, 0.6);
         }
         .radius-slider::-moz-range-thumb {
             width: 20px; height: 20px; border-radius: 50%;
             background: linear-gradient(135deg, #ec4899, #be185d);
-            cursor: pointer; border: none;
-            box-shadow: 0 0 12px rgba(236, 72, 153, 0.6);
+            cursor: pointer; border: none; box-shadow: 0 0 12px rgba(236, 72, 153, 0.6);
         }
         .distance-badge {
-            position: absolute;
-            bottom: clamp(12px, 2vw, 24px);
-            right: clamp(12px, 2vw, 24px);
-            z-index: 3;
-            background: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(12px);
-            padding: 6px 14px;
-            border-radius: 60px;
-            font-weight: 700;
-            color: #22c55e;
-            border: 1px solid rgba(34, 197, 94, 0.4);
-            font-size: clamp(11px, 1vw, 13px);
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            position: absolute; bottom: clamp(12px, 2vw, 24px); right: clamp(12px, 2vw, 24px);
+            z-index: 3; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(12px);
+            padding: 6px 14px; border-radius: 60px; font-weight: 700; color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.4); font-size: clamp(11px, 1vw, 13px);
+            display: flex; align-items: center; gap: 5px;
         }
         .sort-toggle {
             display: flex; gap: 6px; margin-bottom: 12px;
@@ -420,61 +406,38 @@
         }
         .sort-btn.active {
             background: linear-gradient(135deg, #ec4899, #be185d);
-            color: white;
-            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+            color: white; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
         }
         .sort-btn:active { transform: scale(0.97); }
 
-        /* ---------- PRO IDENTITY TAB STYLES ---------- */
+        /* ---------- PRO IDENTITY ---------- */
         .pro-card {
-            background: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 28px;
-            padding: 18px;
-            margin-bottom: 14px;
+            background: var(--panel-bg); border: 1px solid var(--panel-border);
+            border-radius: 28px; padding: 18px; margin-bottom: 14px;
             backdrop-filter: blur(12px);
-            opacity: 0;
-            transform: translateY(20px);
+            opacity: 0; transform: translateY(20px);
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .pro-card.is-visible { opacity: 1; transform: translateY(0); }
-
         .pro-hero {
-            position: relative;
-            border-radius: 24px;
-            overflow: hidden;
-            margin-bottom: 14px;
+            position: relative; border-radius: 24px; overflow: hidden; margin-bottom: 14px;
             background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(102, 126, 234, 0.15));
-            border: 1px solid var(--panel-border);
-            padding: 20px 18px;
-            display: flex;
-            gap: 16px;
-            align-items: center;
+            border: 1px solid var(--panel-border); padding: 20px 18px;
+            display: flex; gap: 16px; align-items: center;
         }
-        .pro-avatar-wrap {
-            position: relative;
-            width: 92px; height: 92px;
-            flex-shrink: 0;
-        }
+        .pro-avatar-wrap { position: relative; width: 92px; height: 92px; flex-shrink: 0; }
         .pro-avatar {
-            width: 100%; height: 100%;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid #ec4899;
-            box-shadow: 0 0 24px rgba(236, 72, 153, 0.4);
+            width: 100%; height: 100%; border-radius: 50%; overflow: hidden;
+            border: 3px solid #ec4899; box-shadow: 0 0 24px rgba(236, 72, 153, 0.4);
         }
         .pro-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .pro-avatar-edit {
-            position: absolute;
-            bottom: -4px; right: -4px;
-            width: 32px; height: 32px;
-            border-radius: 50%;
+            position: absolute; bottom: -4px; right: -4px;
+            width: 32px; height: 32px; border-radius: 50%;
             background: linear-gradient(135deg, #ec4899, #be185d);
             display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 13px;
-            cursor: pointer;
-            border: 3px solid #0b0918;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            color: white; font-size: 13px; cursor: pointer;
+            border: 3px solid #0b0918; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
         .pro-hero-info { flex: 1; min-width: 0; }
         .pro-hero-name {
@@ -482,138 +445,60 @@
             display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
         }
         .pro-hero-meta {
-            color: var(--text-secondary); font-size: 12px;
-            margin-top: 4px;
+            color: var(--text-secondary); font-size: 12px; margin-top: 4px;
             display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
         }
-        .pro-hero-badges {
-            display: flex; gap: 6px; flex-wrap: wrap;
-            margin-top: 8px;
-        }
+        .pro-hero-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
         .pro-chip {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.12);
-            color: white;
-            padding: 3px 10px;
-            border-radius: 60px;
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+            color: white; padding: 3px 10px; border-radius: 60px;
             font-size: 10px; font-weight: 700;
             display: inline-flex; align-items: center; gap: 4px;
         }
-        .pro-chip.gold {
-            background: linear-gradient(135deg, #FBBF24, #F59E0B);
-            color: #000;
-            border-color: transparent;
-        }
-        .pro-chip.green {
-            background: rgba(0, 184, 65, 0.15);
-            border-color: rgba(0, 184, 65, 0.4);
-            color: #00B841;
-        }
-        .pro-chip.purple {
-            background: rgba(168, 85, 247, 0.15);
-            border-color: rgba(168, 85, 247, 0.4);
-            color: #c084fc;
-        }
-
-        /* Profile strength ring */
+        .pro-chip.gold { background: linear-gradient(135deg, #FBBF24, #F59E0B); color: #000; border-color: transparent; }
+        .pro-chip.green { background: rgba(0, 184, 65, 0.15); border-color: rgba(0, 184, 65, 0.4); color: #00B841; }
+        .pro-chip.purple { background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.4); color: #c084fc; }
         .pro-strength {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 14px 16px;
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: 20px;
-            margin-bottom: 14px;
+            display: flex; align-items: center; gap: 14px;
+            padding: 14px 16px; background: rgba(0, 0, 0, 0.25);
+            border-radius: 20px; margin-bottom: 14px;
         }
-        .strength-ring {
-            width: 68px; height: 68px;
-            position: relative;
-            flex-shrink: 0;
-        }
-        .strength-ring svg {
-            width: 100%; height: 100%;
-            transform: rotate(-90deg);
-        }
+        .strength-ring { width: 68px; height: 68px; position: relative; flex-shrink: 0; }
+        .strength-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
         .strength-ring .ring-bg { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 7; }
         .strength-ring .ring-fill {
-            fill: none;
-            stroke: url(#strengthGrad);
-            stroke-width: 7;
-            stroke-linecap: round;
-            transition: stroke-dashoffset 0.6s ease;
+            fill: none; stroke: url(#strengthGrad); stroke-width: 7;
+            stroke-linecap: round; transition: stroke-dashoffset 0.6s ease;
         }
         .strength-ring-value {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; align-items: center; justify-content: center;
             font-size: 16px; font-weight: 800; color: white;
         }
         .strength-text { flex: 1; min-width: 0; }
-        .strength-title {
-            color: white; font-size: 14px; font-weight: 700;
-            display: flex; align-items: center; gap: 6px;
-        }
-        .strength-desc {
-            color: var(--text-secondary); font-size: 11px;
-            margin-top: 3px; line-height: 1.4;
-        }
-        .strength-tips {
-            display: flex; flex-wrap: wrap; gap: 6px;
-            margin-top: 8px;
-        }
+        .strength-title { color: white; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+        .strength-desc { color: var(--text-secondary); font-size: 11px; margin-top: 3px; line-height: 1.4; }
+        .strength-tips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
         .strength-tip {
-            background: rgba(251, 191, 36, 0.12);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            color: #FBBF24;
-            padding: 3px 9px;
-            border-radius: 60px;
-            font-size: 10px;
-            font-weight: 700;
+            background: rgba(251, 191, 36, 0.12); border: 1px solid rgba(251, 191, 36, 0.3);
+            color: #FBBF24; padding: 3px 9px; border-radius: 60px;
+            font-size: 10px; font-weight: 700;
         }
-
-        /* Sections */
         .pro-section-title {
             display: flex; align-items: center; justify-content: space-between;
             color: white; font-size: 14px; font-weight: 700;
-            margin-bottom: 10px;
-            padding: 0 2px;
+            margin-bottom: 10px; padding: 0 2px;
         }
         .pro-section-title i { color: #ec4899; margin-right: 8px; }
-        .pro-section-title .pro-edit-btn {
-            background: rgba(236, 72, 153, 0.15);
-            border: 1px solid rgba(236, 72, 153, 0.3);
-            color: #ec4899;
-            padding: 5px 12px;
-            border-radius: 60px;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: var(--font-sans);
-        }
-        .pro-section-title .pro-edit-btn:active { transform: scale(0.95); }
-
-        /* Photo gallery */
-        .photo-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
+        .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         .photo-slot {
-            position: relative;
-            aspect-ratio: 3/4;
-            border-radius: 14px;
-            overflow: hidden;
-            background: #1e1c2c;
-            border: 1.5px dashed rgba(236, 72, 153, 0.3);
+            position: relative; aspect-ratio: 3/4; border-radius: 14px; overflow: hidden;
+            background: #1e1c2c; border: 1.5px dashed rgba(236, 72, 153, 0.3);
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            cursor: pointer; transition: all 0.2s ease;
         }
         .photo-slot:active { transform: scale(0.97); }
-        .photo-slot img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-        }
+        .photo-slot img { width: 100%; height: 100%; object-fit: cover; }
         .photo-slot.filled { border-style: solid; border-color: rgba(236,72,153,0.6); }
         .photo-slot .slot-add {
             color: #ec4899; font-size: 22px;
@@ -623,145 +508,78 @@
         .photo-slot .slot-remove {
             position: absolute; top: 4px; right: 4px;
             width: 22px; height: 22px; border-radius: 50%;
-            background: rgba(0,0,0,0.7);
-            color: #ff8989; font-size: 11px;
+            background: rgba(0,0,0,0.7); color: #ff8989; font-size: 11px;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
-            z-index: 2;
+            cursor: pointer; z-index: 2;
         }
         .photo-slot .slot-primary {
             position: absolute; top: 4px; left: 4px;
             background: linear-gradient(135deg, #FBBF24, #F59E0B);
-            color: #000; padding: 2px 7px;
-            border-radius: 60px; font-size: 8px; font-weight: 800;
-            z-index: 2;
+            color: #000; padding: 2px 7px; border-radius: 60px;
+            font-size: 8px; font-weight: 800; z-index: 2;
         }
-
-        /* Editable bio */
         .bio-box {
-            background: rgba(0,0,0,0.25);
-            border: 1px solid var(--panel-border);
-            border-radius: 16px;
-            padding: 12px 14px;
-            color: var(--text-secondary);
-            font-size: 13px;
-            line-height: 1.5;
-            min-height: 60px;
+            background: rgba(0,0,0,0.25); border: 1px solid var(--panel-border);
+            border-radius: 16px; padding: 12px 14px;
+            color: var(--text-secondary); font-size: 13px; line-height: 1.5; min-height: 60px;
         }
         .bio-textarea {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 13px;
-            line-height: 1.5;
-            resize: none;
-            outline: none;
-            font-family: var(--font-sans);
-            min-height: 60px;
+            width: 100%; background: transparent; border: none; color: white;
+            font-size: 13px; line-height: 1.5; resize: none; outline: none;
+            font-family: var(--font-sans); min-height: 60px;
         }
         .bio-counter {
             display: flex; justify-content: space-between;
-            font-size: 10px;
-            color: #6f6b8a;
-            margin-top: 6px;
+            font-size: 10px; color: #6f6b8a; margin-top: 6px;
         }
         .bio-counter.warn { color: #FBBF24; }
-
-        /* Interests */
         .interests-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
         .interest-chip {
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-secondary);
-            padding: 6px 12px;
-            border-radius: 60px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            user-select: none;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-secondary); padding: 6px 12px;
+            border-radius: 60px; font-size: 12px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s ease; user-select: none;
         }
         .interest-chip:active { transform: scale(0.95); }
         .interest-chip.selected {
             background: linear-gradient(135deg, #ec4899, #be185d);
-            color: white;
-            border-color: transparent;
+            color: white; border-color: transparent;
             box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
         }
-
-        /* Prompts */
         .prompt-card {
-            background: rgba(0,0,0,0.25);
-            border: 1px solid var(--panel-border);
-            border-radius: 16px;
-            padding: 12px 14px;
-            margin-bottom: 8px;
+            background: rgba(0,0,0,0.25); border: 1px solid var(--panel-border);
+            border-radius: 16px; padding: 12px 14px; margin-bottom: 8px;
         }
         .prompt-q {
-            color: #c084fc;
-            font-size: 11px; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.5px;
-            margin-bottom: 6px;
+            color: #c084fc; font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
         }
-        .prompt-a {
-            color: white;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-        .prompt-a.empty { color: #6f6b8a; font-style: italic; }
         .prompt-input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 13px;
-            line-height: 1.5;
-            resize: none;
-            outline: none;
+            width: 100%; background: transparent; border: none; color: white;
+            font-size: 13px; line-height: 1.5; resize: none; outline: none;
             font-family: var(--font-sans);
         }
-
-        /* Stats grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
         .stat-box {
-            background: rgba(0,0,0,0.25);
-            border: 1px solid var(--panel-border);
-            border-radius: 16px;
-            padding: 12px 14px;
+            background: rgba(0,0,0,0.25); border: 1px solid var(--panel-border);
+            border-radius: 16px; padding: 12px 14px;
             display: flex; align-items: center; gap: 10px;
         }
         .stat-icon {
             width: 34px; height: 34px; border-radius: 10px;
-            background: rgba(236, 72, 153, 0.15);
-            color: #ec4899;
+            background: rgba(236, 72, 153, 0.15); color: #ec4899;
             display: flex; align-items: center; justify-content: center;
-            font-size: 14px;
-            flex-shrink: 0;
+            font-size: 14px; flex-shrink: 0;
         }
         .stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
         .stat-icon.gold { background: rgba(251, 191, 36, 0.15); color: #FBBF24; }
         .stat-icon.purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
-        .stat-value {
-            color: white; font-size: 18px; font-weight: 800;
-            line-height: 1;
-        }
-        .stat-label {
-            color: var(--text-secondary); font-size: 10px;
-            font-weight: 600; margin-top: 3px;
-        }
-
-        /* Verification rows */
+        .stat-value { color: white; font-size: 18px; font-weight: 800; line-height: 1; }
+        .stat-label { color: var(--text-secondary); font-size: 10px; font-weight: 600; margin-top: 3px; }
         .verify-row {
             display: flex; align-items: center; gap: 12px;
-            padding: 10px 12px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 14px;
-            margin-bottom: 8px;
+            padding: 10px 12px; background: rgba(0,0,0,0.2);
+            border-radius: 14px; margin-bottom: 8px;
         }
         .verify-row:last-child { margin-bottom: 0; }
         .verify-icon {
@@ -771,40 +589,25 @@
         }
         .verify-icon.done { background: rgba(0, 184, 65, 0.2); color: #00B841; }
         .verify-icon.pending { background: rgba(251, 191, 36, 0.2); color: #FBBF24; }
-        .verify-icon.locked { background: rgba(255,255,255,0.06); color: #6f6b8a; }
         .verify-info { flex: 1; min-width: 0; }
-        .verify-name {
-            color: white; font-size: 12px; font-weight: 700;
-        }
-        .verify-desc {
-            color: var(--text-secondary); font-size: 10.5px;
-            margin-top: 2px;
-        }
+        .verify-name { color: white; font-size: 12px; font-weight: 700; }
+        .verify-desc { color: var(--text-secondary); font-size: 10.5px; margin-top: 2px; }
         .verify-btn {
             background: rgba(236, 72, 153, 0.15);
             border: 1px solid rgba(236, 72, 153, 0.3);
-            color: #ec4899;
-            padding: 5px 12px;
-            border-radius: 60px;
-            font-size: 10px; font-weight: 700;
-            cursor: pointer;
-            flex-shrink: 0;
-            font-family: var(--font-sans);
+            color: #ec4899; padding: 5px 12px; border-radius: 60px;
+            font-size: 10px; font-weight: 700; cursor: pointer;
+            flex-shrink: 0; font-family: var(--font-sans);
         }
         .verify-btn.done {
             background: rgba(0, 184, 65, 0.15);
             border-color: rgba(0, 184, 65, 0.4);
-            color: #00B841;
-            cursor: default;
+            color: #00B841; cursor: default;
         }
-
-        /* Privacy toggle rows */
         .toggle-row {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 12px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 14px;
-            margin-bottom: 6px;
+            padding: 10px 12px; background: rgba(0,0,0,0.2);
+            border-radius: 14px; margin-bottom: 6px;
         }
         .toggle-row:last-child { margin-bottom: 0; }
         .toggle-label {
@@ -813,64 +616,38 @@
         }
         .toggle-label i { color: #c084fc; width: 16px; }
         .switch {
-            position: relative;
-            width: 40px; height: 22px;
-            background: #2e2a3e;
-            border-radius: 60px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            flex-shrink: 0;
+            position: relative; width: 40px; height: 22px;
+            background: #2e2a3e; border-radius: 60px;
+            cursor: pointer; transition: all 0.2s ease; flex-shrink: 0;
         }
         .switch::after {
-            content: '';
-            position: absolute;
-            top: 3px; left: 3px;
-            width: 16px; height: 16px;
-            border-radius: 50%;
-            background: #6f6b8a;
-            transition: all 0.2s ease;
+            content: ''; position: absolute; top: 3px; left: 3px;
+            width: 16px; height: 16px; border-radius: 50%;
+            background: #6f6b8a; transition: all 0.2s ease;
         }
         .switch.on { background: linear-gradient(135deg, #ec4899, #be185d); }
         .switch.on::after { left: 21px; background: white; }
-
-        /* Account actions */
         .action-row {
             display: flex; align-items: center; gap: 10px;
-            padding: 12px 14px;
-            border-radius: 14px;
-            background: rgba(0,0,0,0.2);
-            color: white;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 8px;
-            transition: all 0.2s ease;
+            padding: 12px 14px; border-radius: 14px;
+            background: rgba(0,0,0,0.2); color: white;
+            font-size: 13px; font-weight: 600; cursor: pointer;
+            margin-bottom: 8px; transition: all 0.2s ease;
         }
         .action-row:active { transform: scale(0.98); }
         .action-row.danger { color: #ff8989; }
         .action-row i { width: 18px; }
-
-        /* Save bar */
         .save-bar {
-            position: sticky;
-            bottom: -1px;
+            position: sticky; bottom: -1px;
             background: linear-gradient(180deg, transparent, rgba(12, 10, 22, 0.95) 30%);
-            padding: 14px 0 0;
-            margin-top: 14px;
-            display: none;
+            padding: 14px 0 0; margin-top: 14px; display: none;
         }
         .save-bar.visible { display: block; }
         .save-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #00B841, #008F3A);
-            border: none;
-            padding: 14px;
-            border-radius: 60px;
-            color: white;
-            font-size: 15px;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 8px 24px rgba(0, 184, 65, 0.3);
+            width: 100%; background: linear-gradient(135deg, #00B841, #008F3A);
+            border: none; padding: 14px; border-radius: 60px;
+            color: white; font-size: 15px; font-weight: 800;
+            cursor: pointer; box-shadow: 0 8px 24px rgba(0, 184, 65, 0.3);
             font-family: var(--font-sans);
             display: flex; align-items: center; justify-content: center; gap: 8px;
         }
@@ -890,7 +667,6 @@
 <body>
 <div id="root"></div>
 
-<!-- SVG gradient for strength ring -->
 <svg width="0" height="0" style="position:absolute">
     <defs>
         <linearGradient id="strengthGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -902,8 +678,43 @@
 
 <script>
 // ============================================================
-// FLAMEMATCH PRO — Frontend-only, with Pro Identity tab
+// FLAMEMATCH PRO — Neon + Paystack integrated
 // ============================================================
+
+// ============================================================
+// ⚙️ BACKEND CONFIG — change this ONE line after deploying
+// ============================================================
+const API_BASE_URL = "https://flamematch-backend.vercel.app";
+// Replace with your real backend URL (no trailing slash)
+// ============================================================
+
+// ============================================================
+// CENTRAL API HELPER — all backend calls go through this
+// ============================================================
+async function apiRequest(endpoint, options = {}) {
+    const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : '/' + endpoint}`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    try {
+        const res = await fetch(url, {
+            ...options,
+            signal: controller.signal,
+            headers: { 'Content-Type': 'application/json', ...(options.headers || {}) }
+        });
+        clearTimeout(timeoutId);
+        const contentType = res.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+            throw new Error('Backend returned non-JSON — check API_BASE_URL');
+        }
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || `Request failed (${res.status})`);
+        return data;
+    } catch (e) {
+        clearTimeout(timeoutId);
+        if (e.name === 'AbortError') throw new Error('Server timeout — please retry');
+        throw e;
+    }
+}
 
 // ============================================================
 // GEO UTILITIES
@@ -921,10 +732,8 @@ class GeoUtils {
     }
     static randomOffset(lat, lon, maxKm) {
         const r = maxKm / 111;
-        const u = Math.random();
-        const v = Math.random();
-        const w = r * Math.sqrt(u);
-        const t = 2 * Math.PI * v;
+        const u = Math.random(), v = Math.random();
+        const w = r * Math.sqrt(u), t = 2 * Math.PI * v;
         const newLat = lat + w * Math.cos(t);
         const newLon = lon + w * Math.sin(t) / Math.cos(lat * Math.PI / 180);
         return { lat: newLat, lon: newLon };
@@ -970,7 +779,7 @@ class CameraEngine {
 }
 
 // ============================================================
-// PREMIUM PACKAGES
+// PREMIUM PACKAGES (display only — real prices on backend)
 // ============================================================
 class PremiumPackage {
     static packages = [
@@ -1019,7 +828,7 @@ class ProfileFactory {
             lifestyle: ['Active', 'Social', 'Homebody', 'Adventurous', 'Balanced'][Math.floor(Math.random() * 5)],
             education: ['high_school', 'bachelor', 'master', 'phd'][Math.floor(Math.random() * 4)],
             verified: Math.random() > 0.4, isOnline: Math.random() > 0.3,
-            _lat: offset.lat, _lon: offset.lon, distance: distance
+            _lat: offset.lat, _lon: offset.lon, distance
         };
     }
 }
@@ -1043,32 +852,23 @@ class UIEngine {
         document.querySelectorAll('.modern-card, .pro-card').forEach(c => this.observer?.observe(c));
     }
 }
-
 window.uiEngineInstance = new UIEngine();
 
 // ============================================================
 // STATE
 // ============================================================
 let currentSessionUser = null;
-let appData = {
-    discoverProfiles: [],
-    matchesList: [],
-    userCoins: 450,
-    currentUserBio: "",
-    customUserPhotoURL: null
-};
+let appData = { discoverProfiles: [], matchesList: [], userCoins: 450, currentUserBio: "", customUserPhotoURL: null };
 let activeTab = "discover";
 let currentChatPartner = null;
 let cameraEngineInstance = null;
 let globalLiveViewerInterval = null;
 
-// Near Me
 let userLocation = null;
 let nearMeEnabled = false;
 let radiusKm = 25;
 let sortMode = "distance";
 
-// Pro profile fields
 let profileDraft = null;
 let profileHasChanges = false;
 
@@ -1093,6 +893,56 @@ function showToast(msg, bg) {
 function escapeHtml(str) { return str ? str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m)) : ''; }
 function attachModernCardStyles() { window.uiEngineInstance?.observeCards(); }
 
+let _loadingToastEl = null;
+function showLoadingToast(msg) {
+    if (_loadingToastEl) _loadingToastEl.remove();
+    _loadingToastEl = document.createElement('div');
+    _loadingToastEl.className = 'payment-overlay';
+    _loadingToastEl.innerHTML = `<div class="spinner-lg"></div><p>${escapeHtml(msg)}</p>`;
+    document.body.appendChild(_loadingToastEl);
+}
+function hideLoadingToast() {
+    if (_loadingToastEl) { _loadingToastEl.remove(); _loadingToastEl = null; }
+}
+
+// ============================================================
+// PREMIUM STATE — from server only
+// ============================================================
+function isPremiumUser() {
+    const u = currentSessionUser;
+    if (!u) return false;
+    if (!['silver', 'gold', 'platinum'].includes(u.membership)) return false;
+    if (u.membershipExpiry && new Date(u.membershipExpiry) < new Date()) return false;
+    return true;
+}
+function getMembershipLevel() { return currentSessionUser?.membership || 'free'; }
+function isBoostActive() {
+    const u = currentSessionUser;
+    if (!u || !u.boostActive) return false;
+    if (u.boostExpiry && new Date(u.boostExpiry) < new Date()) return false;
+    return true;
+}
+function canSuperLike() {
+    const u = currentSessionUser;
+    if (!u) return false;
+    if (u.membership === 'platinum') return true;
+    if (u.membership === 'gold' && (u.superLikesUsed || 0) < 25) return true;
+    if (u.membership === 'silver' && (u.superLikesUsed || 0) < 10) return true;
+    return (u.superLikesUsed || 0) < 3;
+}
+function getDailySwipes() {
+    const u = currentSessionUser;
+    if (!u) return 0;
+    const lastReset = new Date(u.lastSwipeReset || Date.now());
+    const now = new Date();
+    if (lastReset.getDate() !== now.getDate() || lastReset.getMonth() !== now.getMonth() || lastReset.getFullYear() !== now.getFullYear()) {
+        u.dailySwipes = 0;
+        u.lastSwipeReset = now.toISOString();
+    }
+    return u.dailySwipes || 0;
+}
+function canSwipe() { return isPremiumUser() || getDailySwipes() < 15; }
+
 // ============================================================
 // NEAR ME
 // ============================================================
@@ -1106,12 +956,9 @@ function requestUserLocation() {
         );
     });
 }
-
 async function enableNearMe() {
     if (nearMeEnabled) {
-        nearMeEnabled = false;
-        userLocation = null;
-        sortMode = "match";
+        nearMeEnabled = false; userLocation = null; sortMode = "match";
         showToast("📍 Near Me disabled", "#475569");
         regenerateAllProfiles();
         renderCurrentTab();
@@ -1129,20 +976,14 @@ async function enableNearMe() {
         }
         showToast("✅ Near Me enabled", "#00B841");
         renderCurrentTab();
-    } catch (err) {
-        showToast(`❌ ${err.message}`, "#ef4444");
-    }
+    } catch (err) { showToast(`❌ ${err.message}`, "#ef4444"); }
 }
-
 function recomputeDistances() {
     if (!userLocation) return;
     appData.discoverProfiles.forEach(p => {
-        if (p._lat && p._lon) {
-            p.distance = GeoUtils.distance(userLocation.lat, userLocation.lon, p._lat, p._lon);
-        }
+        if (p._lat && p._lon) p.distance = GeoUtils.distance(userLocation.lat, userLocation.lon, p._lat, p._lon);
     });
 }
-
 function regenerateAllProfiles() {
     appData.discoverProfiles = [];
     while (appData.discoverProfiles.length < 8) {
@@ -1150,7 +991,6 @@ function regenerateAllProfiles() {
     }
     if (currentSessionUser) saveUserData(currentSessionUser.id);
 }
-
 function getFilteredSortedProfiles() {
     let list = [...appData.discoverProfiles];
     if (nearMeEnabled && userLocation) {
@@ -1170,21 +1010,9 @@ function defaultProfileFields() {
         bio: appData.currentUserBio || "Hey there! I'm new on FlameMatch. Let's chat ✨",
         photos: appData.customUserPhotoURL ? [appData.customUserPhotoURL] : [],
         interests: [],
-        prompts: {
-            date: '',
-            perfect: '',
-            together: ''
-        },
-        privacy: {
-            showOnline: true,
-            showDistance: true,
-            showAge: true
-        },
-        verification: {
-            email: true,
-            phone: false,
-            photo: false
-        },
+        prompts: { date: '', perfect: '', together: '' },
+        privacy: { showOnline: true, showDistance: true, showAge: true },
+        verification: { email: true, phone: false, photo: false },
         stats: {
             views: Math.floor(Math.random() * 400) + 120,
             likesReceived: Math.floor(Math.random() * 80) + 20,
@@ -1192,7 +1020,6 @@ function defaultProfileFields() {
         }
     };
 }
-
 function loadUserData(userId) {
     const stored = localStorage.getItem(`flamematch_data_local_${userId}`);
     if (stored) {
@@ -1202,7 +1029,6 @@ function loadUserData(userId) {
         appData.userCoins = data.userCoins !== undefined ? data.userCoins : 450;
         appData.currentUserBio = data.currentUserBio || "";
         appData.customUserPhotoURL = data.customPhotoURL || null;
-        // Pro profile extras
         profileDraft = data.profileDraft || defaultProfileFields();
     } else {
         appData.discoverProfiles = [];
@@ -1223,33 +1049,28 @@ function saveUserData(userId) {
         userCoins: appData.userCoins,
         currentUserBio: appData.currentUserBio,
         customPhotoURL: appData.customUserPhotoURL,
-        profileDraft: profileDraft
+        profileDraft
     }));
 }
 
 // ============================================================
-// PREMIUM LOGIC
+// BACKEND SYNC
 // ============================================================
-function isPremiumUser() { return false; }
-function getMembershipLevel() { return 'free'; }
-function canSuperLike() {
-    const user = currentSessionUser;
-    if (!user) return false;
-    return (user.superLikesUsed || 0) < 3;
-}
-function isBoostActive() { return false; }
-function getDailySwipes() {
-    const user = currentSessionUser;
-    if (!user) return 0;
-    const lastReset = new Date(user.lastSwipeReset || Date.now());
-    const now = new Date();
-    if (lastReset.getDate() !== now.getDate() || lastReset.getMonth() !== now.getMonth() || lastReset.getFullYear() !== now.getFullYear()) {
-        user.dailySwipes = 0;
-        user.lastSwipeReset = now.toISOString();
+async function refreshUserFromServer() {
+    if (!currentSessionUser?.email) return;
+    try {
+        const data = await apiRequest(`/api/users/premium-status?email=${encodeURIComponent(currentSessionUser.email)}`);
+        if (data.user) {
+            currentSessionUser.membership = data.user.membership || 'free';
+            currentSessionUser.membershipExpiry = data.user.membershipExpiry;
+            currentSessionUser.boostActive = data.user.boostActive || false;
+            currentSessionUser.boostExpiry = data.user.boostExpiry;
+            localStorage.setItem('flamematch_session_local', JSON.stringify(currentSessionUser));
+        }
+    } catch (e) {
+        console.warn('Could not refresh user from server:', e.message);
     }
-    return user.dailySwipes || 0;
 }
-function canSwipe() { return getDailySwipes() < 15; }
 
 // ============================================================
 // CORE
@@ -1268,7 +1089,7 @@ function consumeDiscoverHead() {
 }
 
 function likeProfile(profile) {
-    if (!canSwipe()) { showToast("⏳ Daily swipes used. Come back tomorrow!", "#ef4444"); return; }
+    if (!canSwipe()) { showToast("⏳ Daily swipes used. Upgrade for unlimited!", "#ef4444"); return; }
     if (currentSessionUser) {
         currentSessionUser.dailySwipes = (currentSessionUser.dailySwipes || 0) + 1;
         localStorage.setItem('flamematch_session_local', JSON.stringify(currentSessionUser));
@@ -1291,7 +1112,7 @@ function likeProfile(profile) {
     consumeDiscoverHead();
 }
 function passProfile(profile) {
-    if (!canSwipe()) { showToast("⏳ Daily swipes used. Come back tomorrow!", "#ef4444"); return; }
+    if (!canSwipe()) { showToast("⏳ Daily swipes used. Upgrade!", "#ef4444"); return; }
     if (currentSessionUser) {
         currentSessionUser.dailySwipes = (currentSessionUser.dailySwipes || 0) + 1;
         localStorage.setItem('flamematch_session_local', JSON.stringify(currentSessionUser));
@@ -1300,7 +1121,7 @@ function passProfile(profile) {
     consumeDiscoverHead();
 }
 function superLike(profile) {
-    if (!canSuperLike()) { showToast("💎 No SuperLikes left", "#ff4d4d"); return; }
+    if (!canSuperLike()) { showToast("💎 No SuperLikes left. Upgrade!", "#ff4d4d"); return; }
     if (currentSessionUser) {
         currentSessionUser.superLikesUsed = (currentSessionUser.superLikesUsed || 0) + 1;
         localStorage.setItem('flamematch_session_local', JSON.stringify(currentSessionUser));
@@ -1448,7 +1269,7 @@ function renderDiscoverTab() {
     }
 
     const profile = list[0];
-    const swipesRemaining = 15 - getDailySwipes();
+    const swipesRemaining = isPremiumUser() ? '∞' : (15 - getDailySwipes());
     const distanceBadge = (nearMeEnabled && profile.distance != null)
         ? `<div class="distance-badge"><i class="fas fa-location-dot"></i> ${GeoUtils.format(profile.distance)}</div>`
         : '';
@@ -1456,7 +1277,7 @@ function renderDiscoverTab() {
     container.innerHTML = headerHtml + `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
             <span style="color:var(--text-secondary);font-size:13px;">👆 ${swipesRemaining} swipes left</span>
-            <span class="premium-badge">FREE</span>
+            <span class="premium-badge">${getMembershipLevel().toUpperCase()}</span>
         </div>
         <div class="modern-card" id="draggableCard">
             <div class="profile-img">
@@ -1634,7 +1455,7 @@ function renderLiveTab() {
 }
 
 // ============================================================
-// RENDER: PRO IDENTITY TAB
+// RENDER: PRO IDENTITY
 // ============================================================
 const ALL_INTERESTS = ['Travel','Food','Music','Sports','Art','Tech','Fashion','Fitness','Books','Movies','Photography','Cooking','Gaming','Hiking','Yoga','Coffee','Wine','Dancing','Pets','Nature'];
 
@@ -1643,34 +1464,25 @@ function computeProfileStrength() {
     let score = 0;
     const tips = [];
 
-    // Photos (25%) — up to 3 photos
     const photoCount = profileDraft.photos.length;
-    const photoScore = Math.min(photoCount / 3, 1) * 25;
-    score += photoScore;
+    score += Math.min(photoCount / 3, 1) * 25;
     if (photoCount < 3) tips.push(`Add ${3 - photoCount} more photo${3 - photoCount > 1 ? 's' : ''}`);
 
-    // Bio (20%)
     const bioLen = (profileDraft.bio || '').trim().length;
     if (bioLen >= 80) score += 20;
     else if (bioLen > 0) { score += (bioLen / 80) * 20; tips.push('Lengthen your bio'); }
     else tips.push('Write a bio');
 
-    // Interests (20%) — need 4+
     const intCount = profileDraft.interests.length;
-    const intScore = Math.min(intCount / 4, 1) * 20;
-    score += intScore;
+    score += Math.min(intCount / 4, 1) * 20;
     if (intCount < 4) tips.push(`Pick ${4 - intCount} more interest${4 - intCount > 1 ? 's' : ''}`);
 
-    // Prompts (20%) — need all 3
     const promptsDone = Object.values(profileDraft.prompts).filter(v => v && v.trim().length > 0).length;
-    const promptScore = (promptsDone / 3) * 20;
-    score += promptScore;
+    score += (promptsDone / 3) * 20;
     if (promptsDone < 3) tips.push(`${3 - promptsDone} prompt${3 - promptsDone > 1 ? 's' : ''} left`);
 
-    // Verification (15%)
     const verifiedCount = Object.values(profileDraft.verification).filter(Boolean).length;
-    const verifyScore = (verifiedCount / 3) * 15;
-    score += verifyScore;
+    score += (verifiedCount / 3) * 15;
     if (verifiedCount < 3) tips.push('Verify profile');
 
     return { percent: Math.round(Math.min(score, 100)), tips: tips.slice(0, 3) };
@@ -1679,7 +1491,6 @@ function computeProfileStrength() {
 function renderIdentityTab() {
     const user = currentSessionUser;
     const container = document.getElementById("appContent");
-
     if (!profileDraft) profileDraft = defaultProfileFields();
 
     const strength = computeProfileStrength();
@@ -1687,7 +1498,6 @@ function renderIdentityTab() {
     const circumference = 2 * Math.PI * 30;
     const offset = circumference * (1 - strength.percent / 100);
 
-    // Build photo grid (6 slots)
     let photoSlots = '';
     for (let i = 0; i < 6; i++) {
         const photo = profileDraft.photos[i];
@@ -1701,26 +1511,21 @@ function renderIdentityTab() {
         } else {
             photoSlots += `
                 <div class="photo-slot" data-add="${i}">
-                    <div class="slot-add">
-                        <i class="fas fa-plus"></i>
-                        <span>ADD</span>
-                    </div>
+                    <div class="slot-add"><i class="fas fa-plus"></i><span>ADD</span></div>
                 </div>`;
         }
     }
 
-    // Interests chips
     let interestChips = '';
     ALL_INTERESTS.forEach(int => {
         const selected = profileDraft.interests.includes(int);
         interestChips += `<div class="interest-chip ${selected ? 'selected' : ''}" data-interest="${int}">${int}</div>`;
     });
 
-    // Stats
     const stats = profileDraft.stats || { views: 0, likesReceived: 0, matches: 0 };
+    const membership = getMembershipLevel();
 
     container.innerHTML = `
-        <!-- HERO CARD -->
         <div class="pro-card is-visible">
             <div class="pro-hero">
                 <div class="pro-avatar-wrap">
@@ -1739,15 +1544,13 @@ function renderIdentityTab() {
                         <span><i class="fas fa-map-marker-alt" style="color:#c084fc;"></i> ${user?.country || 'Kenya'}</span>
                     </div>
                     <div class="pro-hero-badges">
-                        <span class="pro-chip gold"><i class="fas fa-crown"></i> FREE</span>
+                        <span class="pro-chip gold"><i class="fas fa-crown"></i> ${membership.toUpperCase()}</span>
                         ${profileDraft.verification.email ? '<span class="pro-chip green"><i class="fas fa-envelope"></i> Email</span>' : ''}
                         ${profileDraft.verification.phone ? '<span class="pro-chip green"><i class="fas fa-phone"></i> Phone</span>' : ''}
                         ${profileDraft.verification.photo ? '<span class="pro-chip green"><i class="fas fa-camera"></i> Photo</span>' : ''}
                     </div>
                 </div>
             </div>
-
-            <!-- Profile Strength -->
             <div class="pro-strength">
                 <div class="strength-ring">
                     <svg viewBox="0 0 68 68">
@@ -1769,7 +1572,6 @@ function renderIdentityTab() {
             </div>
         </div>
 
-        <!-- STATS -->
         <div class="pro-card">
             <div class="pro-section-title">
                 <span><i class="fas fa-chart-bar"></i> Your Stats</span>
@@ -1777,36 +1579,23 @@ function renderIdentityTab() {
             <div class="stats-grid">
                 <div class="stat-box">
                     <div class="stat-icon"><i class="fas fa-eye"></i></div>
-                    <div>
-                        <div class="stat-value">${stats.views}</div>
-                        <div class="stat-label">Profile Views</div>
-                    </div>
+                    <div><div class="stat-value">${stats.views}</div><div class="stat-label">Profile Views</div></div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-icon purple"><i class="fas fa-heart"></i></div>
-                    <div>
-                        <div class="stat-value">${stats.likesReceived}</div>
-                        <div class="stat-label">Likes</div>
-                    </div>
+                    <div><div class="stat-value">${stats.likesReceived}</div><div class="stat-label">Likes</div></div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-icon green"><i class="fas fa-users"></i></div>
-                    <div>
-                        <div class="stat-value">${appData.matchesList.length}</div>
-                        <div class="stat-label">Matches</div>
-                    </div>
+                    <div><div class="stat-value">${appData.matchesList.length}</div><div class="stat-label">Matches</div></div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-icon gold"><i class="fas fa-star"></i></div>
-                    <div>
-                        <div class="stat-value">${Math.round(strength.percent)}%</div>
-                        <div class="stat-label">Profile Score</div>
-                    </div>
+                    <div><div class="stat-value">${Math.round(strength.percent)}%</div><div class="stat-label">Profile Score</div></div>
                 </div>
             </div>
         </div>
 
-        <!-- PHOTOS -->
         <div class="pro-card">
             <div class="pro-section-title">
                 <span><i class="fas fa-images"></i> Photo Gallery</span>
@@ -1815,7 +1604,6 @@ function renderIdentityTab() {
             <div class="photo-grid">${photoSlots}</div>
         </div>
 
-        <!-- BIO -->
         <div class="pro-card">
             <div class="pro-section-title">
                 <span><i class="fas fa-quote-left"></i> About Me</span>
@@ -1829,7 +1617,6 @@ function renderIdentityTab() {
             </div>
         </div>
 
-        <!-- INTERESTS -->
         <div class="pro-card">
             <div class="pro-section-title">
                 <span><i class="fas fa-heart"></i> Interests</span>
@@ -1838,7 +1625,6 @@ function renderIdentityTab() {
             <div class="interests-wrap">${interestChips}</div>
         </div>
 
-        <!-- PROMPTS -->
         <div class="pro-card">
             <div class="pro-section-title">
                 <span><i class="fas fa-comments"></i> Conversation Starters</span>
@@ -1857,7 +1643,6 @@ function renderIdentityTab() {
             </div>
         </div>
 
-        <!-- VERIFICATION -->
         <div class="pro-card">
             <div class="pro-section-title">
                 <span><i class="fas fa-shield-alt"></i> Verification</span>
@@ -1900,7 +1685,6 @@ function renderIdentityTab() {
             </div>
         </div>
 
-        <!-- PRIVACY -->
         <div class="pro-card">
             <div class="pro-section-title">
                 <span><i class="fas fa-user-shield"></i> Privacy</span>
@@ -1919,7 +1703,6 @@ function renderIdentityTab() {
             </div>
         </div>
 
-        <!-- ACCOUNT ACTIONS -->
         <div class="pro-card">
             <div class="pro-section-title">
                 <span><i class="fas fa-cog"></i> Account</span>
@@ -1946,7 +1729,6 @@ function renderIdentityTab() {
             </div>
         </div>
 
-        <!-- SAVE BAR -->
         <div class="save-bar ${profileHasChanges ? 'visible' : ''}" id="saveBar">
             <button class="save-btn" id="saveProfileBtn">
                 <i class="fas fa-check-circle"></i> Save Changes
@@ -1959,7 +1741,6 @@ function renderIdentityTab() {
 }
 
 function attachIdentityEvents() {
-    // Hero avatar upload
     document.getElementById("heroAvatarInput")?.addEventListener("change", (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -1972,7 +1753,6 @@ function attachIdentityEvents() {
         showToast("📸 Main photo updated", "#00B841");
     });
 
-    // Photo slots
     document.querySelectorAll(".photo-slot").forEach(slot => {
         slot.addEventListener("click", (e) => {
             if (e.target.closest(".slot-remove")) return;
@@ -1988,7 +1768,6 @@ function attachIdentityEvents() {
                     const idx = Number(addIdx);
                     while (profileDraft.photos.length < idx) profileDraft.photos.push(null);
                     profileDraft.photos[idx] = url;
-                    // Compact photos array
                     profileDraft.photos = profileDraft.photos.filter(Boolean);
                     if (idx === 0) appData.customUserPhotoURL = url;
                     profileHasChanges = true;
@@ -2000,7 +1779,6 @@ function attachIdentityEvents() {
         });
     });
 
-    // Remove photo
     document.querySelectorAll(".slot-remove").forEach(btn => {
         btn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -2014,9 +1792,7 @@ function attachIdentityEvents() {
         });
     });
 
-    // Bio input
-    const bioInput = document.getElementById("bioInput");
-    bioInput?.addEventListener("input", (e) => {
+    document.getElementById("bioInput")?.addEventListener("input", (e) => {
         profileDraft.bio = e.target.value;
         const counter = document.getElementById("bioCounter");
         if (counter) {
@@ -2028,7 +1804,6 @@ function attachIdentityEvents() {
         document.getElementById("saveBar")?.classList.add("visible");
     });
 
-    // Interests
     document.querySelectorAll(".interest-chip").forEach(chip => {
         chip.addEventListener("click", () => {
             const int = chip.dataset.interest;
@@ -2049,7 +1824,6 @@ function attachIdentityEvents() {
         });
     });
 
-    // Prompts
     ["date", "perfect", "together"].forEach(key => {
         const el = document.getElementById(`prompt${key.charAt(0).toUpperCase() + key.slice(1)}`);
         el?.addEventListener("input", (e) => {
@@ -2059,11 +1833,9 @@ function attachIdentityEvents() {
         });
     });
 
-    // Verification buttons
     document.querySelectorAll("[data-verify]").forEach(btn => {
         btn.addEventListener("click", () => {
             const key = btn.dataset.verify;
-            // Simulate verification
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             btn.disabled = true;
             setTimeout(() => {
@@ -2075,7 +1847,6 @@ function attachIdentityEvents() {
         });
     });
 
-    // Privacy toggles
     document.querySelectorAll(".switch[data-toggle]").forEach(sw => {
         sw.addEventListener("click", () => {
             const key = sw.dataset.toggle;
@@ -2086,7 +1857,6 @@ function attachIdentityEvents() {
         });
     });
 
-    // Save button
     document.getElementById("saveProfileBtn")?.addEventListener("click", () => {
         appData.currentUserBio = profileDraft.bio;
         profileHasChanges = false;
@@ -2096,7 +1866,6 @@ function attachIdentityEvents() {
         renderIdentityTab();
     });
 
-    // Export data
     document.getElementById("exportDataBtn")?.addEventListener("click", () => {
         const data = {
             user: currentSessionUser,
@@ -2114,12 +1883,10 @@ function attachIdentityEvents() {
         showToast("📥 Data exported", "#667eea");
     });
 
-    // Pause profile
     document.getElementById("pauseProfileBtn")?.addEventListener("click", () => {
         showToast("⏸️ Profile paused (demo)", "#FBBF24");
     });
 
-    // Logout
     document.getElementById("logoutBtn")?.addEventListener("click", () => {
         localStorage.removeItem('flamematch_session_local');
         currentSessionUser = null;
@@ -2129,7 +1896,6 @@ function attachIdentityEvents() {
         showAuthScreen();
     });
 
-    // Delete account
     document.getElementById("deleteAccountBtn")?.addEventListener("click", () => {
         if (confirm("Delete account? This cannot be undone.")) {
             localStorage.removeItem('flamematch_session_local');
@@ -2143,45 +1909,128 @@ function attachIdentityEvents() {
 }
 
 // ============================================================
-// RENDER: PREMIUM
+// RENDER: PREMIUM — with Paystack
 // ============================================================
 function renderPremiumShop() {
     const container = document.getElementById("appContent");
+    const email = currentSessionUser?.email || '';
+    const membership = getMembershipLevel();
+    const ready = API_BASE_URL && !API_BASE_URL.includes('YOUR-BACKEND');
+
     let html = `
         <div style="margin-bottom:20px;">
             <h3 style="color:white;">💎 Premium Plans</h3>
             <p style="color:var(--text-secondary);font-size:12px;margin-top:6px;">
-                <i class="fas fa-info-circle" style="color:#FBBF24;"></i>
-                <strong style="color:#FBBF24;">Demo mode</strong> — payments are not enabled in this build.
+                <i class="fas fa-shield-alt" style="color:#0BA4DB;"></i>
+                Secure payments via <strong style="color:#0BA4DB;">Paystack</strong> · Verified server-side
             </p>
+            ${!ready ? `
+                <div style="background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.4);border-radius:12px;padding:12px;margin-top:10px;color:#FBBF24;font-size:12px;">
+                    ⚠️ Backend URL not configured. Set <code>API_BASE_URL</code> in the code.
+                </div>` : ''}
         </div>`;
 
     PremiumPackage.packages.forEach(pkg => {
+        const isActive = membership === pkg.id;
         html += `
-            <div class="membership-card" style="border-color:${pkg.color};opacity:0.85;">
+            <div class="membership-card ${isActive ? 'pro' : ''}" style="border-color:${pkg.color};">
                 <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <span style="color:white;font-weight:700;font-size:20px;">${pkg.name}</span>
+                    <div>
+                        <span style="color:white;font-weight:700;font-size:20px;">${pkg.name}</span>
+                        ${isActive ? '<span style="background:#00B841;color:white;padding:2px 10px;border-radius:60px;font-size:11px;font-weight:700;margin-left:8px;">ACTIVE</span>' : ''}
+                    </div>
                     <div style="font-size:24px;font-weight:800;color:white;">${pkg.currency} ${pkg.price} <span style="font-size:12px;color:var(--text-secondary);">/mo</span></div>
                 </div>
                 <ul style="list-style:none;margin:16px 0;">
                     ${pkg.features.map(f => `<li style="color:var(--text-secondary);padding:6px 0;display:flex;align-items:center;gap:10px;"><i class="fas fa-check-circle" style="color:var(--gold);width:20px;"></i> ${f}</li>`).join('')}
                 </ul>
-                <button disabled style="background:#2e2a3e;border:1px solid #4a4a5a;padding:14px;border-radius:60px;color:#6f6b8a;font-weight:700;width:100%;cursor:not-allowed;font-size:15px;">
-                    <i class="fas fa-lock"></i> Coming soon
-                </button>
+                ${!isActive ? `
+                    <button onclick="startPaystackPayment('${pkg.id}')" ${!ready ? 'disabled' : ''} style="background:linear-gradient(135deg,#0BA4DB,#0570a8);border:none;padding:14px;border-radius:60px;color:white;font-weight:700;width:100%;cursor:pointer;font-size:15px;${!ready ? 'opacity:0.5;cursor:not-allowed;' : ''}">
+                        <i class="fas fa-credit-card"></i> Pay ${pkg.currency} ${pkg.price}
+                    </button>` : `<button disabled style="background:#2e2a3e;border:1px solid #00B841;padding:14px;border-radius:60px;color:#00B841;font-weight:700;width:100%;cursor:default;font-size:15px;">✅ Active Plan</button>`}
             </div>`;
     });
 
-    html += `
-        <div class="membership-card" style="border-color:rgba(251,191,36,0.3);opacity:0.85;">
-            <span style="color:white;font-weight:700;font-size:18px;">🚀 Profile Boost</span>
-            <p style="color:var(--text-secondary);margin:8px 0;">10x more visibility</p>
-            <button disabled style="background:#2e2a3e;border:1px solid #4a4a5a;padding:14px;border-radius:60px;color:#6f6b8a;font-weight:700;width:100%;cursor:not-allowed;font-size:15px;">
-                <i class="fas fa-lock"></i> Coming soon
-            </button>
-        </div>`;
     container.innerHTML = html;
     attachModernCardStyles();
+}
+
+// ============================================================
+// PAYSTACK PAYMENT FLOW
+// ============================================================
+async function startPaystackPayment(planId) {
+    if (!currentSessionUser?.email) {
+        showToast('⚠️ Please log in first', '#ef4444');
+        return;
+    }
+    if (!API_BASE_URL || API_BASE_URL.includes('YOUR-BACKEND')) {
+        showToast('⚠️ Backend URL not configured', '#ef4444');
+        return;
+    }
+
+    showLoadingToast('⏳ Initializing payment...');
+
+    try {
+        const data = await apiRequest('/api/paystack/initialize', {
+            method: 'POST',
+            body: JSON.stringify({
+                email: currentSessionUser.email,
+                planId,
+                callbackUrl: window.location.origin + window.location.pathname,
+                name: currentSessionUser.name,
+                age: currentSessionUser.age,
+                country: currentSessionUser.country
+            })
+        });
+
+        hideLoadingToast();
+
+        if (!data.success || !data.authorization_url) {
+            throw new Error(data.message || 'Could not start payment');
+        }
+
+        sessionStorage.setItem('fm_pending_ref', data.reference);
+        sessionStorage.setItem('fm_pending_plan', planId);
+
+        showToast('🔒 Redirecting to Paystack...', '#0BA4DB');
+        setTimeout(() => { window.location.href = data.authorization_url; }, 700);
+
+    } catch (err) {
+        hideLoadingToast();
+        showToast(`⚠️ ${err.message}`, '#ef4444');
+        console.error('Payment error:', err);
+    }
+}
+
+async function verifyPendingPaymentIfAny() {
+    const reference = sessionStorage.getItem('fm_pending_ref');
+    if (!reference) return;
+
+    showLoadingToast('🔍 Verifying payment...');
+
+    try {
+        const data = await apiRequest('/api/paystack/verify', {
+            method: 'POST',
+            body: JSON.stringify({ reference })
+        });
+
+        hideLoadingToast();
+        sessionStorage.removeItem('fm_pending_ref');
+        sessionStorage.removeItem('fm_pending_plan');
+
+        if (data.success && data.status === 'success') {
+            await refreshUserFromServer();
+            showToast('🎉 Premium activated!', '#00B841');
+            renderCurrentTab();
+        } else {
+            showToast(`❌ ${data.message || 'Payment not verified'}`, '#ef4444');
+        }
+    } catch (err) {
+        hideLoadingToast();
+        sessionStorage.removeItem('fm_pending_ref');
+        sessionStorage.removeItem('fm_pending_plan');
+        showToast('⚠️ Verification failed — contact support if charged', '#ef4444');
+    }
 }
 
 // ============================================================
@@ -2274,7 +2123,7 @@ function showAuthScreen() {
         submitBtn.innerText = isLogin ? "Login Session" : "Create Account";
     };
 
-    submitBtn.onclick = () => {
+    submitBtn.onclick = async () => {
         const email = document.getElementById("authEmail").value.trim();
         const password = document.getElementById("authPassword").value.trim();
         errorDiv.innerText = '';
@@ -2285,7 +2134,8 @@ function showAuthScreen() {
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span class="loading-spinner"></span>';
 
-        setTimeout(() => {
+        // Local mock login (no auth backend yet)
+        setTimeout(async () => {
             let user;
             if (isLogin) {
                 const stored = localStorage.getItem('flamematch_users_local');
@@ -2297,6 +2147,7 @@ function showAuthScreen() {
                         email: email.toLowerCase(),
                         name: email.split('@')[0],
                         age: 25, country: 'Kenya',
+                        membership: 'free',
                         coins: 450, superLikesUsed: 0,
                         dailySwipes: 0,
                         lastSwipeReset: new Date().toISOString(),
@@ -2319,6 +2170,7 @@ function showAuthScreen() {
                     id: 'u_' + Date.now(),
                     email: email.toLowerCase(),
                     name, age: Number(age), country,
+                    membership: 'free',
                     coins: 450, superLikesUsed: 0,
                     dailySwipes: 0,
                     lastSwipeReset: new Date().toISOString(),
@@ -2333,6 +2185,10 @@ function showAuthScreen() {
             currentSessionUser = user;
             localStorage.setItem('flamematch_session_local', JSON.stringify(user));
             loadUserData(user.id);
+
+            // Sync premium status from server if backend is configured
+            await refreshUserFromServer();
+
             initMainApp();
 
             submitBtn.disabled = false;
@@ -2351,7 +2207,7 @@ function initMainApp() {
             <div class="main-header">
                 <div class="logo-area"><h1>FlameMatch❤️‍🔥</h1></div>
                 <div style="display:flex;align-items:center;gap:8px;">
-                    <span class="premium-badge" style="font-size:9px;background:#4a4a5a;">FREE</span>
+                    <span class="premium-badge" style="font-size:9px;background:${isPremiumUser() ? '#FBBF24' : '#4a4a5a'};">${getMembershipLevel().toUpperCase()}</span>
                     <div class="coin-badge"><i class="fas fa-gem"></i> <span id="coinAmount">${appData.userCoins || 0}</span></div>
                 </div>
             </div>
@@ -2381,12 +2237,19 @@ function initMainApp() {
         };
     });
     renderCurrentTab();
+
+    // 🔥 Verify any pending Paystack payment on return from checkout
+    verifyPendingPaymentIfAny();
+    // 🔥 Refresh premium status from server (silently)
+    refreshUserFromServer().then(() => {
+        if (activeTab === 'shop' || activeTab === 'profile') renderCurrentTab();
+    });
 }
 
 // ============================================================
 // BOOTSTRAP
 // ============================================================
-(function bootstrap() {
+(async function bootstrap() {
     const storedSession = localStorage.getItem('flamematch_session_local');
     if (storedSession) {
         try {
@@ -2398,6 +2261,8 @@ function initMainApp() {
     }
     showAuthScreen();
 })();
+
+window.startPaystackPayment = startPaystackPayment;
 </script>
 </body>
 </html>
