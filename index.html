@@ -304,7 +304,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Payment overlay */
         .payment-overlay {
             position: fixed; inset: 0; z-index: 100000;
             background: rgba(3, 3, 8, 0.85); backdrop-filter: blur(12px);
@@ -678,14 +677,16 @@
 
 <script>
 // ============================================================
-// FLAMEMATCH PRO — Neon + Paystack integrated
+// FLAMEMATCH PRO — Frontend with Vercel backend integration
 // ============================================================
 
 // ============================================================
-// ⚙️ BACKEND CONFIG — change this ONE line after deploying
+// ⚙️ BACKEND CONFIG — auto-switches between local and production
 // ============================================================
-const API_BASE_URL = "https://flamematch-backend.vercel.app";
-// Replace with your real backend URL (no trailing slash)
+const API_BASE_URL =
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:5000'
+    : 'https://dating-app-git-main-sammaxcinema-1374s-projects.vercel.app';
 // ============================================================
 
 // ============================================================
@@ -906,7 +907,7 @@ function hideLoadingToast() {
 }
 
 // ============================================================
-// PREMIUM STATE — from server only
+// PREMIUM STATE
 // ============================================================
 function isPremiumUser() {
     const u = currentSessionUser;
@@ -1051,25 +1052,6 @@ function saveUserData(userId) {
         customPhotoURL: appData.customUserPhotoURL,
         profileDraft
     }));
-}
-
-// ============================================================
-// BACKEND SYNC
-// ============================================================
-async function refreshUserFromServer() {
-    if (!currentSessionUser?.email) return;
-    try {
-        const data = await apiRequest(`/api/users/premium-status?email=${encodeURIComponent(currentSessionUser.email)}`);
-        if (data.user) {
-            currentSessionUser.membership = data.user.membership || 'free';
-            currentSessionUser.membershipExpiry = data.user.membershipExpiry;
-            currentSessionUser.boostActive = data.user.boostActive || false;
-            currentSessionUser.boostExpiry = data.user.boostExpiry;
-            localStorage.setItem('flamematch_session_local', JSON.stringify(currentSessionUser));
-        }
-    } catch (e) {
-        console.warn('Could not refresh user from server:', e.message);
-    }
 }
 
 // ============================================================
@@ -1909,13 +1891,12 @@ function attachIdentityEvents() {
 }
 
 // ============================================================
-// RENDER: PREMIUM — with Paystack
+// RENDER: PREMIUM — with real Paystack flow
 // ============================================================
 function renderPremiumShop() {
     const container = document.getElementById("appContent");
-    const email = currentSessionUser?.email || '';
     const membership = getMembershipLevel();
-    const ready = API_BASE_URL && !API_BASE_URL.includes('YOUR-BACKEND');
+    const ready = !!API_BASE_URL;
 
     let html = `
         <div style="margin-bottom:20px;">
@@ -1924,10 +1905,6 @@ function renderPremiumShop() {
                 <i class="fas fa-shield-alt" style="color:#0BA4DB;"></i>
                 Secure payments via <strong style="color:#0BA4DB;">Paystack</strong> · Verified server-side
             </p>
-            ${!ready ? `
-                <div style="background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.4);border-radius:12px;padding:12px;margin-top:10px;color:#FBBF24;font-size:12px;">
-                    ⚠️ Backend URL not configured. Set <code>API_BASE_URL</code> in the code.
-                </div>` : ''}
         </div>`;
 
     PremiumPackage.packages.forEach(pkg => {
@@ -1956,15 +1933,11 @@ function renderPremiumShop() {
 }
 
 // ============================================================
-// PAYSTACK PAYMENT FLOW
+// PAYSTACK PAYMENT FLOW — server-side verified
 // ============================================================
 async function startPaystackPayment(planId) {
     if (!currentSessionUser?.email) {
         showToast('⚠️ Please log in first', '#ef4444');
-        return;
-    }
-    if (!API_BASE_URL || API_BASE_URL.includes('YOUR-BACKEND')) {
-        showToast('⚠️ Backend URL not configured', '#ef4444');
         return;
     }
 
@@ -2009,9 +1982,8 @@ async function verifyPendingPaymentIfAny() {
     showLoadingToast('🔍 Verifying payment...');
 
     try {
-        const data = await apiRequest('/api/paystack/verify', {
-            method: 'POST',
-            body: JSON.stringify({ reference })
+        const data = await apiRequest(`/api/paystack/verify?reference=${encodeURIComponent(reference)}`, {
+            method: 'GET'
         });
 
         hideLoadingToast();
@@ -2019,8 +1991,14 @@ async function verifyPendingPaymentIfAny() {
         sessionStorage.removeItem('fm_pending_plan');
 
         if (data.success && data.status === 'success') {
-            await refreshUserFromServer();
-            showToast('🎉 Premium activated!', '#00B841');
+            currentSessionUser.membership = data.plan || currentSessionUser.membership;
+            currentSessionUser.boostActive = true;
+            currentSessionUser.boostExpiry = new Date(Date.now() + 24 * 3600000).toISOString();
+            localStorage.setItem('flamematch_session_local', JSON.stringify(currentSessionUser));
+            showToast('🎉 Premium activated successfully!', '#00B841');
+            renderCurrentTab();
+        } else if (data.status === 'success' && data.message?.includes('already')) {
+            showToast('✅ Premium already active', '#00B841');
             renderCurrentTab();
         } else {
             showToast(`❌ ${data.message || 'Payment not verified'}`, '#ef4444');
@@ -2123,7 +2101,7 @@ function showAuthScreen() {
         submitBtn.innerText = isLogin ? "Login Session" : "Create Account";
     };
 
-    submitBtn.onclick = async () => {
+    submitBtn.onclick = () => {
         const email = document.getElementById("authEmail").value.trim();
         const password = document.getElementById("authPassword").value.trim();
         errorDiv.innerText = '';
@@ -2134,8 +2112,7 @@ function showAuthScreen() {
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span class="loading-spinner"></span>';
 
-        // Local mock login (no auth backend yet)
-        setTimeout(async () => {
+        setTimeout(() => {
             let user;
             if (isLogin) {
                 const stored = localStorage.getItem('flamematch_users_local');
@@ -2185,10 +2162,6 @@ function showAuthScreen() {
             currentSessionUser = user;
             localStorage.setItem('flamematch_session_local', JSON.stringify(user));
             loadUserData(user.id);
-
-            // Sync premium status from server if backend is configured
-            await refreshUserFromServer();
-
             initMainApp();
 
             submitBtn.disabled = false;
@@ -2240,16 +2213,12 @@ function initMainApp() {
 
     // 🔥 Verify any pending Paystack payment on return from checkout
     verifyPendingPaymentIfAny();
-    // 🔥 Refresh premium status from server (silently)
-    refreshUserFromServer().then(() => {
-        if (activeTab === 'shop' || activeTab === 'profile') renderCurrentTab();
-    });
 }
 
 // ============================================================
 // BOOTSTRAP
 // ============================================================
-(async function bootstrap() {
+(function bootstrap() {
     const storedSession = localStorage.getItem('flamematch_session_local');
     if (storedSession) {
         try {
