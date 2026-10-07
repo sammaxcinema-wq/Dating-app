@@ -2063,7 +2063,7 @@ function renderCurrentTab() {
 }
 
 // ============================================================
-// AUTH SCREEN
+// AUTH SCREEN — UPDATED: unified single-step handler
 // ============================================================
 function showAuthScreen() {
     if (cameraEngineInstance) { cameraEngineInstance.stopStream(); cameraEngineInstance = null; clearLiveInterval(); }
@@ -2073,11 +2073,11 @@ function showAuthScreen() {
         <div class="auth-container">
             <div class="auth-logo"><h1>FlameMatch</h1><p>Find your permanent flame 🔥</p></div>
             <div id="authForm">
-                <input type="email" id="authEmail" class="auth-input" placeholder="Email">
-                <input type="password" id="authPassword" class="auth-input" placeholder="Password">
+                <input type="email" id="authEmail" class="auth-input" placeholder="Email" autocomplete="email">
+                <input type="password" id="authPassword" class="auth-input" placeholder="Password" autocomplete="current-password">
                 <div id="authExtraFields" style="display:none;">
-                    <input type="text" id="authName" class="auth-input" placeholder="Full Name">
-                    <input type="number" id="authAge" class="auth-input" placeholder="Age" min="18">
+                    <input type="text" id="authName" class="auth-input" placeholder="Full Name" autocomplete="name">
+                    <input type="number" id="authAge" class="auth-input" placeholder="Age" min="18" max="120">
                     <select id="authCountry" class="auth-select">
                         <option>United States</option><option>Canada</option><option>UK</option>
                         <option>Kenya</option><option>Nigeria</option><option>South Africa</option>
@@ -2099,26 +2099,33 @@ function showAuthScreen() {
         isLogin = !isLogin;
         extraDiv.style.display = isLogin ? "none" : "block";
         submitBtn.innerText = isLogin ? "Login Session" : "Create Account";
+        errorDiv.innerText = "";
     };
 
-    submitBtn.onclick = () => {
+    // ---------- Unified auth handler ----------
+    async function handleAuth() {
         const email = document.getElementById("authEmail").value.trim();
         const password = document.getElementById("authPassword").value.trim();
         errorDiv.innerText = '';
 
+        // Client-side validation
         if (!email || !password) { errorDiv.innerText = 'Enter email and password'; return; }
-        if (!isLogin && password.length < 4) { errorDiv.innerText = 'Password too short'; return; }
+        if (password.length < 4) { errorDiv.innerText = 'Password must be at least 4 characters'; return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errorDiv.innerText = 'Enter a valid email address'; return; }
 
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span class="loading-spinner"></span>';
 
-        setTimeout(() => {
+        try {
             let user;
+
             if (isLogin) {
                 const stored = localStorage.getItem('flamematch_users_local');
                 const users = stored ? JSON.parse(stored) : {};
                 user = users[email.toLowerCase()];
+
                 if (!user) {
+                    // Auto-provision on first login (preserves existing workflow)
                     user = {
                         id: 'u_' + Date.now(),
                         email: email.toLowerCase(),
@@ -2135,26 +2142,35 @@ function showAuthScreen() {
                 }
             } else {
                 const name = document.getElementById("authName").value.trim();
-                const age = document.getElementById("authAge").value;
+                const age = parseInt(document.getElementById("authAge").value, 10);
                 const country = document.getElementById("authCountry").value;
-                if (!name || !age || age < 18) {
-                    errorDiv.innerText = "Valid age (18+) required.";
+
+                if (!name || !age || isNaN(age) || age < 18 || age > 120) {
+                    errorDiv.innerText = "Valid name and age (18+) required.";
                     submitBtn.disabled = false;
                     submitBtn.innerText = "Create Account";
                     return;
                 }
+
+                const stored = localStorage.getItem('flamematch_users_local');
+                const users = stored ? JSON.parse(stored) : {};
+                if (users[email.toLowerCase()]) {
+                    errorDiv.innerText = "An account with this email already exists.";
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Create Account";
+                    return;
+                }
+
                 user = {
                     id: 'u_' + Date.now(),
                     email: email.toLowerCase(),
-                    name, age: Number(age), country,
+                    name, age, country,
                     membership: 'free',
                     coins: 450, superLikesUsed: 0,
                     dailySwipes: 0,
                     lastSwipeReset: new Date().toISOString(),
                     createdAt: new Date().toISOString()
                 };
-                const stored = localStorage.getItem('flamematch_users_local');
-                const users = stored ? JSON.parse(stored) : {};
                 users[email.toLowerCase()] = user;
                 localStorage.setItem('flamematch_users_local', JSON.stringify(users));
             }
@@ -2164,10 +2180,23 @@ function showAuthScreen() {
             loadUserData(user.id);
             initMainApp();
 
+        } catch (err) {
+            errorDiv.innerText = err.message || 'Authentication failed. Please try again.';
+        } finally {
             submitBtn.disabled = false;
             submitBtn.innerText = isLogin ? "Login Session" : "Create Account";
-        }, 400);
-    };
+        }
+    }
+
+    submitBtn.onclick = handleAuth;
+
+    // Allow Enter key to submit (preserves accessibility)
+    document.getElementById("authEmail").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("authPassword").focus();
+    });
+    document.getElementById("authPassword").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") handleAuth();
+    });
 }
 
 // ============================================================
